@@ -1,0 +1,1316 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
+<title>ZUNNU — Super App Pet</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--bg:#F7F5F0;--card:#fff;--ink:#282722;--soft:#999;--line:#ECEAE5;--green:#245C4F;--green2:#347668;--greenSoft:#EAF5F0;--orange:#EE9C3C;--orangeSoft:#FFF0DB;--coral:#E76F51;--coralSoft:#FCE4DE;--pink:#D94F7A;--pinkSoft:#FCE8EF;--gold:#D4AF37;--goldSoft:#FFF9E6;--blue:#2B7BB9;--blueSoft:#E2F1FC;--pix:#32BCAD;--pixSoft:#E6F8F6}
+[data-theme="dark"]{--bg:#1a1a2e;--card:#16213e;--ink:#e8e8e8;--soft:#a0a0b0;--line:#2a2a4a;--green:#347668;--green2:#245C4F;--greenSoft:#1a3a2e;--orange:#EE9C3C;--orangeSoft:#3a2a10;--coral:#E76F51;--coralSoft:#3a1a10;--pink:#D94F7A;--pinkSoft:#3a1a2a;--gold:#D4AF37;--goldSoft:#3a3010;--blue:#2B7BB9;--blueSoft:#1a2a3a;--pix:#32BCAD;--pixSoft:#1a3a3a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative}
+
+.header{padding:12px 16px;background:var(--bg);position:sticky;top:0;z-index:10}
+.header-row{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:8px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800}
+.title{font-size:16px;font-weight:800;color:var(--ink)}
+.header-actions{display:flex;gap:4px;align-items:center}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.plan-btn{border:0;background:linear-gradient(135deg,#FFE259,#FFA751);color:#5A3900;font-size:9px;font-weight:800;padding:5px 8px;border-radius:6px;cursor:pointer;letter-spacing:.3px}
+.notif-btn{position:relative}.notif-badge{position:absolute;top:-1px;right:-1px;background:var(--coral);color:#fff;font-size:7px;font-weight:800;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+.content{padding:8px 16px 80px}
+.section{margin:16px 0 8px}.section h2{margin:0;font-size:13px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
+.search-bar{display:flex;gap:6px;margin-bottom:12px}
+.search-bar input{flex:1;border:none;background:var(--card);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--ink);outline:none;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+
+.btn{border:1px solid var(--green);background:var(--green);color:#fff;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;display:inline-block}
+.btn.outline{background:transparent;color:var(--green)}.btn.pink{background:var(--pink);border:none;color:#fff}.btn.gold{background:linear-gradient(135deg,#FFE259,#FFA751);border:none;color:#5A3900;font-weight:800}.btn.blue{background:var(--blue);border:none;color:#fff}.btn.pix{background:var(--pix);border-color:var(--pix);color:#fff}.btn.danger{background:var(--coral);border:none;color:#fff}
+.small{font-size:11px;color:var(--soft)}.small-btn{padding:5px 8px;border-radius:6px;font-size:10px}
+
+.badge-pro{background:var(--goldSoft);color:#916800;border:1px solid #F0C45C;padding:1px 5px;border-radius:4px;font-size:8px;font-weight:800}
+.badge-plus{background:var(--blueSoft);color:var(--blue);border:1px solid #BCE0FD;padding:1px 5px;border-radius:4px;font-size:8px;font-weight:800}
+.badge-free{background:#f0efec;color:var(--soft);padding:1px 5px;border-radius:4px;font-size:8px;font-weight:700}
+.badge-verified{background:#E2F7EB;color:#1B663E;border:1px solid #A2E2DB;padding:1px 5px;border-radius:4px;font-size:8px;font-weight:800}
+
+.ad-banner{background:var(--orangeSoft);border:none;border-radius:12px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.ad-badge{font-size:7px;background:var(--orange);color:#fff;padding:2px 4px;border-radius:3px;font-weight:800}
+
+.post{background:var(--card);border-radius:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);animation:fadeIn .3s ease}
+.post-head{padding:10px 12px 0;gap:8px;display:flex;align-items:center}
+.avatar{border-radius:50%;background:var(--greenSoft);font-size:16px;display:flex;align-items:center;justify-content:center;width:36px;height:36px;overflow:hidden;flex-shrink:0}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.post-user{font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px}
+.post-meta{font-size:10px;color:var(--soft)}
+.post-text{padding:6px 12px 8px;font-size:12px;line-height:1.5;color:var(--ink)}
+.media{height:180px;background:var(--greenSoft)}.media img{width:100%;height:100%;object-fit:cover}
+.post-actions{display:flex;gap:4px;padding:6px 12px;border-top:1px solid var(--line)}
+.action{border:0;background:none;padding:4px 8px;cursor:pointer;font-size:11px;color:var(--soft);font-weight:600;border-radius:6px}.action:hover{background:var(--greenSoft)}
+
+.post-menu{position:relative}.post-menu-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--soft);padding:4px}
+.post-dropdown{position:absolute;right:0;top:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px;z-index:15;min-width:110px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.post-dropdown button{display:block;width:100%;border:none;background:none;padding:6px 10px;font-size:11px;text-align:left;cursor:pointer;border-radius:4px}.post-dropdown button:hover{background:var(--greenSoft)}
+
+.comments-section{padding:8px 12px;border-top:1px solid var(--line)}
+.comment-item{display:flex;gap:6px;margin-bottom:6px}
+.comment-item .avatar{width:24px;height:24px;font-size:10px}
+.comment-text b{font-size:10px}.comment-text p{margin:0;font-size:11px;color:var(--soft)}
+.comment-input{display:flex;gap:4px;margin-top:4px}
+.comment-input input{flex:1;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:11px;background:var(--bg);color:var(--ink)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.product-card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);animation:fadeIn .3s ease}
+.product-card img{width:100%;height:100px;object-fit:cover}
+.product-info{padding:8px;display:flex;flex-direction:column;flex:1}
+.product-price{font-size:13px;font-weight:800;color:var(--green);margin:2px 0}
+
+.service-card{background:var(--card);border-radius:12px;padding:10px;margin-bottom:8px;display:flex;gap:8px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.04);animation:fadeIn .3s ease}
+.service-icon{width:40px;height:40px;border-radius:10px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+.match-deck{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.match-photo-wrap{position:relative;height:280px}.match-photo{width:100%;height:100%;object-fit:cover}
+.match-overlay{position:absolute;bottom:0;inset-inline:0;padding:14px;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);color:#fff}
+.match-actions{display:flex;justify-content:center;gap:16px;padding:12px}
+.action-round{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform .15s}.action-round:active{transform:scale(.9)}
+.action-round.nope{color:var(--coral)}.action-round.like{color:var(--pink);background:var(--pinkSoft);border-color:var(--pinkSoft)}
+
+.pet-card{background:var(--card);border-radius:12px;padding:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.04);animation:fadeIn .3s ease}
+.tutor-card{background:var(--card);border-radius:16px;padding:14px;text-align:center;margin-bottom:12px}
+.tutor-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.selfie-frame{width:140px;height:140px;border-radius:50%;border:3px dashed var(--green);margin:10px auto;position:relative;overflow:hidden;background:#333;display:flex;align-items:center;justify-content:center}
+.selfie-preview{width:100%;height:100%;object-fit:cover}
+.scan-line{position:absolute;width:100%;height:2px;background:var(--pix);top:0;animation:scan 2s infinite alternate}
+@keyframes scan{0%{top:0%}100%{top:95%}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+.skeleton{background:linear-gradient(90deg,var(--line) 25%,var(--bg) 50%,var(--line) 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;border-radius:10px;height:50px;margin-bottom:8px}
+
+.chat-window{display:flex;flex-direction:column;height:calc(100vh - 160px)}
+.chat-messages{flex:1;overflow-y:auto;padding:8px 0}
+.chat-bubble{max-width:75%;padding:8px 12px;border-radius:14px;margin-bottom:6px;font-size:12px;line-height:1.4}
+.chat-bubble.sent{background:var(--green);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.chat-bubble.received{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+.chat-input{display:flex;gap:6px;padding:8px 0}
+.chat-input input{flex:1;border:1px solid var(--line);border-radius:16px;padding:8px 12px;font-size:12px;background:var(--card);color:var(--ink)}
+
+.emoji-picker{display:flex;flex-wrap:wrap;gap:2px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:6px}
+.emoji-picker button{border:none;background:none;font-size:16px;cursor:pointer;padding:3px;border-radius:4px}.emoji-picker button:hover{background:var(--greenSoft)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:100;cursor:pointer}
+.lightbox img{max-width:90%;max-height:90%;object-fit:contain}
+
+.profile-view{background:var(--card);border-radius:14px;padding:14px;text-align:center;margin-bottom:10px}
+
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;height:56px;background:var(--card);border-top:1px solid var(--line);display:flex;z-index:20;box-shadow:0 -2px 8px rgba(0,0,0,.04)}
+.nav-btn{border:0;background:none;flex:1;font-size:9px;color:var(--soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:color .2s}
+.nav-btn.active{color:var(--green);font-weight:700}.nav-icon{font-size:16px}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.modal{width:100%;max-width:430px;max-height:85vh;overflow:auto;background:var(--bg);border-radius:16px 16px 0 0;padding:14px;animation:slideUp .25s ease}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.modal-title{font-size:14px;font-weight:700}.close{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:12px}
+.field{margin-bottom:8px;text-align:left}.field label{display:block;font-size:11px;font-weight:600;margin-bottom:3px;color:var(--soft)}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);outline:none}
+.plan-card{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+
+.loading{display:flex;justify-content:center;padding:30px}
+.spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200}
+.onboarding-card{background:var(--card);border-radius:16px;padding:20px;text-align:center;max-width:320px;width:90%}
+
+.notif-dropdown{position:absolute;right:0;top:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;z-index:15;width:240px;box-shadow:0 4px 12px rgba(0,0,0,.1);max-height:260px;overflow-y:auto}
+.notif-item{padding:6px;border-radius:6px;font-size:11px;border-bottom:1px solid var(--line);cursor:pointer}.notif-item:last-child{border-bottom:none}.notif-item:hover{background:var(--greenSoft)}
+.notif-item.unread{font-weight:700}
+
+.stories-row{display:flex;gap:10px;overflow-x:auto;padding:8px 0 12px;scrollbar-width:none;-ms-overflow-style:none}
+.stories-row::-webkit-scrollbar{display:none}
+.story-circle{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;flex-shrink:0}
+.story-ring{width:56px;height:56px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--pink),var(--orange));display:flex;align-items:center;justify-content:center}
+.story-ring.viewed{background:var(--line)}
+.story-ring.add-story{background:none;border:2px dashed var(--line)}
+.story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg)}
+.story-ring .add-icon{width:100%;height:100%;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--green)}
+.story-name{font-size:9px;color:var(--soft);max-width:56px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.story-viewer{position:fixed;inset:0;background:#000;z-index:200;display:flex;align-items:center;justify-content:center}
+.story-viewer-inner{width:100%;max-width:430px;height:100%;position:relative;display:flex;flex-direction:column}
+.story-viewer-img{flex:1;object-fit:contain;background:#111}
+.story-viewer-header{position:absolute;top:0;left:0;right:0;padding:12px;display:flex;align-items:center;gap:8px;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);z-index:1}
+.story-viewer-header img{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid #fff}
+.story-viewer-header b{color:#fff;font-size:12px}
+.story-viewer-header span{color:rgba(255,255,255,.6);font-size:10px}
+.story-close{position:absolute;top:12px;right:12px;color:#fff;font-size:20px;cursor:pointer;z-index:2;background:rgba(0,0,0,.3);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.story-progress{position:absolute;top:0;left:0;right:0;display:flex;gap:3px;padding:8px 12px;z-index:2}
+.story-progress-bar{flex:1;height:2px;background:rgba(255,255,255,.3);border-radius:1px;overflow:hidden}
+.story-progress-bar .fill{height:100%;background:#fff;border-radius:1px;transition:width .1s linear}
+.story-caption{position:absolute;bottom:0;left:0;right:0;padding:16px;color:#fff;font-size:13px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent)}
+.story-nav{position:absolute;top:0;bottom:0;width:40%;cursor:pointer;z-index:1}.story-nav.prev{left:0}.story-nav.next{right:0}
+
+.reel-card{position:relative;width:100%;height:calc(100vh - 56px);background:#000;scroll-snap-align:start;overflow:hidden}
+.reel-video{width:100%;height:100%;object-fit:contain}
+.reel-overlay{position:absolute;bottom:0;left:0;right:0;padding:12px 14px 16px;background:linear-gradient(to top,rgba(0,0,0,.7),transparent);color:#fff}
+.reel-overlay b{font-size:13px}.reel-overlay p{font-size:11px;margin:4px 0 0;opacity:.9;line-height:1.3}
+.reel-music{display:flex;align-items:center;gap:4px;font-size:10px;opacity:.8;margin-top:4px}
+.reel-actions{position:absolute;right:10px;bottom:80px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.reel-action-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#fff;font-size:10px}
+.reel-action-btn .icon{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(4px)}
+.reel-action-btn.liked .icon{background:var(--pink);color:#fff}
+.modal-body{padding:0;max-height:50vh;overflow-y:auto}
+
+.reels-container{scroll-snap-type:y mandatory;overflow-y:auto;height:calc(100vh - 56px)}
+
+.map-container{width:100%;height:calc(100vh - 116px);position:relative}
+#mapaView{width:100%;height:100%;z-index:1}
+.map-pets-list{position:absolute;bottom:0;left:0;right:0;background:var(--card);border-radius:16px 16px 0 0;padding:10px;z-index:2;max-height:35vh;overflow-y:auto;box-shadow:0 -2px 12px rgba(0,0,0,.1)}
+.map-pet-card{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;cursor:pointer;transition:background .15s}
+.map-pet-card:hover{background:var(--bg)}
+.map-pet-card img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--line)}
+.map-toggle{position:absolute;top:10px;right:10px;z-index:3;display:flex;gap:6px}
+.map-toggle button{padding:6px 10px;border-radius:20px;border:none;background:var(--card);font-size:11px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.map-toggle button.active{background:var(--green);color:#fff}
+
+.social-user-header{text-align:center;padding:16px;background:var(--card);border-radius:16px;margin-bottom:12px}
+.social-user-header .avatar-lg{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--green);margin:0 auto 8px;display:block}
+.social-stats{display:flex;justify-content:space-around;background:var(--bg);border-radius:12px;padding:8px;margin:10px 0}
+.social-stats div{text-align:center}.social-stats b{font-size:16px;display:block}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;border-radius:12px;overflow:hidden}
+.gallery-grid img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer}
+.gallery-album{margin-bottom:12px}
+.gallery-album h4{font-size:12px;color:var(--soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+
+.timeline{position:relative;padding-left:20px;margin:12px 0}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--line)}
+.timeline-item{position:relative;margin-bottom:16px;padding:10px;background:var(--card);border-radius:10px}
+.timeline-item::before{content:'';position:absolute;left:-17px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)}
+.timeline-item .date{font-size:10px;color:var(--soft)}
+
+.ai-match-card{background:var(--card);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;gap:10px;align-items:center;border-left:4px solid var(--green)}
+.ai-match-score{font-size:20px;font-weight:800;color:var(--green);min-width:42px;text-align:center}
+.ai-match-reasons{font-size:10px;color:var(--soft);margin-top:2px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.connection-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
+.connection-dot.online{background:#4CAF50}.connection-dot.offline{background:#f44336}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="screen"></div>
+  <div class="bottom-nav" id="bottomNav" style="display:none">
+    <button class="nav-btn active" data-tab="inicio" aria-label="Inicio"><span class="nav-icon">&#8962;</span>Inicio</button>
+    <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon">&#128205;</span>Mapa</button>
+    <button class="nav-btn" data-tab="reels" aria-label="Reels"><span class="nav-icon">&#127916;</span>Reels</button>
+    <button class="nav-btn" data-tab="pets" aria-label="Pets"><span class="nav-icon">&#128062;</span>Pets</button>
+    <button class="nav-btn" data-tab="perfil" aria-label="Perfil"><span class="nav-icon">&#128100;</span>Perfil</button>
+  </div>
+</div>
+<script>
+const API = '';
+let token = localStorage.getItem('zunnu_token');
+let tab = 'inicio';
+let authMode = 'login';
+let currentUser = null;
+let posts = [];
+let pets = [];
+let matchDeck = [];
+let currentMatchIdx = 0;
+let activeProductCheckout = null;
+let showComments = {};
+let notifications = [];
+let unreadCount = 0;
+let viewingProfile = null;
+let viewingPet = null;
+let onboardingStep = 0;
+let darkMode = localStorage.getItem('zunnu_dark') === '1';
+let postPage = 1;
+let postPages = 1;
+let storiesData = [];
+let myStory = null;
+let reelsData = [];
+let viewingStory = null;
+let storyIdx = 0;
+let storyTimer = null;
+let ws = null;
+let wsReconnectTimer = null;
+let isTyping = {};
+let chatMatchId = null;
+
+function connectWS() {
+  if (!token) return;
+  if (ws && ws.readyState <= 1) return;
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(proto + '//' + location.host + '/ws?token=' + token);
+  ws.onopen = () => { console.log('[WS] Connected'); if (wsReconnectTimer) { clearTimeout(wsReconnectTimer); wsReconnectTimer = null; } };
+  ws.onclose = () => { console.log('[WS] Disconnected'); wsReconnectTimer = setTimeout(connectWS, 3000); };
+  ws.onerror = () => { ws.close(); };
+  ws.onmessage = (evt) => {
+    const msg = JSON.parse(evt.data);
+    handleWSMessage(msg);
+  };
+}
+
+function handleWSMessage(msg) {
+  switch (msg.type) {
+    case 'connected': break;
+    case 'new_post':
+      if (tab === 'inicio' && msg.post && !posts.find(p => p.id === msg.post.id)) {
+        posts.unshift(msg.post);
+        if (tab === 'inicio') renderInicio();
+      }
+      break;
+    case 'post_like':
+      if (tab === 'inicio') {
+        const p = posts.find(p => p.id === msg.postId);
+        if (p) { p.likes = msg.likes; }
+        renderInicio();
+      }
+      break;
+    case 'new_comment':
+      if (tab === 'inicio') {
+        const p = posts.find(p => p.id === msg.postId);
+        if (p) { p.comments_count = (p.comments_count || 0) + 1; }
+        renderInicio();
+      }
+      break;
+    case 'new_message':
+      if (chatMatchId === msg.matchId) {
+        loadChatMessages();
+      } else {
+        unreadCount++;
+        showToast('Nova mensagem!');
+      }
+      break;
+    case 'typing':
+      if (chatMatchId === msg.matchId) {
+        isTyping[msg.userId] = true;
+        const el = document.getElementById('chatTyping');
+        if (el) el.style.display = 'block';
+        setTimeout(() => { isTyping[msg.userId] = false; if (el) el.style.display = 'none'; }, 2000);
+      }
+      break;
+    case 'read':
+      if (chatMatchId === msg.matchId) {
+        const el = document.getElementById('chatLastSeen');
+        if (el) el.textContent = 'Lida';
+      }
+      break;
+    case 'new_match':
+      showToast('Novo match! Voce e alguem se curtiram!');
+      break;
+    case 'new_follower':
+      showToast('Alguem comecou a te seguir!');
+      break;
+    case 'new_story':
+      showToast(msg.story?.user_name + ' postou um story!');
+      break;
+    case 'new_reel':
+      showToast('Novo reel disponivel!');
+      break;
+    case 'notification':
+      unreadCount++;
+      showToast(msg.notification?.message || 'Nova notificacao');
+      break;
+    case 'pong': break;
+  }
+}
+
+function showToast(text) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:fadeIn .3s';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 2500);
+}
+
+function sendWS(data) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(data)); }
+
+const screen = document.getElementById('screen');
+const nav = document.getElementById('bottomNav');
+
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+function getBadge(b){if(b==='pro')return'<span class="badge-pro">PRO</span>';if(b==='plus'||b==='tutor')return'<span class="badge-plus">TUTOR</span>';return'<span class="badge-free">FREE</span>';}
+
+function adHTML(){if(!currentUser||currentUser.plan!=='free')return'';return'<div class="ad-banner"><div><span class="ad-badge">ANUNCIO</span><div style="font-weight:800;font-size:11px;margin-top:2px">Racao Premium 20% OFF</div></div><button class="btn small-btn outline" onclick="openModal(\'plans\')">Sem Ads (R$4,99)</button></div>';}
+
+function header(title,subtitle,action=''){
+  let planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
+  let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
+  let chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat')" aria-label="Chat"><span>&#128172;</span></button>`:'';
+  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${action?`<button class="icon-btn" onclick="${action.click}">${action.icon}</button>`:''}</div></div></div>`;
+}
+
+async function api(path,opts={}){
+  const headers={'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  try{
+    const r=await fetch(API+path,{...opts,headers:{...headers,...opts.headers}});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Erro na API');
+    return data;
+  }catch(e){throw e;}
+}
+
+function showLoading(){screen.innerHTML=header('ZUNNU','')+'<div class="content"><div class="skeleton"></div><div class="skeleton" style="height:200px"></div><div class="skeleton"></div></div>';}
+
+function applyTheme(){document.documentElement.setAttribute('data-theme',darkMode?'dark':'light');localStorage.setItem('zunnu_dark',darkMode?'1':'0');}
+
+function formatDate(dateStr){
+  if(!dateStr)return'agora';
+  const diff=(Date.now()-new Date(dateStr+'Z').getTime())/1000;
+  if(diff<60)return'agora';
+  if(diff<3600)return'ha '+Math.floor(diff/60)+' min';
+  if(diff<86400)return'ha '+Math.floor(diff/3600)+'h';
+  return'ha '+Math.floor(diff/86400)+' dias';
+}
+function calculateAge(birthDateString){
+  if(!birthDateString)return 0;
+  const today=new Date();const birth=new Date(birthDateString);
+  let age=today.getFullYear()-birth.getFullYear();
+  const m=today.getMonth()-birth.getMonth();
+  if(m<0||(m===0&&today.getDate()<birth.getDate()))age--;
+  return age;
+}
+
+function renderAuth(){
+  nav.style.display='none';
+  screen.innerHTML=`<div class="content" style="padding-top:24px"><div style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;text-align:center"><div class="logo" style="margin:0 auto 10px;font-size:24px;width:50px;height:50px">P</div><h2 style="margin:0 0 6px">${authMode==='login'?'Entrar no ZUNNU':'Criar Conta no ZUNNU'}</h2><p class="small" style="margin-bottom:14px">${authMode==='login'?'Acesse a comunidade e cuide do seu pet':'Cadastro seguro de tutores (+18 anos)'}</p>
+  ${authMode==='register'?`<div class="field"><label>Nome Completo</label><input id="regName" placeholder="Seu nome"></div><div class="field"><label>Data de Nascimento (+18)</label><input id="regBirth" type="date"></div>`:''}
+  <div class="field"><label>E-mail</label><input id="authEmail" type="email" placeholder="seu@email.com"></div>
+  <div class="field"><label>Senha</label><input id="authPass" type="password" placeholder="Minimo 6 caracteres"></div>
+  <button class="btn" style="width:100%;margin-top:8px" onclick="handleAuth()">${authMode==='login'?'Acessar Conta':'Concluir Cadastro'}</button>
+  <div style="margin-top:14px;font-size:11px"><a href="#" onclick="toggleAuth()" style="color:var(--green);font-weight:800">${authMode==='login'?'Nao tem conta? Criar agora':'Ja tenho conta'}</a></div></div></div>`;
+}
+
+function toggleAuth(){authMode=authMode==='login'?'register':'login';renderAuth();}
+
+async function handleAuth(){
+  try{
+    if(authMode==='register'){
+      const name=document.getElementById('regName')?.value.trim();
+      const birth=document.getElementById('regBirth')?.value;
+      const email=document.getElementById('authEmail')?.value.trim();
+      const pass=document.getElementById('authPass')?.value;
+      if(!name){alert('Informe seu nome.');return;}
+      if(!birth){alert('Informe sua data de nascimento.');return;}
+      if(!email){alert('Informe seu email.');return;}
+      if(!pass||pass.length<6){alert('Senha deve ter minimo 6 caracteres.');return;}
+      const age=calculateAge(birth);
+      if(age<18){alert('Cadastro restrito a maiores de 18 anos.');return;}
+      const data=await api('/api/auth/register',{method:'POST',body:JSON.stringify({name,email,password:pass,birthDate:birth})});
+      token=data.token;localStorage.setItem('zunnu_token',token);
+      currentUser=data.user;currentUser.plan='free';currentUser.stats={pets:0,posts:0,matches:0};
+    }else{
+      const email=document.getElementById('authEmail')?.value.trim();
+      const pass=document.getElementById('authPass')?.value;
+      if(!email||!pass){alert('Preencha email e senha.');return;}
+      const data=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password:pass})});
+      token=data.token;localStorage.setItem('zunnu_token',token);
+      await loadProfile();
+    }
+    loadAll();
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function loadProfile(){
+  try{
+    const data=await api('/api/auth/me');
+    currentUser=data;currentUser.plan=data.plan||'free';
+  }catch(e){token=null;localStorage.removeItem('zunnu_token');}
+}
+
+async function loadAll(){
+  showLoading();
+  try{
+    if(!currentUser)await loadProfile();
+    if(!currentUser){renderAuth();return;}
+    applyTheme();
+    const[postsData,notifData,matchDeckData,petsData,storiesDataRaw,reelsDataRaw]=await Promise.all([
+      api('/api/posts?page='+postPage+'&limit=10').catch(()=>({posts:[],total:0,pages:1})),
+      api('/api/notifications').catch(()=>({notifications:[],unreadCount:0})),
+      api('/api/match/deck').catch(()=>[]),
+      api('/api/pets').catch(()=>[]),
+      api('/api/stories').catch(()=>({stories:[],my_story:null})),
+      api('/api/reels').catch(()=>[])
+    ]);
+    posts=postsData.posts||[];postPages=postsData.pages||1;
+    notifications=notifData.notifications||[];unreadCount=notifData.unreadCount||0;
+    matchDeck=Array.isArray(matchDeckData)?matchDeckData:[];
+    pets=Array.isArray(petsData)?petsData:[];
+    storiesData=storiesDataRaw.stories||[];myStory=storiesDataRaw.my_story||null;
+    reelsData=Array.isArray(reelsDataRaw)?reelsDataRaw:[];
+    render();
+  }catch(e){console.error(e);renderAuth();}
+}
+
+function logout(){token=null;localStorage.removeItem('zunnu_token');currentUser=null;render();}
+function renderInicio(){
+  let pag='';
+  if(postPages>1){
+    pag='<div style="display:flex;gap:8px;justify-content:center;margin:14px 0">';
+    for(let i=1;i<=postPages;i++)pag+=`<button class="btn small-btn ${i===postPage?'':'outline'}" onclick="goPage(${i})">${i}</button>`;
+    pag+='</div>';
+  }
+  screen.innerHTML=header('ZUNNU','')+`
+  <div class="content">
+    <div class="stories-row">
+      <div class="story-circle" onclick="openModal('addStory')">
+        <div class="story-ring add-story"><div class="add-icon">+</div></div>
+        <div class="story-name">Seu story</div>
+      </div>
+      ${storiesData.filter(s=>s.user_id!==currentUser?.id).map(s=>`
+        <div class="story-circle" onclick="viewStory(${s.user_id})">
+          <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${s.user_avatar||''}" onerror="this.style.display='none'" alt=""></div>
+          <div class="story-name">${esc(s.user_name)}</div>
+        </div>
+      `).join('')}
+    </div>
+    ${adHTML()}
+    <div class="search-bar"><input id="feedSearch" placeholder="Buscar no feed..." onkeyup="searchFeed()"><button class="btn small-btn" onclick="searchFeed()">Buscar</button></div>
+    <button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('post')">Nova Postagem</button>
+    ${posts.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum post ainda. Seja o primeiro!</p>':''}
+    ${posts.map(p=>{
+      const isOwner=currentUser&&(p.user_id===currentUser.id);
+      let menu=isOwner?`<div class="post-menu"><button class="post-menu-btn" onclick="togglePostMenu(${p.id})">&#8943;</button><div id="pmenu-${p.id}" class="post-dropdown" style="display:none"><button onclick="editPost(${p.id})">Editar</button><button onclick="deletePost(${p.id})">Excluir</button></div></div>`:'';
+      return`<div class="post">
+        <div class="post-head">
+          <div class="avatar" onclick="viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${p.user_avatar||''}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
+          <div style="flex:1">
+            <div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div>
+            <div class="post-meta">${esc(p.time||formatDate(p.created_at))}</div>
+          </div>
+          ${menu}
+        </div>
+        <div class="post-text">${esc(p.text)}</div>
+        ${p.image?`<div class="media" onclick="openLightbox('${p.image}')" style="cursor:pointer"><img src="${p.image}" onerror="this.style.display='none'" alt=""></div>`:''}
+        <div class="post-actions">
+          <button class="action" onclick="toggleLike(${p.id})" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button>
+          <button class="action" onclick="toggleComments(${p.id})">&#128172; ${p.comments_count||0}</button>
+          <button class="action" onclick="sharePost(${p.id})">&#128228; Compartilhar</button>
+          ${!isOwner?`<button class="action" style="margin-left:auto;color:var(--coral)" onclick="reportPost(${p.id})">Denunciar</button>`:''}
+        </div>
+        <div id="comments-${p.id}" style="display:${showComments[p.id]?'block':'none'}" class="comments-section">
+          <div id="commentsList-${p.id}"><div class="loading"><div class="spinner"></div></div></div>
+          <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
+        </div>
+      </div>`;
+    }).join('')}
+    ${pag}
+  </div>`;
+}
+
+function togglePostMenu(id){const el=document.getElementById('pmenu-'+id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
+function goPage(p){postPage=p;loadAll();}
+
+async function searchFeed(){
+  const q=document.getElementById('feedSearch')?.value||'';
+  try{const d=await api('/api/posts?search='+encodeURIComponent(q)+'&page=1&limit=10');posts=d.posts||[];postPages=d.pages||1;render();}catch(e){}
+}
+
+async function toggleLike(id){
+  try{const d=await api('/api/posts/'+id+'/like',{method:'POST'});
+    const p=posts.find(x=>x.id===id);if(p){p.likes=d.likes;p.liked_by_user=d.liked;}render();
+  }catch(e){}
+}
+
+function toggleComments(id){
+  showComments[id]=!showComments[id];
+  if(showComments[id])loadComments(id);
+  render();
+}
+
+async function loadComments(id){
+  try{
+    const comments=await api('/api/posts/'+id+'/comments');
+    const el=document.getElementById('commentsList-'+id);
+    if(!el)return;
+    el.innerHTML=comments.length===0?'<p style="font-size:11px;color:var(--soft)">Nenhum comentario</p>':
+      comments.map(c=>`<div class="comment-item"><div class="avatar" style="width:28px;height:28px;font-size:10px"><img src="${c.user_avatar||''}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div><div class="comment-text"><b>${esc(c.user_name)}</b> <span class="small">${c.time||formatDate(c.created_at)}</span><p>${esc(c.text)}</p></div></div>`).join('');
+  }catch(e){}
+}
+
+async function addComment(postId){
+  const input=document.getElementById('commentInput-'+postId);
+  const text=input?.value.trim();if(!text)return;
+  try{await api('/api/posts/'+postId+'/comments',{method:'POST',body:JSON.stringify({text})});input.value='';await loadComments(postId);render();}catch(e){alert(e.message);}
+}
+
+async function sharePost(id){
+  const url=window.location.origin+'/post/'+id;
+  if(navigator.share){try{await navigator.share({title:'ZUNNU',text:'Confira este post no ZUNNU!',url});}catch(e){}}
+  else{navigator.clipboard?.writeText(url);alert('Link copiado!');}
+}
+
+async function editPost(id){
+  const p=posts.find(x=>x.id===id);if(!p)return;
+  const newText=prompt('Editar post:',p.text);if(!newText||newText===p.text)return;
+  try{await api('/api/posts/'+id,{method:'PUT',body:JSON.stringify({text:newText})});p.text=newText;render();}catch(e){alert(e.message);}
+}
+
+async function deletePost(id){
+  if(!confirm('Excluir este post?'))return;
+  try{await api('/api/posts/'+id,{method:'DELETE'});posts=posts.filter(p=>p.id!==id);render();}catch(e){alert(e.message);}
+}
+
+async function reportPost(id){
+  const reason=prompt('Motivo da denuncia:\n1. Conteudo improprio\n2. Ofensa\n3. Golpe\n4. Maus-tratos');
+  if(!reason)return;
+  try{await api('/api/posts/'+id+'/report',{method:'POST',body:JSON.stringify({reason})});alert('Denuncia recebida!');}catch(e){alert(e.message);}
+}
+
+
+function renderConexao(){
+  if(matchDeck.length===0){
+    screen.innerHTML=header('Criar Conexao','')+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128153;</div><h3>Carregando pets para conectar...</h3><button class="btn pink" style="margin-top:12px" onclick="loadAll()">Recarregar</button></div>`;return;
+  }
+  if(currentMatchIdx>=matchDeck.length){
+    screen.innerHTML=header('Criar Conexao','')+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128153;</div><h3>Voce viu todos os pets!</h3><button class="btn pink" style="margin-top:12px" onclick="currentMatchIdx=0;loadAll()">Ver Novamente</button></div>`;return;
+  }
+  const p=matchDeck[currentMatchIdx];
+  screen.innerHTML=header('Criar Conexao','')+`
+  <div class="content">
+    <div class="match-deck">
+      <div class="match-photo-wrap">
+        <img src="${p.image}" class="match-photo" onerror="this.src='https://via.placeholder.com/400x300?text=Pet'" alt="${esc(p.name)}">
+        <div class="match-overlay">
+          <div style="font-size:20px;font-weight:800">${esc(p.name)}, ${esc(p.age)} <span style="font-size:12px;color:var(--orange)">${esc(p.zodiac)}</span></div>
+          <div class="small">${esc(p.location)} | Tutor: <b>${esc(p.tutor_name||p.tutor)}</b></div>
+          <div style="font-size:11px;margin-top:4px">${esc(p.bio||p.tutor_bio||'')}</div>
+        </div>
+      </div>
+      <div class="match-actions">
+        <button class="action-round nope" onclick="nextConexao(false)">&#10005;</button>
+        <button class="action-round like" onclick="nextConexao(true)">&#128153;</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function nextConexao(isLike){
+  const p=matchDeck[currentMatchIdx];
+  if(p&&p.user_id){
+    try{
+      const d=await api('/api/match/swipe/'+p.user_id,{method:'POST',body:JSON.stringify({isLike})});
+      if(d.match){alert('Conexao criada! Voces curtiram um ao outro! Chat liberado.');}
+    }catch(e){}
+  }
+  currentMatchIdx++;renderConexao();
+}
+function renderPets(){
+  screen.innerHTML=header('Meus Pets','',{icon:'+',click:"openModal('addPet')"})+`
+  <div class="content">
+    ${pets.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum pet cadastrado</p>':''}
+    ${pets.map(p=>`
+      <div class="pet-card" onclick="viewPetDetail(${p.id})" style="cursor:pointer">
+        <div style="display:flex;gap:10px">
+          <img src="${p.image}" style="width:60px;height:60px;border-radius:12px;object-fit:cover" onerror="this.src='https://via.placeholder.com/60?text=Pet'" alt="${esc(p.name)}">
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between">
+              <div style="font-weight:800">${esc(p.name)}</div>
+              <span class="small" style="color:var(--orange)">${esc(p.zodiac)}</span>
+            </div>
+            <div class="small">${esc(p.species)} ${esc(p.breed)} | ${esc(p.age)} | ${p.is_castrated?'Castrado':'Nao castrado'}</div>
+            <div class="small" style="color:var(--pink);font-weight:700;margin-top:2px">${esc(p.match?.status||'')}</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px" class="small">
+          <div style="font-weight:800;color:var(--green)">Vacinas:</div>
+          ${(p.vaccines||[]).map(v=>`<div>${esc(v.name)}: <b>${esc(v.date)}</b> <span style="color:${v.status==='Em dia'?'var(--green)':'var(--orange)'}">${esc(v.status)}</span></div>`).join('')||'Nenhuma vacina registrada'}
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+async function viewPetDetail(id){
+  try{
+    const pet=await api('/api/pets/'+id);
+    viewingPet=pet;
+    openModal('petDetail');
+  }catch(e){alert(e.message);}
+}
+
+function renderPerfil(){
+  if(!currentUser)return;
+  screen.innerHTML=header('Perfil','',{icon:'&#128274;',click:"logout()"})+`
+  <div class="content">
+    <div class="tutor-card">
+      <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative" title="Clique para alterar foto">
+        <img src="${currentUser.selfie_url||currentUser.avatar||''}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
+        <div style="position:absolute;bottom:0;right:0;background:var(--green);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid #fff">&#128247;</div>
+      </div>
+      <div style="font-weight:800;font-size:16px;margin:6px 0 2px">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
+      <div class="small">${esc(currentUser.location||'')}</div>
+      ${currentUser.is_human_verified?'<div style="margin-top:6px"><span class="badge-verified">Humano Verificado</span></div>':`<div style="margin-top:8px"><button class="btn small-btn" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button></div>`}
+      <div class="small" style="margin-top:8px">${esc(currentUser.bio||'')}</div>
+      <div style="display:flex;justify-content:space-around;background:var(--bg);border-radius:12px;padding:8px;margin-top:12px">
+        <div class="small"><b>${currentUser.stats?.pets||0}</b> Pets</div>
+        <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
+        <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
+      </div>
+      <button class="btn pink" style="width:100%;margin-top:12px" onclick="renderConexao()">&#128153; Criar Conexao</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('plans')">Gerenciar Plano</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="toggleDarkMode()">${darkMode?'Modo Claro':'Modo Escuro'}</button>
+    </div>
+  </div>`;
+}
+
+function toggleDarkMode(){darkMode=!darkMode;applyTheme();render();}
+
+async function toggleNotifs(){
+  const el=document.getElementById('notifDropdown');
+  if(el){el.remove();return;}
+  const existing=document.querySelector('.notif-dropdown');
+  if(existing){existing.remove();return;}
+  const data=await api('/api/notifications').catch(()=>({notifications:[],unreadCount:0}));
+  notifications=data.notifications||[];unreadCount=data.unreadCount||0;
+  const btn=document.querySelector('.notif-btn');
+  if(!btn)return;
+  const div=document.createElement('div');div.className='notif-dropdown';
+  div.innerHTML=notifications.length===0?'<div style="padding:12px;text-align:center;font-size:11px;color:var(--soft)">Sem notificacoes</div>':
+    notifications.slice(0,10).map(n=>`<div class="notif-item ${n.is_read?'':'unread'}" onclick="readNotif(${n.id})">${esc(n.message)}<br><span class="small">${formatDate(n.created_at)}</span></div>`).join('');
+  btn.appendChild(div);
+}
+
+async function readNotif(id){
+  try{await api('/api/notifications/read/'+id,{method:'POST'});unreadCount=Math.max(0,unreadCount-1);toggleNotifs();}catch(e){}
+}
+
+function render(){
+  if(!currentUser||!token){renderAuth();return;}
+  if(viewingPet){return;}
+  nav.style.display='flex';
+  if(tab==='inicio')renderInicio();
+  if(tab==='mapa')renderMapa();
+  if(tab==='reels')renderReels();
+  if(tab==='pets')renderPets();
+  if(tab==='perfil')renderPerfil();
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+}
+
+function setTab(t){tab=t;viewingPet=null;render();window.scrollTo(0,0);}
+function openModal(type){
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+
+  if(type==='plans'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Planos ZUNNU</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="plan-card"><div style="display:flex;justify-content:space-between"><b>Plano Gratuito</b><span class="badge-free">${currentUser?.plan==='free'?'ATIVO':''}</span></div><div class="small">R$ 0/mes</div></div>
+      <div class="plan-card" style="border-color:var(--blue);background:var(--blueSoft)"><div style="display:flex;justify-content:space-between"><b>Tutor Plus</b><span class="badge-plus">${currentUser?.plan==='plus'?'ATIVO':''}</span></div><div style="font-weight:800;font-size:16px;margin:4px 0">R$ 4,99 <span class="small">/mes</span></div><div class="small">Zero Anuncios + Selo Azul Tutor</div><button class="btn blue small-btn" style="margin-top:6px;width:100%" onclick="startPayment('plus')">${currentUser?.plan==='plus'?'Plano Ativo':'Assinar por R$ 4,99'}</button></div>
+      <div class="plan-card" style="border-color:var(--gold);background:var(--goldSoft)"><div style="display:flex;justify-content:space-between"><b>Vendedor PRO</b><span class="badge-pro">${currentUser?.plan==='pro'?'ATIVO':''}</span></div><div style="font-weight:800;font-size:16px;margin:4px 0">R$ 29,90 <span class="small">/mes</span></div><div class="small">Zero Ads + Selo PRO + Loja e Servicos (Taxa 7%)</div><button class="btn gold small-btn" style="margin-top:6px;width:100%" onclick="startPayment('pro')">${currentUser?.plan==='pro'?'Plano Ativo':'Assinar PRO por R$ 29,90'}</button></div>
+    </div></div>`;
+  }else if(type==='selfie'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" style="text-align:center"><div class="modal-head"><div class="modal-title">Verificacao Facial</div><button class="close" onclick="closeModal()">X</button></div><p class="small">Posicione seu rosto no circulo.</p><div class="selfie-frame"><img class="selfie-preview" src="${currentUser?.avatar||''}" onerror="this.src='https://via.placeholder.com/150'"><div class="scan-line"></div></div><div class="small" style="color:var(--green);font-weight:700;margin-bottom:12px">Rosto Identificado</div><button class="btn" style="width:100%" onclick="validateSelfie()">Validar Identidade</button></div></div>`;
+  }else if(type==='checkout'){
+    if(!activeProductCheckout)return;
+    const c=activeProductCheckout;
+    const qrImg=c.pixQrCode?`<img src="data:image/png;base64,${c.pixQrCode}" style="width:200px;height:200px;border-radius:8px" alt="QR Code Pix">`:`<div style="font-size:48px">&#128241;</div><div class="small" style="margin-top:4px">QR Code sera exibido aqui</div>`;
+    const copySection=c.pixCopyPaste?`<div style="margin:10px 0"><div class="small" style="margin-bottom:4px">Ou copie o codigo Pix:</div><div style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:10px;font-family:monospace;word-break:break-all;max-height:60px;overflow:auto" id="pixCopyCode">${esc(c.pixCopyPaste)}</div><button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="copyPixCode()">Copiar Codigo Pix</button></div>`:'';
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Checkout Pix</div><button class="close" onclick="closeModal()">X</button></div><div style="font-weight:800">${esc(c.title)}</div><div class="product-price">R$ ${c.price?.toFixed(2)||'0.00'}</div><div style="background:#fff;border:2px dashed var(--pix);border-radius:12px;padding:16px;text-align:center;margin:12px 0">${qrImg}</div>${copySection}<button class="btn pix" style="width:100%" onclick="confirmPixPayment()">Ja Paguei - Confirmar</button><div class="small" style="text-align:center;margin-top:8px">Escaneie o QR Code com o app do seu banco</div></div></div>`;
+  }else if(type==='post'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Nova Publicacao</div><button class="close" onclick="closeModal()">X</button></div><div id="emojiBar"></div><div class="field"><label>Mensagem</label><textarea id="postTxt" placeholder="Compartilhe uma historia..." rows="4"></textarea></div><button class="btn" style="width:100%" onclick="savePost()">Publicar</button></div></div>`;
+    setTimeout(()=>{const bar=document.getElementById('emojiBar');if(bar){bar.innerHTML='<div class="emoji-picker" id="emojiPicker"></div>';loadEmojis();}},100);
+  }else if(type==='addPet'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Pet</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Nome do Pet</label><input id="pName" placeholder="Ex: Thor"></div><div class="field"><label>Especie</label><select id="pSpecies"><option>Cachorro</option><option>Gato</option><option>Ave</option><option>Reptil</option><option>Outro</option></select></div><div class="field"><label>Raca</label><input id="pBreed" placeholder="Ex: SRD"></div><div class="field"><label>Idade</label><input id="pAge" placeholder="Ex: 2 anos"></div><div class="field"><label>Signo</label><input id="pZodiac" placeholder="Ex: Aries"></div><button class="btn" style="width:100%" onclick="savePet()">Salvar Pet</button></div></div>`;
+  }else if(type==='addProduct'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Produto</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Titulo</label><input id="prodTitle" placeholder="Nome do produto"></div><div class="field"><label>Preco (R$)</label><input id="prodPrice" type="number" step="0.01" placeholder="49.90"></div><div class="field"><label>URL da Imagem</label><input id="prodImage" placeholder="https://..."></div><button class="btn" style="width:100%" onclick="saveProduct()">Cadastrar Produto</button></div></div>`;
+  }else if(type==='petDetail'&&viewingPet){
+    const p=viewingPet;const isOwner=currentUser&&(p.user_id===currentUser.id);
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">${esc(p.name)}</div><button class="close" onclick="closeModal()">X</button></div>
+      <div style="text-align:center"><img src="${p.image}" style="width:120px;height:120px;border-radius:50%;object-fit:cover" onerror="this.src='https://via.placeholder.com/120'" alt="${esc(p.name)}">
+      <div style="font-weight:800;font-size:18px;margin:8px 0">${esc(p.name)}</div>
+      <div class="small">${esc(p.species)} | ${esc(p.breed)} | ${esc(p.age)}</div>
+      <div class="small">${esc(p.zodiac)} | ${p.is_castrated?'Castrado':'Nao castrado'}</div>
+      <div class="small" style="margin-top:4px">Tutor: <b>${esc(p.tutor_name)}</b></div></div>
+      <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:8px">
+        <div style="font-weight:800;color:var(--green);font-size:12px">Vacinas</div>
+        ${(p.vaccines||[]).map(v=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--line)"><span>${esc(v.name)}</span><span>${esc(v.date)}</span><span style="color:${v.status==='Em dia'?'var(--green)':'var(--orange)'}">${esc(v.status)}</span>${isOwner?`<button style="border:none;background:none;color:var(--coral);cursor:pointer" onclick="deleteVaccine(${p.id},${v.id})">X</button>`:''}</div>`).join('')||'<p class="small">Nenhuma vacina</p>'}
+        ${isOwner?`<button class="btn small-btn outline" style="width:100%;margin-top:8px" onclick="openModal('addVaccine')">+ Adicionar Vacina</button>`:''}
+      </div>
+    </div></div>`;
+  }else if(type==='addVaccine'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Adicionar Vacina</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Nome da Vacina</label><input id="vName" placeholder="Ex: Antirrabica"></div><div class="field"><label>Data</label><input id="vDate" placeholder="DD/MM/AAAA"></div><div class="field"><label>Status</label><select id="vStatus"><option>Em dia</option><option>Agendada</option><option>A agendar</option></select></div><button class="btn" style="width:100%" onclick="saveVaccine()">Salvar</button></div></div>`;
+  }else if(type==='userProfile'&&viewingProfile){
+    const u=viewingProfile;
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Perfil</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="profile-view">
+        <img src="${u.avatar||''}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76'" alt="${esc(u.name)}">
+        <div style="font-weight:800;font-size:16px;margin:6px 0 2px">${esc(u.name)} ${getBadge(u.plan)}</div>
+        <div class="small">${esc(u.bio||'')}</div>
+        <div class="small">${esc(u.location||'')}</div>
+        <div style="display:flex;justify-content:space-around;margin-top:10px">
+          <div class="small"><b>${u.stats?.pets||0}</b> Pets</div>
+          <div class="small"><b>${u.stats?.posts||0}</b> Posts</div>
+          <div class="small"><b>${u.stats?.matches||0}</b> Matches</div>
+        </div>
+      </div>
+      ${(u.pets||[]).map(p=>`<div class="pet-card"><div style="display:flex;gap:8px"><img src="${p.image}" style="width:40px;height:40px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'"><div><b>${esc(p.name)}</b><div class="small">${esc(p.species)} | ${esc(p.breed)}</div></div></div></div>`).join('')}
+    </div></div>`;
+  }else if(type==='chat'){
+    renderChatModal();
+    document.body.appendChild(root);return;
+  }else if(type==='editAvatar'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Alterar Foto de Perfil</div><button class="close" onclick="closeModal()">X</button></div>
+      <div style="text-align:center;margin-bottom:12px"><img src="${currentUser?.selfie_url||currentUser?.avatar||''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/80'"></div>
+      <div class="field"><label>URL da Nova Foto</label><input id="newAvatarUrl" type="url" placeholder="https://exemplo.com/foto.jpg" value="${esc(currentUser?.avatar||'')}"></div>
+      <button class="btn" style="width:100%" onclick="saveAvatar()">Salvar Foto</button>
+      ${currentUser?.avatar?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="saveAvatar('')">Remover Foto</button>`:''}
+    </div></div>`;
+  }else if(type==='addStory'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Novo Story</div><button class="close" onclick="closeModal()">X</button></div>
+      <p class="small" style="margin-bottom:12px">Seu story expira em 24h</p>
+      <div class="field"><label>URL da Imagem *</label><input id="storyUrl" type="url" placeholder="https://exemplo.com/foto.jpg"></div>
+      <div class="field"><label>Legenda</label><input id="storyCaption" placeholder="Legenda opcional"></div>
+      <div class="field"><label>Vincular Pet</label><select id="storyPet"><option value="">Nenhum</option>${(pets||[]).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+      <button class="btn pink" style="width:100%" onclick="createStory()">Publicar Story</button>
+    </div></div>`;
+  }else if(type==='addReel'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Novo Reel</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="field"><label>URL do Video *</label><input id="reelUrl" type="url" placeholder="https://exemplo.com/video.mp4"></div>
+      <div class="field"><label>Legenda *</label><input id="reelCaption" placeholder="Descreva o reel"></div>
+      <div class="field"><label>Musica</label><input id="reelMusic" placeholder="Nome da musica"></div>
+      <div class="field"><label>Vincular Pet</label><select id="reelPet"><option value="">Nenhum</option>${(pets||[]).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+      <button class="btn pink" style="width:100%" onclick="createReel()">Publicar Reel</button>
+    </div></div>`;
+  }else if(type==='reelComments'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Comentarios</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="modal-body"></div>
+    </div></div>`;
+  }else if(type==='addPhoto'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Nova Foto do Pet</div><button class="close" onclick="closeModal()">X</button></div>
+      <input type="hidden" id="addPhotoPetId" value="">
+      <div class="field"><label>URL da Imagem *</label><input id="photoUrl" type="url" placeholder="https://exemplo.com/foto.jpg"></div>
+      <div class="field"><label>Legenda</label><input id="photoCaption" placeholder="Descricao da foto"></div>
+      <button class="btn pink" style="width:100%" onclick="addPetPhoto()">Adicionar Foto</button>
+    </div></div>`;
+  }else if(type==='addMilestone'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Novo Marco</div><button class="close" onclick="closeModal()">X</button></div>
+      <input type="hidden" id="milestonePetId" value="">
+      <div class="field"><label>Titulo *</label><input id="milestoneTitle" placeholder="Ex: Primeira caminhada"></div>
+      <div class="field"><label>Descricao</label><input id="milestoneDesc" placeholder="Detalhes..."></div>
+      <div class="field"><label>Data</label><input id="milestoneDate" type="date"></div>
+      <button class="btn pink" style="width:100%" onclick="addPetMilestone()">Adicionar Marco</button>
+    </div></div>`;
+  }
+  document.body.appendChild(root);
+}
+
+async function saveAvatar(urlOverride){
+  const url=urlOverride!==undefined?urlOverride:document.getElementById('newAvatarUrl')?.value.trim();
+  try{
+    const data=await api('/api/auth/me',{method:'PUT',body:JSON.stringify({avatar:url||''})});
+    if(currentUser){currentUser.avatar=data.avatar;currentUser.selfie_url=data.selfie_url;}
+    closeModal();setTab('perfil');alert('Foto atualizada!');
+  }catch(e){alert(e.message);}
+}
+function closeModal(){document.getElementById('modal-root')?.remove();viewingPet=null;currentChatMatchId=null;chatMatchId=null;}
+async function savePost(){
+  const t=document.getElementById('postTxt')?.value.trim();
+  if(!t){alert('Escreva algo!');return;}
+  try{
+    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t})});
+    posts.unshift(p);closeModal();setTab('inicio');
+  }catch(e){alert(e.message);}
+}
+
+async function savePet(){
+  const name=document.getElementById('pName')?.value.trim();
+  if(!name){alert('Nome obrigatorio');return;}
+  try{
+    const p=await api('/api/pets',{method:'POST',body:JSON.stringify({
+      name,species:document.getElementById('pSpecies')?.value||'Pet',
+      breed:document.getElementById('pBreed')?.value||'SRD',
+      age:document.getElementById('pAge')?.value||'',
+      zodiac:document.getElementById('pZodiac')?.value||'',
+      image:'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80'
+    })});
+    pets.unshift(p);closeModal();setTab('pets');
+  }catch(e){alert(e.message);}
+}
+
+async function saveProduct(){
+  const title=document.getElementById('prodTitle')?.value.trim();
+  const price=parseFloat(document.getElementById('prodPrice')?.value);
+  if(!title||!price){alert('Titulo e preco obrigatorios');return;}
+  try{
+    const p=await api('/api/products',{method:'POST',body:JSON.stringify({
+      title,price,image:document.getElementById('prodImage')?.value||''
+    })});
+    closeModal();setTab('inicio');
+  }catch(e){alert(e.message);}
+}
+
+async function saveVaccine(){
+  if(!viewingPet)return;
+  const name=document.getElementById('vName')?.value.trim();
+  if(!name){alert('Nome da vacina obrigatorio');return;}
+  try{
+    const vaccines=await api('/api/pets/'+viewingPet.id+'/vaccines',{method:'POST',body:JSON.stringify({
+      name,date:document.getElementById('vDate')?.value||'',
+      status:document.getElementById('vStatus')?.value||'A agendar'
+    })});
+    viewingPet.vaccines=vaccines;closeModal();openModal('petDetail');
+  }catch(e){alert(e.message);}
+}
+
+async function deleteVaccine(petId,vaccineId){
+  if(!confirm('Remover vacina?'))return;
+  try{
+    const vaccines=await api('/api/pets/'+petId+'/vaccines/'+vaccineId,{method:'DELETE'});
+    if(viewingPet)viewingPet.vaccines=vaccines;
+    closeModal();openModal('petDetail');
+  }catch(e){alert(e.message);}
+}
+
+async function openCheckout(id){
+  const prod=products.find(p=>p.id===id);if(!prod)return;
+  try{
+    const data=await api('/api/payments/create-product-pix',{method:'POST',body:JSON.stringify({productId:prod.id,title:prod.title,price:prod.price})});
+    activeProductCheckout={id:data.txid,title:data.title||prod.title,price:data.amount||prod.price,pixQrCode:data.pixQrCode,pixCopyPaste:data.pixCopyPaste,ticketUrl:data.ticketUrl};
+    openModal('checkout');
+  }catch(e){
+    activeProductCheckout={id:'sim_'+Date.now(),title:prod.title,price:prod.price,pixQrCode:null,pixCopyPaste:null};
+    openModal('checkout');
+  }
+}
+
+async function confirmPixPayment(){
+  try{
+    const r=await api('/api/payments/confirm/'+activeProductCheckout?.id,{method:'POST'});
+    if(r.status==='paid'){
+      closeModal();
+      await loadProfile();
+      alert(r.message||'Pagamento confirmado! Plano ativado!');
+      render();
+    }else{
+      alert(r.message||'Pagamento ainda pendente. Verifique se o Pix foi enviado e tente novamente.');
+    }
+  }catch(e){alert(e.message||'Erro ao confirmar pagamento.');}
+}
+
+function copyPixCode(){
+  const el=document.getElementById('pixCopyCode');
+  const code=el?.textContent||'';
+  if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>alert('Codigo Pix copiado!')).catch(()=>fallbackCopy(code));}
+  else{fallbackCopy(code);}
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('Codigo Pix copiado!');}catch(e){alert('Nao foi possivel copiar. Copie manualmente.');}
+  document.body.removeChild(ta);
+}
+
+async function startPayment(plan){
+  try{
+    const data=await api('/api/payments/create-pix',{method:'POST',body:JSON.stringify({plan})});
+    activeProductCheckout={id:data.txid,title:'Plano '+(data.plan||plan).toUpperCase(),price:data.amount,pixQrCode:data.pixQrCode,pixCopyPaste:data.pixCopyPaste,ticketUrl:data.ticketUrl};
+    openModal('checkout');
+  }catch(e){
+    alert('Pagamento simulado! Plano '+plan+' ativado.');
+    if(currentUser)currentUser.plan=plan;closeModal();render();
+  }
+}
+
+async function validateSelfie(){
+  try{await api('/api/auth/verify-human',{method:'POST'});
+    if(currentUser)currentUser.is_human_verified=1;closeModal();alert('Identidade verificada!');render();
+  }catch(e){closeModal();if(currentUser)currentUser.is_human_verified=1;render();}
+}
+function loadEmojis(){
+  const bar=document.getElementById('emojiPicker');if(!bar)return;
+  const emojis=['&#128049;','&#128054;','&#128057;','&#129412;','&#128038;','&#128059;','&#128056;','&#129420;','&#128156;','&#128151;','&#128155;','&#128154;','&#127775;','&#127800;','&#128077;','&#128079;','&#9749;','&#127856;','&#128062;','&#127822;'];
+  bar.innerHTML=emojis.map(e=>`<button type="button" onclick="insertEmoji('${e}')">${e}</button>`).join('');
+}
+
+function insertEmoji(e){
+  const ta=document.getElementById('postTxt');if(!ta)return;
+  const cp=ta.selectionStart;ta.value=ta.value.slice(0,cp)+e+ta.value.slice(cp);ta.focus();
+}
+
+function openLightbox(src){
+  const lb=document.createElement('div');lb.className='lightbox';
+  lb.innerHTML=`<img src="${src}" alt="Imagem ampliada">`;
+  lb.onclick=()=>lb.remove();document.body.appendChild(lb);
+}
+
+async function renderChatModal(){
+  try{
+    const matches=await api('/api/match/matches');
+    const root=document.getElementById('modal-root');
+    if(!root)return;
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Chat</div><button class="close" onclick="closeModal()">X</button></div>
+      ${matches.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum match ainda. Use o Match para encontrar amigos!</p>':''}
+      ${matches.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line);cursor:pointer" onclick="openChat(${m.id},'${esc(m.partner_name)}','${esc(m.partner_avatar||'')}')">
+        <div class="avatar"><img src="${m.partner_avatar||''}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
+        <div style="flex:1"><b style="font-size:13px">${esc(m.partner_name)}</b><div class="small">Clique para conversar</div></div>
+      </div>`).join('')}
+    </div></div>`;
+    document.body.appendChild(root);
+  }catch(e){}
+}
+
+let currentChatMatchId=null;
+
+async function openChat(matchId,partnerName,partnerAvatar){
+  currentChatMatchId=matchId;
+  chatMatchId=matchId;
+  const root=document.getElementById('modal-root');
+  if(!root)return;
+  root.innerHTML=`<div class="modal-bg" style="height:100%;align-items:stretch" onclick="if(event.target===this)closeModal()"><div class="modal" style="border-radius:0;max-height:100%;height:100%;display:flex;flex-direction:column">
+    <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><b>${esc(partnerName)}</b></div></div>
+    <div class="chat-window"><div class="chat-messages" id="chatMessages"></div>
+    <div id="chatTyping" style="display:none;font-size:10px;color:var(--soft);padding:2px 8px">Digitando...</div>
+    <div class="chat-input"><input id="chatInput" placeholder="Mensagem..." onkeydown="if(event.key==='Enter')sendChatMsg();if(event.key)sendWS({type:'typing',matchId:${matchId}})"><button class="btn small-btn" onclick="sendChatMsg()">Enviar</button></div>
+  </div></div>`;
+  document.body.appendChild(root);
+  await loadChatMessages();
+}
+
+async function loadChatMessages(){
+  if(!currentChatMatchId)return;
+  const el=document.getElementById('chatMessages');if(!el)return;
+  try{
+    const messages=await api('/api/match/matches/'+currentChatMatchId+'/messages');
+    el.innerHTML=messages.map(m=>`<div class="chat-bubble ${m.sender_id===currentUser?.id?'sent':'received'}">${esc(m.text)}<div style="font-size:9px;margin-top:4px;opacity:.7">${formatDate(m.created_at)}</div></div>`).join('');
+    el.scrollTop=el.scrollHeight;
+  }catch(e){}
+}
+
+async function sendChatMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input?.value.trim();if(!text||!currentChatMatchId)return;
+  input.value='';
+  const el=document.getElementById('chatMessages');
+  if(el){el.innerHTML+=`<div class="chat-bubble sent">${esc(text)}<div style="font-size:9px;margin-top:4px;opacity:.7">agora</div></div>`;el.scrollTop=el.scrollHeight;}
+  sendWS({type:'chat_message',matchId:currentChatMatchId,text});
+  try{await api('/api/match/matches/'+currentChatMatchId+'/messages',{method:'POST',body:JSON.stringify({text})});}catch(e){}
+}
+function viewStory(userId){
+  const group=storiesData.find(s=>s.user_id===userId);
+  if(!group||!group.stories.length)return;
+  viewingStory=group;
+  storyIdx=0;
+  showStorySlide();
+}
+function showStorySlide(){
+  if(!viewingStory||storyIdx>=viewingStory.stories.length){closeStory();return;}
+  const s=viewingStory.stories[storyIdx];
+  const existing=document.getElementById('storyViewer');if(existing)existing.remove();
+  api('/api/stories/'+s.id+'/view',{method:'POST'}).catch(()=>{});
+  const el=document.createElement('div');el.className='story-viewer';el.id='storyViewer';
+  el.innerHTML=`<div class="story-viewer-inner">
+    <div class="story-progress">${viewingStory.stories.map((_,i)=>`<div class="story-progress-bar"><div class="fill" id="sp-${i}" style="width:${i<storyIdx?'100%':'0%'}"></div></div>`).join('')}</div>
+    <div class="story-viewer-header">
+      <img src="${viewingStory.user_avatar||''}" onerror="this.style.display='none'" alt="">
+      <b>${esc(viewingStory.user_name)}</b>
+      <span>${formatDate(s.created_at)}</span>
+    </div>
+    <div class="story-close" onclick="closeStory()">&#10005;</div>
+    <img class="story-viewer-img" src="${s.image_url}" alt="">
+    ${s.caption?`<div class="story-caption">${esc(s.caption)}</div>`:''}
+    <div class="story-nav prev" onclick="prevStorySlide()"></div>
+    <div class="story-nav next" onclick="nextStorySlide()"></div>
+  </div>`;
+  document.body.appendChild(el);
+  let w=0;const bar=document.getElementById('sp-'+storyIdx);
+  storyTimer=setInterval(()=>{w+=2;if(bar)bar.style.width=w+'%';if(w>=100){clearInterval(storyTimer);nextStorySlide();}},100);
+}
+function nextStorySlide(){clearInterval(storyTimer);storyIdx++;showStorySlide();}
+function prevStorySlide(){clearInterval(storyTimer);storyIdx=Math.max(0,storyIdx-1);showStorySlide();}
+function closeStory(){clearInterval(storyTimer);viewingStory=null;const el=document.getElementById('storyViewer');if(el)el.remove();}
+
+function renderReels(){
+  if(!reelsData||reelsData.length===0){
+    screen.innerHTML=header('Reels','')+`<div class="content" style="text-align:center;padding-top:60px"><div style="font-size:40px">&#127916;</div><h3>Nenhum reel ainda</h3><p class="small">Seja o primeiro a postar!</p><button class="btn pink" style="margin-top:12px" onclick="openModal('addReel')">Criar Reel</button></div>`;return;
+  }
+  screen.innerHTML=header('Reels','',{icon:'+',click:"openModal('addReel')"})+`
+  <div class="reels-container">${reelsData.map(r=>`
+    <div class="reel-card" id="reel-${r.id}">
+      ${r.video_url?`<video class="reel-video" src="${esc(r.video_url)}" loop muted playsinline onclick="this.paused?this.play():this.pause();this.muted=false" poster="${esc(r.thumbnail||'')}" preload="metadata"></video>`:`<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:48px">&#127916;</div>`}
+      <div class="reel-overlay">
+        <b>@${esc(r.user_name)} ${getBadge(r.user_plan)}</b>
+        <p>${esc(r.caption)}</p>
+        ${r.music?`<div class="reel-music">&#9835; ${esc(r.music)}</div>`:''}
+      </div>
+      <div class="reel-actions">
+        <div class="reel-action-btn ${r.liked_by_user?'liked':''}" onclick="toggleReelLike(${r.id},this)">
+          <div class="icon">${r.liked_by_user?'&#9829;':'&#9825;'}</div><span>${r.likes_count||0}</span>
+        </div>
+        <div class="reel-action-btn" onclick="openReelComments(${r.id})">
+          <div class="icon">&#128172;</div><span>${r.comments_count||0}</span>
+        </div>
+        <div class="reel-action-btn">
+          <div class="icon">&#9733;</div><span>${r.views_count||0}</span>
+        </div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+  setTimeout(()=>{reelsData.forEach(r=>{const vid=document.querySelector('#reel-'+r.id+' video');if(vid){vid.play().catch(()=>{});api('/api/reels/'+r.id+'/view',{method:'POST'}).catch(()=>{});}});},500);
+}
+
+async function toggleReelLike(reelId,el){
+  try{const res=await api('/api/reels/'+reelId+'/like',{method:'POST'});
+    el.classList.toggle('liked',res.liked);
+    el.querySelector('.icon').innerHTML=res.liked?'&#9829;':'&#9825;';
+    el.querySelector('span').textContent=res.likes;
+  }catch(e){console.error(e);}
+}
+
+async function openReelComments(reelId){
+  try{
+    const comments=await api('/api/reels/'+reelId+'/comments');
+    openModal('reelComments');
+    const body=document.querySelector('.modal-body');
+    if(!body)return;
+    body.innerHTML=`
+      <div style="max-height:50vh;overflow-y:auto;margin-bottom:12px">
+        ${comments.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum comentario ainda</p>':''}
+        ${comments.map(c=>`<div style="display:flex;gap:8px;margin-bottom:10px"><div class="avatar" style="width:28px;height:28px;min-width:28px"><img src="${c.user_avatar||''}" onerror="this.style.display='none'" alt=""></div><div><b style="font-size:11px">${esc(c.user_name)}</b><p style="margin:2px 0 0;font-size:12px">${esc(c.text)}</p></div></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:6px"><input id="reelCommentInput" placeholder="Comentar..." style="flex:1" onkeydown="if(event.key==='Enter')sendReelComment(${reelId})"><button class="btn small-btn" onclick="sendReelComment(${reelId})">Enviar</button></div>
+    `;
+  }catch(e){console.error(e);}
+}
+
+async function sendReelComment(reelId){
+  const input=document.getElementById('reelCommentInput');
+  const text=input?.value.trim();if(!text)return;
+  try{await api('/api/reels/'+reelId+'/comments',{method:'POST',body:JSON.stringify({text})});input.value='';openReelComments(reelId);}catch(e){alert(e.message);}
+}
+
+async function createStory(){
+  const url=document.getElementById('storyUrl')?.value.trim();
+  const caption=document.getElementById('storyCaption')?.value.trim()||'';
+  const pet_id=document.getElementById('storyPet')?.value||null;
+  if(!url){alert('Insira a URL da imagem');return;}
+  try{await api('/api/stories',{method:'POST',body:JSON.stringify({image_url:url,caption,pet_id:pet_id?parseInt(pet_id):null})});closeModal();await loadAll();}catch(e){alert(e.message);}
+}
+
+async function createReel(){
+  const url=document.getElementById('reelUrl')?.value.trim();
+  const caption=document.getElementById('reelCaption')?.value.trim()||'';
+  const music=document.getElementById('reelMusic')?.value.trim()||'';
+  const pet_id=document.getElementById('reelPet')?.value||null;
+  if(!url){alert('Insira a URL do video');return;}
+  if(!caption){alert('Adicione uma legenda');return;}
+  try{await api('/api/reels',{method:'POST',body:JSON.stringify({video_url:url,caption,music,pet_id:pet_id?parseInt(pet_id):null})});closeModal();await loadAll();}catch(e){alert(e.message);}
+}
+
+let mapaInst=null;
+let nearbyPets=[];
+let mapaFilter='all';
+function renderMapa(){
+  screen.innerHTML=header('Mapa','',{icon:'AI',click:"renderAiSuggestions()"})+`
+    <div class="map-container">
+      <div class="map-toggle">
+        <button class="${mapaFilter==='all'?'active':''}" onclick="mapaFilter='all';loadNearbyPets()">Todos</button>
+        <button class="${mapaFilter==='Cachorro'?'active':''}" onclick="mapaFilter='Cachorro';loadNearbyPets()">&#128054; Dogs</button>
+        <button class="${mapaFilter==='Gato'?'active':''}" onclick="mapaFilter='Gato';loadNearbyPets()">&#128049; Cats</button>
+      </div>
+      <div id="mapaView"></div>
+      <div class="map-pets-list" id="mapPetsList"><p style="text-align:center;color:var(--soft);padding:12px">Carregando...</p></div>
+    </div>`;
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      window._userLat=pos.coords.latitude;window._userLng=pos.coords.longitude;
+      initMap(pos.coords.latitude,pos.coords.longitude);
+      loadNearbyPets();
+    },()=>{initMap(-2.5307,-44.2829);loadNearbyPets();});
+  }else{initMap(-2.5307,-44.2829);loadNearbyPets();}
+}
+function initMap(lat,lng){
+  if(mapaInst){mapaInst.remove();mapaInst=null;}
+  mapaInst=L.map('mapaView',{zoomControl:false}).setView([lat,lng],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(mapaInst);
+  L.control.zoom({position:'topright'}).addTo(mapaInst);
+  L.circleMarker([lat,lng],{radius:8,fillColor:'#4CAF50',fillOpacity:1,color:'#fff',weight:2}).addTo(mapaInst)
+    .bindPopup('Voce esta aqui');
+  setTimeout(()=>mapaInst.invalidateSize(),200);
+}
+async function loadNearbyPets(){
+  const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;
+  try{
+    let url='/api/nearby/pets?lat='+lat+'&lng='+lng+'&radius=20';
+    if(mapaFilter!=='all')url+='&species='+encodeURIComponent(mapaFilter);
+    nearbyPets=await api(url);
+    renderNearbyList();
+    renderNearbyMarkers();
+  }catch(e){console.error(e);}
+}
+function renderNearbyMarkers(){
+  if(!mapaInst)return;
+  mapaInst.eachLayer(l=>{if(l instanceof L.CircleMarker&&l.getPopup()?.getContent()!=='Voce esta aqui')mapaInst.removeLayer(l);});
+  nearbyPets.forEach(p=>{
+    if(!p.latitude||!p.longitude)return;
+    const icon=L.divIcon({className:'',html:`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);background:#fff"><img src="${p.image||''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='&#128062;'"></div>`,iconSize:[36,36],iconAnchor:[18,18]});
+    L.marker([p.latitude,p.longitude],{icon}).addTo(mapaInst)
+      .bindPopup(`<div style="text-align:center;min-width:120px"><img src="${p.image||''}" style="width:60px;height:60px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><br><b style="font-size:12px">${esc(p.name)}</b><br><span style="font-size:10px;color:#666">${esc(p.breed)} ${p.distance}km</span><br><button onclick="viewUserProfile(${p.user_id})" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver Tutor</button></div>`);
+  });
+}
+function renderNearbyList(){
+  const el=document.getElementById('mapPetsList');if(!el)return;
+  if(nearbyPets.length===0){el.innerHTML='<p style="text-align:center;color:var(--soft);padding:12px">Nenhum pet encontrado nearby</p>';return;}
+  el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--soft);margin-bottom:6px;padding:0 4px">${nearbyPets.length} pets por perto</div>`+
+    nearbyPets.map(p=>`<div class="map-pet-card" onclick="viewUserProfile(${p.user_id})">
+      <img src="${p.image||''}" onerror="this.src='https://via.placeholder.com/40'" alt="">
+      <div style="flex:1"><b style="font-size:12px">${esc(p.name)}</b><div style="font-size:10px;color:var(--soft)">${esc(p.breed)} &bull; ${p.distance}km</div></div>
+      <div style="font-size:10px;color:var(--green);font-weight:600">${esc(p.zodiac||'')}</div>
+    </div>`).join('');
+}
+
+async function viewUserProfile(userId){
+  try{
+    const data=await api('/api/social/user/'+userId);
+    const u=data.user;const pets=data.pets||[];const posts=data.recent_posts||[];
+    screen.innerHTML=header(u.name,'',{icon:'&#8592;',click:"setTab('inicio')"})+`
+    <div class="content">
+      <div class="social-user-header">
+        <img class="avatar-lg" src="${u.avatar||''}" onerror="this.src='https://via.placeholder.com/72'" alt="">
+        <div style="font-weight:800">${esc(u.name)} ${getBadge(u.plan)}</div>
+        <div class="small">${esc(u.location||'')} ${u.is_human_verified?'&#128275; Verificado':''}</div>
+        <div class="small" style="margin-top:4px">${esc(u.bio||'')}</div>
+        <div class="social-stats">
+          <div><b>${u.followers}</b><span class="small">Seguidores</span></div>
+          <div><b>${u.following}</b><span class="small">Seguindo</span></div>
+          <div><b>${u.posts_count}</b><span class="small">Posts</span></div>
+          <div><b>${pets.length}</b><span class="small">Pets</span></div>
+        </div>
+        ${userId!==currentUser?.id?`<button class="btn ${u.i_follow?'outline':'pink'}" style="width:100%;margin-top:8px" onclick="toggleFollow(${userId})">${u.i_follow?'Deixar de Seguir':'Seguir'}</button>`:''}
+        ${userId!==currentUser?.id?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="openChatWith(${userId})">&#128172; Mensagem</button>`:''}
+      </div>
+      ${pets.length>0?`<div class="section"><h2>Pets</h2></div><div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0">${pets.map(p=>`<div style="min-width:100px;text-align:center;cursor:pointer" onclick="viewPetProfile(${p.id})"><img src="${p.image||''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--line)" onerror="this.src='https://via.placeholder.com/80'"><div style="font-size:11px;font-weight:600;margin-top:4px">${esc(p.name)}</div><div style="font-size:9px;color:var(--soft)">${esc(p.breed)}</div></div>`).join('')}</div>`:''}
+      ${posts.length>0?`<div class="section"><h2>Postagens Recentes</h2></div>${posts.map(p=>`<div class="post"><div class="post-head"><div class="avatar"><img src="${p.user_avatar||''}" onerror="this.style.display='none'" alt=""></div><div style="flex:1"><div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div><div class="post-meta">${formatDate(p.created_at)}</div></div></div><div class="post-text">${esc(p.text)}</div><div class="post-actions"><button class="action" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button><button class="action">&#128172; ${p.comments_count||0}</button></div></div>`).join('')}</div>`:''}
+    </div>`;
+  }catch(e){alert('Erro ao carregar perfil');console.error(e);}
+}
+
+async function toggleFollow(userId){
+  try{await api('/api/social/follow/'+userId,{method:'POST'});viewUserProfile(userId);}catch(e){alert(e.message);}
+}
+
+async function viewPetProfile(petId){
+  try{
+    const [photos,milestones]=await Promise.all([
+      api('/api/petgallery/'+petId+'/photos').catch(()=>[]),
+      api('/api/petgallery/'+petId+'/milestones').catch(()=>[])
+    ]);
+    const pet=pets?.find(p=>p.id===petId);
+    if(!pet)return;
+    screen.innerHTML=header(pet.name,'',{icon:'&#8592;',click:"setTab('pets')"})+`
+    <div class="content">
+      <div style="text-align:center;margin-bottom:12px">
+        <img src="${pet.image||''}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/96'">
+        <h3 style="margin:8px 0 2px">${esc(pet.name)}</h3>
+        <div class="small">${esc(pet.breed)} &bull; ${esc(pet.age)} &bull; &#9800; ${esc(pet.zodiac||'')}</div>
+        <div style="margin-top:6px"><button class="btn small-btn" onclick="openModal('addPhoto');document.getElementById('addPhotoPetId').value=${petId}">+ Foto</button> <button class="btn small-btn outline" onclick="openModal('addMilestone');document.getElementById('milestonePetId').value=${petId}">+ Marco</button></div>
+      </div>
+      ${photos.length>0?`<div class="section"><h2>Fotos</h2></div><div class="gallery-grid">${photos.map(p=>`<img src="${p.image_url}" alt="${esc(p.caption)}" onclick="openLightbox('${p.image_url}')" onerror="this.style.display='none'">`).join('')}</div>`:''}
+      ${milestones.length>0?`<div class="section"><h2>Timeline</h2></div><div class="timeline">${milestones.map(m=>`<div class="timeline-item"><div class="date">${m.date}</div><b style="font-size:12px">&#${m.icon||'128062'}; ${esc(m.title)}</b><p style="font-size:11px;color:var(--soft);margin:2px 0 0">${esc(m.description)}</p></div>`).join('')}</div>`:''}
+      ${photos.length===0&&milestones.length===0?'<p style="text-align:center;color:var(--soft);padding:24px">Nenhuma foto ou marco ainda</p>':''}
+    </div>`;
+  }catch(e){console.error(e);}
+}
+
+async function renderAiSuggestions(){
+  try{
+    const suggestions=await api('/api/aimatch/suggestions');
+    screen.innerHTML=header('Match IA','Sugestoes inteligentes',{icon:'&#8592;',click:"setTab('mapa')"})+`
+    <div class="content">
+      ${suggestions.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Nenhuma sugestao ainda. Adicione seus pets para gerar matches!</p>':''}
+      ${suggestions.map(s=>`<div class="ai-match-card">
+        <div class="ai-match-score">${s.score}%</div>
+        <div style="flex:1"><b style="font-size:13px">${esc(s.my_pet.name)} &#10084; ${esc(s.match_pet.name)}</b>
+          <div style="font-size:11px;color:var(--soft)">${esc(s.match_pet.breed)} &bull; ${esc(s.match_pet.age)}</div>
+          <div class="ai-match-reasons">${esc(s.reasons)}</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn small-btn" onclick="viewUserProfile(${s.match_pet.user_id})">Ver Tutor</button>
+            <button class="btn small-btn pink" onclick="acceptAiMatch(${s.my_pet.id},${s.match_pet.id},${s.score})">Aceitar</button>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }catch(e){console.error(e);}
+}
+
+async function acceptAiMatch(pet1Id,pet2Id,score){
+  try{await api('/api/aimatch/accept',{method:'POST',body:JSON.stringify({pet1_id:pet1Id,pet2_id:pet2Id,score})});alert('Match aceito!');}catch(e){alert(e.message);}
+}
+
+function openChatWith(userId){
+  const match=matches.find(m=>m.partner_id===userId);
+  if(match){setTab('match');setTimeout(()=>openChat(match.id,match.partner_name,match.partner_avatar),300);}
+  else{setTab('match');}
+}
+
+async function addPetPhoto(){
+  const petId=document.getElementById('addPhotoPetId')?.value;
+  const url=document.getElementById('photoUrl')?.value.trim();
+  const caption=document.getElementById('photoCaption')?.value.trim()||'';
+  if(!url||!petId){alert('Insira a URL da foto');return;}
+  try{await api('/api/petgallery/'+petId+'/photos',{method:'POST',body:JSON.stringify({image_url:url,caption})});closeModal();viewPetProfile(parseInt(petId));}catch(e){alert(e.message);}
+}
+
+async function addPetMilestone(){
+  const petId=document.getElementById('milestonePetId')?.value;
+  const title=document.getElementById('milestoneTitle')?.value.trim();
+  const desc=document.getElementById('milestoneDesc')?.value.trim()||'';
+  const date=document.getElementById('milestoneDate')?.value||'';
+  if(!title||!petId){alert('Insira um titulo');return;}
+  try{await api('/api/petgallery/'+petId+'/milestones',{method:'POST',body:JSON.stringify({title,description:desc,date})});closeModal();viewPetProfile(parseInt(petId));}catch(e){alert(e.message);}
+}
+
+function renderOnboarding(){
+  const steps=[
+    {title:'Bem-vindo ao ZUNNU!',text:'O super app para tutores de pets. Descubra a comunidade!',icon:'&#128062;'},
+    {title:'Feed & Comunidade',text:'Compartilhe fotos, historias e conecte-se com outros tutores.',icon:'&#128247;'},
+    {title:'Match & Chat',text:'Encontre amigos para seu pet e converse pelo chat!',icon:'&#128148;'},
+    {title:'Loja & Servicos',text:'Compre produtos e contrate servicos profissionais para seu pet.',icon:'&#128722;'}
+  ];
+  const s=steps[onboardingStep];
+  if(!s)return;
+  const overlay=document.createElement('div');overlay.className='onboarding-overlay';overlay.id='onboarding';
+  overlay.innerHTML=`<div class="onboarding-card"><div style="font-size:48px;margin-bottom:12px">${s.icon}</div><h3 style="margin:0 0 8px">${s.title}</h3><p class="small">${s.text}</p><div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+    ${onboardingStep>0?'<button class="btn small-btn outline" onclick="prevOnboarding()">Voltar</button>':''}
+    <button class="btn" onclick="nextOnboarding()">${onboardingStep<steps.length-1?'Proximo':'Comecar!'}</button>
+  </div><div style="margin-top:8px;font-size:10px;color:var(--soft)">${onboardingStep+1}/${steps.length}</div></div>`;
+  document.body.appendChild(overlay);
+}
+
+function nextOnboarding(){onboardingStep++;document.getElementById('onboarding')?.remove();if(onboardingStep>=4){closeOnboarding();return;}renderOnboarding();}
+function prevOnboarding(){onboardingStep--;document.getElementById('onboarding')?.remove();renderOnboarding();}
+function closeOnboarding(){document.getElementById('onboarding')?.remove();localStorage.setItem('zunnu_onboarded','1');}
+
+async function checkOnboarding(){
+  if(!localStorage.getItem('zunnu_onboarded')&&currentUser){
+    try{const postsData=await api('/api/posts?limit=5');if((postsData.posts||[]).length<3){onboardingStep=0;renderOnboarding();}}catch(e){}
+  }
+}
+
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.notif-btn')&&!e.target.closest('.notif-dropdown')){
+    const nd=document.querySelector('.notif-dropdown');if(nd)nd.remove();
+  }
+  if(!e.target.closest('.post-menu')){
+    document.querySelectorAll('.post-dropdown').forEach(d=>d.style.display='none');
+  }
+});
+
+applyTheme();
+
+if(token){
+  loadAll().then(()=>{checkOnboarding();connectWS();setInterval(()=>{if(ws&&ws.readyState===1)sendWS({type:'ping'});},25000);});
+}else{
+  renderAuth();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+node_modules/
+server/patai.db
+server/zunu.db
+server/zunnu.db
+android/
+.DS_Store
+*.log

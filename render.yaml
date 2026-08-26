@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: zunnu-app
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && node server/seed.js
+    startCommand: node server/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production

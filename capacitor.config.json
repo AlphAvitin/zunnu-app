@@ -1,0 +1,13 @@
+{
+  "appId": "com.zunnu.app",
+  "appName": "ZUNNU",
+  "webDir": "www",
+  "server": {
+    "url": "https://zunnu-app.onrender.com",
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
