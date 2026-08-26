@@ -256,6 +256,107 @@ function createTables(db) {
     text TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now'))
   )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS cart_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    product_id INTEGER,
+    quantity INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    buyer_id INTEGER,
+    total REAL,
+    status TEXT DEFAULT 'pending',
+    shipping_name TEXT,
+    shipping_address TEXT,
+    shipping_phone TEXT,
+    payment_method TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    paid_at DATETIME
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER,
+    product_id INTEGER,
+    seller_id INTEGER,
+    title TEXT,
+    price_at_purchase REAL,
+    quantity INTEGER
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS lost_pets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    pet_name TEXT,
+    species TEXT,
+    breed TEXT,
+    description TEXT,
+    image TEXT,
+    status TEXT DEFAULT 'lost',
+    latitude REAL,
+    longitude REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS reports_v2 (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reporter_id INTEGER,
+    target_type TEXT,
+    target_id INTEGER,
+    reason TEXT,
+    category TEXT,
+    status TEXT DEFAULT 'pending',
+    admin_note TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS bookings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    provider_id INTEGER,
+    service_id INTEGER,
+    service_title TEXT,
+    date TEXT,
+    time TEXT,
+    pet_name TEXT,
+    notes TEXT,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS business_profiles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER UNIQUE,
+    business_name TEXT,
+    business_type TEXT,
+    description TEXT,
+    phone TEXT,
+    address TEXT,
+    hours TEXT,
+    verified INTEGER DEFAULT 0
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS follow_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    requester_id INTEGER,
+    target_id INTEGER,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS chat_stickers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    url TEXT,
+    category TEXT
+  )`);
+  try { db.run(`ALTER TABLE users ADD COLUMN is_private INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN business_type TEXT`); } catch(e) {}
+  try { db.run(`ALTER TABLE products ADD COLUMN stock INTEGER DEFAULT 99`); } catch(e) {}
 }
 
 function run(sql, params = []) {

@@ -199,6 +199,8 @@ button,input,textarea,select{font:inherit}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 .connection-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px}
 .connection-dot.online{background:#4CAF50}.connection-dot.offline{background:#f44336}
+
+.cart-icon{position:relative}.cart-badge{position:absolute;top:-2px;right:-2px;background:var(--coral);color:#fff;font-size:7px;font-weight:800;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -209,6 +211,7 @@ button,input,textarea,select{font:inherit}
     <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon">&#128205;</span>Mapa</button>
     <button class="nav-btn" data-tab="reels" aria-label="Reels"><span class="nav-icon">&#127916;</span>Reels</button>
     <button class="nav-btn" data-tab="pets" aria-label="Pets"><span class="nav-icon">&#128062;</span>Pets</button>
+    <button class="nav-btn" data-tab="loja" aria-label="Loja"><span class="nav-icon">&#128722;</span>Loja</button>
     <button class="nav-btn" data-tab="perfil" aria-label="Perfil"><span class="nav-icon">&#128100;</span>Perfil</button>
   </div>
 </div>
@@ -242,6 +245,9 @@ let ws = null;
 let wsReconnectTimer = null;
 let isTyping = {};
 let chatMatchId = null;
+let cartItems = [];
+let cartCount = 0;
+let lostPets = [];
 
 function connectWS() {
   if (!token) return;
@@ -344,8 +350,9 @@ function adHTML(){if(!currentUser||currentUser.plan!=='free')return'';return'<di
 function header(title,subtitle,action=''){
   let planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
+  let cartBtn=currentUser?`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
   let chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat')" aria-label="Chat"><span>&#128172;</span></button>`:'';
-  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${action?`<button class="icon-btn" onclick="${action.click}">${action.icon}</button>`:''}</div></div></div>`;
+  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${action?`<button class="icon-btn" onclick="${action.click}">${action.icon}</button>`:''}</div></div></div>`;
 }
 
 async function api(path,opts={}){
@@ -439,7 +446,9 @@ async function loadAll(){
       api('/api/match/deck').catch(()=>[]),
       api('/api/pets').catch(()=>[]),
       api('/api/stories').catch(()=>({stories:[],my_story:null})),
-      api('/api/reels').catch(()=>[])
+      api('/api/reels').catch(()=>[]),
+      loadCart().catch(()=>{}),
+      loadLostPets().catch(()=>{})
     ]);
     posts=postsData.posts||[];postPages=postsData.pages||1;
     notifications=notifData.notifications||[];unreadCount=notifData.unreadCount||0;
@@ -561,9 +570,13 @@ async function deletePost(id){
 }
 
 async function reportPost(id){
-  const reason=prompt('Motivo da denuncia:\n1. Conteudo improprio\n2. Ofensa\n3. Golpe\n4. Maus-tratos');
-  if(!reason)return;
-  try{await api('/api/posts/'+id+'/report',{method:'POST',body:JSON.stringify({reason})});alert('Denuncia recebida!');}catch(e){alert(e.message);}
+  const categories=['Conteudo improprio','Ofensa','Golpe','Maus-tratos','Spam','Outro'];
+  const cat=prompt('Categoria da denuncia:\n'+categories.map((c,i)=>(i+1)+'. '+c).join('\n'));
+  if(!cat)return;
+  const idx=parseInt(cat)-1;
+  const category=categories[idx]||cat;
+  const reason=prompt('Descreva o problema:')||category;
+  try{await api('/api/posts/'+id+'/report',{method:'POST',body:JSON.stringify({reason,category:category})});alert('Denuncia recebida!');}catch(e){alert(e.message);}
 }
 
 
@@ -658,6 +671,8 @@ function renderPerfil(){
       </div>
       <button class="btn pink" style="width:100%;margin-top:12px" onclick="renderConexao()">&#128153; Criar Conexao</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('plans')">Gerenciar Plano</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('business')">Perfil Comercial</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="togglePrivate()">${currentUser.is_private?'Perfil Publico':'Perfil Privado'}</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="toggleDarkMode()">${darkMode?'Modo Claro':'Modo Escuro'}</button>
     </div>
   </div>`;
@@ -692,12 +707,13 @@ function render(){
   if(tab==='mapa')renderMapa();
   if(tab==='reels')renderReels();
   if(tab==='pets')renderPets();
+  if(tab==='loja')renderLoja();
   if(tab==='perfil')renderPerfil();
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
 }
 
 function setTab(t){tab=t;viewingPet=null;render();window.scrollTo(0,0);}
-function openModal(type){
+async function openModal(type){
   const old=document.getElementById('modal-root');if(old)old.remove();
   const root=document.createElement('div');root.id='modal-root';
 
@@ -798,6 +814,27 @@ function openModal(type){
       <div class="field"><label>Descricao</label><input id="milestoneDesc" placeholder="Detalhes..."></div>
       <div class="field"><label>Data</label><input id="milestoneDate" type="date"></div>
       <button class="btn pink" style="width:100%" onclick="addPetMilestone()">Adicionar Marco</button>
+    </div></div>`;
+  }else if(type==='business'){
+    const bp=await loadBusinessProfile();
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Perfil Comercial</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="field"><label>Nome do Negocio</label><input id="bizName" value="${esc(bp?.business_name||'')}"></div>
+      <div class="field"><label>Tipo</label><select id="bizType"><option>Loja de Pet</option><option>Petshop</option><option>Veterinario</option><option>Adocao</option><option>Hotel</option><option>Pet Sitter</option><option>Outro</option></select></div>
+      <div class="field"><label>Descricao</label><textarea id="bizDesc" rows="3">${esc(bp?.description||'')}</textarea></div>
+      <div class="field"><label>Telefone</label><input id="bizPhone" value="${esc(bp?.phone||'')}"></div>
+      <div class="field"><label>Endereco</label><input id="bizAddress" value="${esc(bp?.address||'')}"></div>
+      <div class="field"><label>Horario</label><input id="bizHours" value="${esc(bp?.hours||'')}" placeholder="Seg-Sex 9h-18h"></div>
+      <button class="btn" style="width:100%" onclick="saveBusinessProfile()">Salvar</button>
+    </div></div>`;
+  }else if(type==='lostPet'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Reportar Pet</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="field"><label>Status</label><select id="lostStatus"><option value="lost">Perdido</option><option value="found">Encontrado</option></select></div>
+      <div class="field"><label>Nome</label><input id="lostName" placeholder="Nome do pet"></div>
+      <div class="field"><label>Especie</label><input id="lostSpecies" placeholder="Cachorro, Gato..."></div>
+      <div class="field"><label>Raca</label><input id="lostBreed" placeholder="Raca"></div>
+      <div class="field"><label>Descricao</label><textarea id="lostDesc" rows="2" placeholder="Como encontrar..."></textarea></div>
+      <div class="field"><label>URL da Foto</label><input id="lostImage" placeholder="https://..."></div>
+      <button class="btn" style="width:100%" onclick="reportLostPet()">Reportar</button>
     </div></div>`;
   }
   document.body.appendChild(root);
@@ -968,6 +1005,13 @@ async function openChat(matchId,partnerName,partnerAvatar){
     <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><b>${esc(partnerName)}</b></div></div>
     <div class="chat-window"><div class="chat-messages" id="chatMessages"></div>
     <div id="chatTyping" style="display:none;font-size:10px;color:var(--soft);padding:2px 8px">Digitando...</div>
+    <div id="stickerPicker" style="display:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;margin-bottom:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
+      ${STICKERS.map(s=>`<button style="border:none;background:none;font-size:24px;cursor:pointer;padding:4px;border-radius:4px" onclick="sendSticker('${s.emoji}')">${s.emoji}</button>`).join('')}
+    </div>
+    <div style="display:flex;gap:4px;padding:4px 0">
+      <button style="border:none;background:none;font-size:18px;cursor:pointer" onclick="toggleStickerPicker()">&#127848;</button>
+      <button style="border:none;background:none;font-size:18px;cursor:pointer" onclick="sendLocation()">&#128205;</button>
+    </div>
     <div class="chat-input"><input id="chatInput" placeholder="Mensagem..." onkeydown="if(event.key==='Enter')sendChatMsg();if(event.key)sendWS({type:'typing',matchId:${matchId}})"><button class="btn small-btn" onclick="sendChatMsg()">Enviar</button></div>
   </div></div>`;
   document.body.appendChild(root);
@@ -1114,6 +1158,7 @@ function renderMapa(){
         <button class="${mapaFilter==='all'?'active':''}" onclick="mapaFilter='all';loadNearbyPets()">Todos</button>
         <button class="${mapaFilter==='Cachorro'?'active':''}" onclick="mapaFilter='Cachorro';loadNearbyPets()">&#128054; Dogs</button>
         <button class="${mapaFilter==='Gato'?'active':''}" onclick="mapaFilter='Gato';loadNearbyPets()">&#128049; Cats</button>
+        <button onclick="renderLostPets()">&#128680; Perdidos</button>
       </div>
       <div id="mapaView"></div>
       <div class="map-pets-list" id="mapPetsList"><p style="text-align:center;color:var(--soft);padding:12px">Carregando...</p></div>
@@ -1154,6 +1199,12 @@ function renderNearbyMarkers(){
     L.marker([p.latitude,p.longitude],{icon}).addTo(mapaInst)
       .bindPopup(`<div style="text-align:center;min-width:120px"><img src="${p.image||''}" style="width:60px;height:60px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><br><b style="font-size:12px">${esc(p.name)}</b><br><span style="font-size:10px;color:#666">${esc(p.breed)} ${p.distance}km</span><br><button onclick="viewUserProfile(${p.user_id})" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver Tutor</button></div>`);
   });
+  lostPets.forEach(lp => {
+    if(!lp.latitude||!lp.longitude) return;
+    const icon = L.divIcon({className:'',html:`<div style="width:32px;height:32px;border-radius:50%;background:${lp.status==='lost'?'#E76F51':'#4CAF50'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">${lp.status==='lost'?'!':'?'}</div>`,iconSize:[32,32],iconAnchor:[16,16]});
+    L.marker([lp.latitude,lp.longitude],{icon}).addTo(mapaInst)
+      .bindPopup(`<div style="text-align:center;min-width:120px"><b style="font-size:12px;color:${lp.status==='lost'?'#E76F51':'#4CAF50'}">${lp.status==='lost'?'PERDIDO':'ENCONTRADO'}</b><br><b>${esc(lp.pet_name)}</b><br><span style="font-size:10px">${esc(lp.species)} ${esc(lp.breed)}</span><br><span style="font-size:10px">${esc(lp.description)}</span></div>`);
+  });
 }
 function renderNearbyList(){
   const el=document.getElementById('mapPetsList');if(!el)return;
@@ -1184,6 +1235,7 @@ async function viewUserProfile(userId){
           <div><b>${pets.length}</b><span class="small">Pets</span></div>
         </div>
         ${userId!==currentUser?.id?`<button class="btn ${u.i_follow?'outline':'pink'}" style="width:100%;margin-top:8px" onclick="toggleFollow(${userId})">${u.i_follow?'Deixar de Seguir':'Seguir'}</button>`:''}
+        ${u.is_private&&userId!==currentUser?.id&&!u.i_follow?`<button class="btn small-btn outline" style="width:100%;margin-top:4px" onclick="requestFollow(${userId})">Solicitar Seguir</button>`:''}
         ${userId!==currentUser?.id?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="openChatWith(${userId})">&#128172; Mensagem</button>`:''}
       </div>
       ${pets.length>0?`<div class="section"><h2>Pets</h2></div><div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0">${pets.map(p=>`<div style="min-width:100px;text-align:center;cursor:pointer" onclick="viewPetProfile(${p.id})"><img src="${p.image||''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--line)" onerror="this.src='https://via.placeholder.com/80'"><div style="font-size:11px;font-weight:600;margin-top:4px">${esc(p.name)}</div><div style="font-size:9px;color:var(--soft)">${esc(p.breed)}</div></div>`).join('')}</div>`:''}
@@ -1292,6 +1344,278 @@ async function checkOnboarding(){
   if(!localStorage.getItem('zunnu_onboarded')&&currentUser){
     try{const postsData=await api('/api/posts?limit=5');if((postsData.posts||[]).length<3){onboardingStep=0;renderOnboarding();}}catch(e){}
   }
+}
+
+const STICKERS = [
+  {name:'Cachorro feliz', emoji:'&#128054;'}, {name:'Gato dormindo', emoji:'&#128564;'},
+  {name:'Pet comendo', emoji:'&#127836;'}, {name:'Osso', emoji:'&#128054;'},
+  {name:'Coracao', emoji:'&#128156;'}, {name:'Estrela', emoji:'&#11088;'},
+  {name:'Risada', emoji:'&#128514;'}, {name:'Fofura', emoji:'&#128522;'}
+];
+
+async function loadCart() {
+  try { cartItems = await api('/api/cart'); cartCount = cartItems.reduce((s,i)=>s+i.quantity,0); } catch(e) { cartItems = []; cartCount = 0; }
+}
+
+function renderCart() {
+  screen.innerHTML = header('Meu Carrinho','')+`<div class="content">
+    ${cartItems.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Carrinho vazio<br><br><button class="btn" onclick="setTab(\'inicio\')">Ver Produtos</button></p>':''}
+    ${cartItems.map(c=>`<div style="display:flex;gap:10px;background:var(--card);border-radius:12px;padding:10px;margin-bottom:8px">
+      <img src="${c.image||''}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">
+      <div style="flex:1"><b style="font-size:12px">${esc(c.title)}</b><div class="product-price">R$ ${(c.price*c.quantity).toFixed(2)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+        <button class="btn small-btn outline" onclick="updateCartQty(${c.id},${c.quantity-1})">-</button>
+        <span style="font-weight:700;font-size:13px">${c.quantity}</span>
+        <button class="btn small-btn outline" onclick="updateCartQty(${c.id},${c.quantity+1})">+</button>
+        <button style="border:none;background:none;color:var(--coral);font-size:11px;cursor:pointer;margin-left:auto" onclick="removeCartItem(${c.id})">Remover</button>
+      </div></div>
+    </div>`).join('')}
+    ${cartItems.length>0?`<div style="background:var(--card);border-radius:12px;padding:12px;margin-top:8px"><div style="display:flex;justify-content:space-between;font-weight:800;font-size:14px"><span>Total:</span><span style="color:var(--green)">R$ ${cartItems.reduce((s,c)=>s+c.price*c.quantity,0).toFixed(2)}</span></div>
+    <button class="btn" style="width:100%;margin-top:10px" onclick="renderCheckout()">Finalizar Compra</button></div>`:''}
+  </div>`;
+}
+
+async function addToCart(productId) {
+  try { await api('/api/cart',{method:'POST',body:JSON.stringify({productId,quantity:1})}); cartCount++; showToast('Adicionado ao carrinho!'); } catch(e) { alert(e.message); }
+}
+
+async function updateCartQty(id,qty) {
+  if(qty<1){removeCartItem(id);return;}
+  try { await api('/api/cart/'+id,{method:'PUT',body:JSON.stringify({quantity:qty})}); await loadCart(); renderCart(); } catch(e) {}
+}
+
+async function removeCartItem(id) {
+  try { await api('/api/cart/'+id,{method:'DELETE'}); await loadCart(); renderCart(); } catch(e) {}
+}
+
+function renderCheckout() {
+  screen.innerHTML = header('Finalizar Compra','')+`<div class="content">
+    <div class="field"><label>Nome Completo</label><input id="shipName" value="${esc(currentUser?.name||'')}"></div>
+    <div class="field"><label>Endereco</label><input id="shipAddress" placeholder="Rua, numero, bairro"></div>
+    <div class="field"><label>Telefone</label><input id="shipPhone" placeholder="(99) 99999-9999"></div>
+    <div style="background:var(--card);border-radius:12px;padding:12px;margin:12px 0">
+      <div style="font-weight:700;font-size:12px;margin-bottom:6px">Resumo</div>
+      ${cartItems.map(c=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0"><span>${c.quantity}x ${esc(c.title)}</span><span>R$ ${(c.price*c.quantity).toFixed(2)}</span></div>`).join('')}
+      <div style="border-top:1px solid var(--line);margin-top:6px;padding-top:6px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><span style="color:var(--green)">R$ ${cartItems.reduce((s,c)=>s+c.price*c.quantity,0).toFixed(2)}</span></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn pix" style="flex:1" onclick="placeOrder('pix')">Pix</button>
+      <button class="btn outline" style="flex:1" onclick="placeOrder('manual')">Acordo</button>
+    </div>
+    <button class="btn outline" style="width:100%;margin-top:8px" onclick="setTab('inicio')">Voltar</button>
+  </div>`;
+}
+
+async function placeOrder(method) {
+  const name=document.getElementById('shipName')?.value.trim();
+  const address=document.getElementById('shipAddress')?.value.trim();
+  const phone=document.getElementById('shipPhone')?.value.trim();
+  if(!name||!address){alert('Preencha nome e endereco');return;}
+  try {
+    const data = await api('/api/orders',{method:'POST',body:JSON.stringify({shipping_name:name,shipping_address:address,shipping_phone:phone,payment_method:method})});
+    await loadCart();
+    alert('Pedido #'+data.orderId+' criado com sucesso!');
+    renderMyOrders();
+  } catch(e) { alert(e.message); }
+}
+
+async function renderMyOrders() {
+  try {
+    const orders = await api('/api/orders');
+    screen.innerHTML = header('Meus Pedidos','')+`<div class="content">
+      ${orders.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Nenhum pedido ainda</p>':''}
+      ${orders.map(o=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between"><b style="font-size:13px">Pedido #${o.id}</b><span style="font-size:11px;color:var(--soft)">${formatDate(o.created_at)}</span></div>
+        <div class="small" style="margin:4px 0">Status: <b style="color:${o.status==='delivered'?'var(--green)':o.status==='cancelled'?'var(--coral)':'var(--orange)'}">${esc(o.status)}</b></div>
+        <div style="font-weight:800;color:var(--green)">R$ ${o.total?.toFixed(2)||'0.00'}</div>
+      </div>`).join('')}
+    </div>`;
+  } catch(e) {}
+}
+
+async function saveBusinessProfile() {
+  const name=document.getElementById('bizName')?.value.trim();
+  const type=document.getElementById('bizType')?.value;
+  const desc=document.getElementById('bizDesc')?.value.trim()||'';
+  const phone=document.getElementById('bizPhone')?.value.trim()||'';
+  const address=document.getElementById('bizAddress')?.value.trim()||'';
+  const hours=document.getElementById('bizHours')?.value.trim()||'';
+  if(!name){alert('Nome do negocio obrigatorio');return;}
+  try { await api('/api/business/profile',{method:'POST',body:JSON.stringify({business_name:name,business_type:type,description:desc,phone,address,hours})}); closeModal(); alert('Perfil comercial salvo!'); renderPerfil(); } catch(e) { alert(e.message); }
+}
+
+async function loadBusinessProfile() {
+  try { return await api('/api/business/profile'); } catch(e) { return null; }
+}
+
+async function togglePrivate() {
+  try {
+    const data = await api('/api/auth/me',{method:'PUT',body:JSON.stringify({is_private: currentUser.is_private?0:1})});
+    currentUser.is_private = data.is_private;
+    renderPerfil();
+  } catch(e) { alert(e.message); }
+}
+
+async function requestFollow(userId) {
+  try { await api('/api/social/follow/'+userId,{method:'POST'}); showToast('Solicitacao enviada!'); } catch(e) { alert(e.message); }
+}
+
+function toggleStickerPicker() {
+  const el = document.getElementById('stickerPicker');
+  if(!el) return;
+  el.style.display = el.style.display==='none'?'block':'none';
+}
+
+function sendSticker(emoji) {
+  if(!currentChatMatchId) return;
+  sendWS({type:'chat_message',matchId:currentChatMatchId,text:emoji});
+  api('/api/match/matches/'+currentChatMatchId+'/messages',{method:'POST',body:JSON.stringify({text:emoji})});
+  const el=document.getElementById('chatMessages');
+  if(el){el.innerHTML+=`<div class="chat-bubble sent" style="font-size:32px;padding:8px">${emoji}</div>`;el.scrollTop=el.scrollHeight;}
+}
+
+function sendLocation() {
+  if(!navigator.geolocation) { alert('Geolocalizacao nao disponivel'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const {latitude, longitude} = pos.coords;
+    const text = `[Localizacao] https://maps.google.com/?q=${latitude},${longitude}`;
+    sendWS({type:'chat_message',matchId:currentChatMatchId,text});
+    api('/api/match/matches/'+currentChatMatchId+'/messages',{method:'POST',body:JSON.stringify({text})});
+    const el=document.getElementById('chatMessages');
+    if(el){el.innerHTML+=`<div class="chat-bubble sent">&#128205; Localizacao compartilhada</div>`;el.scrollTop=el.scrollHeight;}
+  }, () => alert('Nao foi possivel obter localizacao'));
+}
+
+function openBookingModal(serviceId, serviceTitle, price) {
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Agendar: ${esc(serviceTitle)}</div><button class="close" onclick="closeModal()">X</button></div>
+    <div class="field"><label>Data</label><input id="bookDate" type="date"></div>
+    <div class="field"><label>Horario</label><input id="bookTime" type="time"></div>
+    <div class="field"><label>Nome do Pet</label><input id="bookPet" placeholder="Ex: Thor"></div>
+    <div class="field"><label>Observacoes</label><textarea id="bookNotes" rows="2" placeholder="Alguma observacao..."></textarea></div>
+    <div style="background:var(--bg);border-radius:8px;padding:8px;margin-bottom:10px;font-size:12px">Valor: <b style="color:var(--green)">R$ ${price?.toFixed(2)||'0.00'}</b></div>
+    <button class="btn" style="width:100%" onclick="confirmBooking(${serviceId})">Confirmar Agendamento</button>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+
+async function confirmBooking(serviceId) {
+  const date=document.getElementById('bookDate')?.value;
+  const time=document.getElementById('bookTime')?.value;
+  const pet_name=document.getElementById('bookPet')?.value.trim();
+  const notes=document.getElementById('bookNotes')?.value.trim()||'';
+  if(!date||!time||!pet_name){alert('Preencha data, horario e nome do pet');return;}
+  try {
+    await api('/api/bookings',{method:'POST',body:JSON.stringify({service_id:serviceId,service_title:'',date,time,pet_name,notes})});
+    closeModal(); alert('Agendamento realizado com sucesso!');
+  } catch(e) { alert(e.message); }
+}
+
+async function renderBookings() {
+  try {
+    const bookings = await api('/api/bookings');
+    screen.innerHTML = header('Meus Agendamentos','')+`<div class="content">
+      ${bookings.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Nenhum agendamento</p>':''}
+      ${bookings.map(b=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between"><b style="font-size:13px">${esc(b.service_title||'Servico')}</b><span style="font-size:11px;color:var(--soft)">${formatDate(b.created_at)}</span></div>
+        <div class="small" style="margin:4px 0">&#128197; ${esc(b.date)} &#128336; ${esc(b.time)}</div>
+        <div class="small">Pet: <b>${esc(b.pet_name)}</b></div>
+        <div class="small" style="margin-top:4px">Status: <b style="color:${b.status==='confirmed'?'var(--green)':'var(--orange)'}">${esc(b.status)}</b></div>
+      </div>`).join('')}
+    </div>`;
+  } catch(e) {}
+}
+
+async function loadLostPets() {
+  try { lostPets = await api('/api/lostpets'); } catch(e) { lostPets = []; }
+}
+
+function renderLostPets() {
+  screen.innerHTML = header('Pets Perdidos/Achados','')+`<div class="content">
+    <button class="btn" style="width:100%;margin-bottom:12px" onclick="openModal('lostPet')">+ Reportar Pet Perdido/Achado</button>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="btn small-btn" onclick="filterLost('all')">Todos</button>
+      <button class="btn small-btn outline" onclick="filterLost('lost')">Perdidos</button>
+      <button class="btn small-btn outline" onclick="filterLost('found')">Encontrados</button>
+    </div>
+    ${lostPets.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum pet reportado</p>':''}
+    ${lostPets.map(lp=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border-left:4px solid ${lp.status==='lost'?'var(--coral)':'var(--green)'}">
+      <div style="display:flex;gap:10px">
+        ${lp.image?`<img src="${lp.image}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">`:''}
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <b style="font-size:13px">${esc(lp.pet_name)}</b>
+            <span style="font-size:9px;padding:2px 6px;border-radius:4px;background:${lp.status==='lost'?'var(--coralSoft)':'var(--greenSoft)'};color:${lp.status==='lost'?'var(--coral)':'var(--green)'};font-weight:700">${lp.status==='lost'?'PERDIDO':'ENCONTRADO'}</span>
+          </div>
+          <div class="small">${esc(lp.species||'')} ${esc(lp.breed||'')} ${esc(lp.description||'')}</div>
+          <div class="small">${formatDate(lp.created_at)}</div>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+async function filterLost(status) {
+  try { lostPets = await api('/api/lostpets'+(status!=='all'?'?status='+status:'')); renderLostPets(); } catch(e) {}
+}
+
+async function reportLostPet() {
+  const name=document.getElementById('lostName')?.value.trim();
+  const status=document.getElementById('lostStatus')?.value;
+  if(!name){alert('Nome obrigatorio');return;}
+  const lat=window._userLat||-2.5307, lng=window._userLng||-44.2829;
+  try {
+    await api('/api/lostpets',{method:'POST',body:JSON.stringify({
+      pet_name:name, species:document.getElementById('lostSpecies')?.value||'',
+      breed:document.getElementById('lostBreed')?.value||'',
+      description:document.getElementById('lostDesc')?.value||'',
+      image:document.getElementById('lostImage')?.value||'',
+      status, latitude:lat, longitude:lng
+    })});
+    closeModal(); await loadLostPets(); renderLostPets();
+  } catch(e) { alert(e.message); }
+}
+
+async function renderLoja() {
+  try {
+    const [productsData, servicesData] = await Promise.all([api('/api/products'), api('/api/services')]);
+    screen.innerHTML = header('Loja ZUNNU','')+`<div class="content">
+      <div style="display:flex;gap:6px;margin-bottom:12px">
+        <button class="btn small-btn" onclick="showLojaSection('products')">Produtos</button>
+        <button class="btn small-btn outline" onclick="showLojaSection('services')">Servicos</button>
+        <button class="btn small-btn outline" onclick="renderMyOrders()">Pedidos</button>
+        <button class="btn small-btn outline" onclick="renderBookings()">Agendamentos</button>
+      </div>
+      <div id="lojaProducts">
+        ${currentUser?.plan==='pro'?`<button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('addProduct')">+ Cadastrar Produto</button>`:''}
+        <div class="grid">${(productsData.products||productsData||[]).map(p=>`<div class="product-card">
+          <img src="${p.image||''}" onerror="this.style.display='none'" alt="${esc(p.title)}">
+          <div class="product-info"><div style="font-size:11px;font-weight:600">${esc(p.title)}</div>
+          <div class="product-price">R$ ${(p.price||0).toFixed(2)}</div>
+          <div class="small">${esc(p.seller_name||'Vendedor')}</div>
+          <button class="btn small-btn" style="width:100%;margin-top:4px" onclick="addToCart(${p.id})">Adicionar ao Carrinho</button>
+          </div>
+        </div>`).join('')}</div>
+      </div>
+      <div id="lojaServices" style="display:none">
+        ${(servicesData.services||servicesData||[]).map(s=>`<div class="service-card">
+          <div class="service-icon">${s.icon||'&#128100;'}</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:12px">${esc(s.title)}</div>
+          <div class="small">R$ ${(s.price||0).toFixed(2)} &bull; ${esc(s.duration||'')}</div>
+          <button class="btn small-btn" style="margin-top:4px" onclick="openBookingModal(${s.id},'${esc(s.title)}',${s.price})">Agendar</button>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  } catch(e) {}
+}
+
+function showLojaSection(section) {
+  const prod=document.getElementById('lojaProducts');
+  const svc=document.getElementById('lojaServices');
+  if(prod)prod.style.display=section==='products'?'block':'none';
+  if(svc)svc.style.display=section==='services'?'block':'none';
 }
 
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
