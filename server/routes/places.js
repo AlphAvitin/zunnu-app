@@ -30,7 +30,7 @@ function rowToPlace(r, uid) {
     pet_friendly: r.pet_friendly ? 1 : 0,
     is_favorite: r.is_favorite ? 1 : 0,
     my_rating: r.my_rating != null ? Number(r.my_rating) : null,
-    distance: r.latitude != null && r.my_lat != null ? Math.round(haversine(Number(r.my_lat), Number(r.my_lng), Number(r.latitude), Number(r.longitude)) * 10) / 10 : null
+    distance: r.latitude != null && r.my_lat != null && r.my_lat !== '' && r.my_lng != null && r.my_lng !== '' ? Math.round(haversine(Number(r.my_lat), Number(r.my_lng), Number(r.latitude), Number(r.longitude)) * 10) / 10 : null
   };
 }
 
