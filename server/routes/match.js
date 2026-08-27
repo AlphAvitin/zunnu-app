@@ -228,7 +228,7 @@ router.get('/matches', authMiddleware, async (req, res) => {
       JOIN users u1 ON m.user1_id = u1.id
       JOIN users u2 ON m.user2_id = u2.id
       WHERE m.user1_id = ? OR m.user2_id = ?
-      ORDER BY COALESCE(last_message_time, m.created_at) DESC
+      ORDER BY COALESCE((SELECT ms4.created_at FROM messages ms4 WHERE ms4.match_id = m.id ORDER BY ms4.id DESC LIMIT 1), m.created_at) DESC
     `, [req.userId, req.userId, req.userId, req.userId, req.userId, req.userId]);
 
     res.json(matches);
