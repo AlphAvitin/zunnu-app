@@ -4,10 +4,10 @@
   "webDir": "www",
   "server": {
     "url": "https://zunnu-app.onrender.com",
-    "cleartext": true,
-    "allowNavigation": ["*"]
+    "cleartext": false,
+    "allowNavigation": ["https://zunnu-app.onrender.com"]
   },
   "android": {
-    "allowMixedContent": true
+    "allowMixedContent": false
   }
 }

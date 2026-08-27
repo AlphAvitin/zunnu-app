@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; media-src 'self' https: blob:; font-src 'self' data: https:; connect-src 'self' https: ws: wss:; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>ZUNNU — Super App Pet</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -349,6 +349,8 @@ const screen = document.getElementById('screen');
 const nav = document.getElementById('bottomNav');
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function su(s){s=String(s||'').trim();if(!/^https?:\/\//i.test(s))return'';return s.replace(/[\u0000-\u001f\u2028\u2029\s"<>'`\\]/g,encodeURIComponent)}
+function sj(s){return String(s||'').replace(/[\\'"&<>\r\n\u2028\u2029]/g,function(c){if(c==='\\')return'\\\\';if(c==="'")return"\\'";if(c==='"')return'&quot;';if(c==='&')return'&amp;';if(c==='<')return'&lt;';if(c==='>')return'&gt;';if(c==='\n')return'\\n';if(c==='\r')return'\\r';if(c==='\u2028')return'\\u2028';return'\\u2029';})}
 
 function getBadge(b){if(b==='pro')return'<span class="badge-pro">PRO</span>';if(b==='plus'||b==='tutor')return'<span class="badge-plus">TUTOR</span>';return'<span class="badge-free">FREE</span>';}
 
@@ -480,7 +482,7 @@ function renderInicio(){
       </div>
       ${storiesData.filter(s=>s.user_id!==currentUser?.id).map(s=>`
         <div class="story-circle" onclick="viewStory(${s.user_id})">
-          <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${s.user_avatar||''}" onerror="this.style.display='none'" alt=""></div>
+          <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${su(s.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div>
           <div class="story-name">${esc(s.user_name)}</div>
         </div>
       `).join('')}
@@ -494,7 +496,7 @@ function renderInicio(){
       let menu=isOwner?`<div class="post-menu"><button class="post-menu-btn" onclick="togglePostMenu(${p.id})">&#8943;</button><div id="pmenu-${p.id}" class="post-dropdown" style="display:none"><button onclick="editPost(${p.id})">Editar</button><button onclick="deletePost(${p.id})">Excluir</button></div></div>`:'';
       return`<div class="post">
         <div class="post-head">
-          <div class="avatar" onclick="viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${p.user_avatar||''}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
+          <div class="avatar" onclick="viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
           <div style="flex:1">
             <div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div>
             <div class="post-meta">${esc(p.time||formatDate(p.created_at))}</div>
@@ -502,7 +504,7 @@ function renderInicio(){
           ${menu}
         </div>
         <div class="post-text">${esc(p.text)}</div>
-        ${p.video_url?`<video class="media-video" src="${esc(p.video_url)}" controls playsinline preload="metadata" poster="${esc(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${p.image}')" style="cursor:pointer"><img src="${p.image}" onerror="this.style.display='none'" alt=""></div>`:''}
+        ${p.video_url?`<video class="media-video" src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
         <div class="post-actions">
           <button class="action" onclick="toggleLike(${p.id})" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button>
           <button class="action" onclick="toggleComments(${p.id})">&#128172; ${p.comments_count||0}</button>
@@ -545,7 +547,7 @@ async function loadComments(id){
     const el=document.getElementById('commentsList-'+id);
     if(!el)return;
     el.innerHTML=comments.length===0?'<p style="font-size:11px;color:var(--soft)">Nenhum comentario</p>':
-      comments.map(c=>`<div class="comment-item"><div class="avatar" style="width:28px;height:28px;font-size:10px"><img src="${c.user_avatar||''}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div><div class="comment-text"><b>${esc(c.user_name)}</b> <span class="small">${c.time||formatDate(c.created_at)}</span><p>${esc(c.text)}</p></div></div>`).join('');
+      comments.map(c=>`<div class="comment-item"><div class="avatar" style="width:28px;height:28px;font-size:10px"><img src="${su(c.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div><div class="comment-text"><b>${esc(c.user_name)}</b> <span class="small">${c.time||formatDate(c.created_at)}</span><p>${esc(c.text)}</p></div></div>`).join('');
   }catch(e){}
 }
 
@@ -595,7 +597,7 @@ function renderConexao(){
   <div class="content">
     <div class="match-deck">
       <div class="match-photo-wrap">
-        <img src="${p.image}" class="match-photo" onerror="this.src='https://via.placeholder.com/400x300?text=Pet'" alt="${esc(p.name)}">
+        <img src="${su(p.image)}" class="match-photo" onerror="this.src='https://via.placeholder.com/400x300?text=Pet'" alt="${esc(p.name)}">
         <div class="match-overlay">
           <div style="font-size:20px;font-weight:800">${esc(p.name)}, ${esc(p.age)} <span style="font-size:12px;color:var(--orange)">${esc(p.zodiac)}</span></div>
           <div class="small">${esc(p.location)} | Tutor: <b>${esc(p.tutor_name||p.tutor)}</b></div>
@@ -640,7 +642,7 @@ async function renderPartnershipPending() {
       ${received.length===0?'<p style="text-align:center;color:var(--soft);padding:20px">Nenhuma solicitacao recebida</p>':''}
       ${received.map(r=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
         <div style="display:flex;gap:10px;align-items:center">
-          ${r.requester_pet_image?`<img src="${r.requester_pet_image}" style="width:48px;height:48px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">`:`<div class="avatar">${esc(r.requester_pet_name||'?')[0]||''}</div>`}
+          ${r.requester_pet_image?`<img src="${su(r.requester_pet_image)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">`:`<div class="avatar">${esc(r.requester_pet_name||'?')[0]||''}</div>`}
           <div style="flex:1"><b style="font-size:13px">${esc(r.requester_name)}</b><div class="small">${esc(r.requester_pet_name||'')} quer ser parceiro(a) dos seus pets</div></div>
         </div>
         <div style="display:flex;gap:6px;margin-top:8px">
@@ -673,7 +675,7 @@ function renderPets(){
     ${pets.map(p=>`
       <div class="pet-card" onclick="viewPetDetail(${p.id})" style="cursor:pointer">
         <div style="display:flex;gap:10px">
-          <img src="${p.image}" style="width:60px;height:60px;border-radius:12px;object-fit:cover" onerror="this.src='https://via.placeholder.com/60?text=Pet'" alt="${esc(p.name)}">
+          <img src="${su(p.image)}" style="width:60px;height:60px;border-radius:12px;object-fit:cover" onerror="this.src='https://via.placeholder.com/60?text=Pet'" alt="${esc(p.name)}">
           <div style="flex:1">
             <div style="display:flex;justify-content:space-between">
               <div style="font-weight:800">${esc(p.name)}</div>
@@ -706,7 +708,7 @@ function renderPerfil(){
   <div class="content">
     <div class="tutor-card">
       <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative" title="Clique para alterar foto">
-        <img src="${currentUser.selfie_url||currentUser.avatar||''}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
+        <img src="${su(currentUser.selfie_url||currentUser.avatar||'')}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
         <div style="position:absolute;bottom:0;right:0;background:var(--green);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid #fff">&#128247;</div>
       </div>
       <div style="font-weight:800;font-size:16px;margin:6px 0 2px">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
@@ -773,7 +775,7 @@ async function openModal(type){
       <div class="plan-card" style="border-color:var(--gold);background:var(--goldSoft)"><div style="display:flex;justify-content:space-between"><b>Vendedor PRO</b><span class="badge-pro">${currentUser?.plan==='pro'?'ATIVO':''}</span></div><div style="font-weight:800;font-size:16px;margin:4px 0">R$ 29,90 <span class="small">/mes</span></div><div class="small">Zero Ads + Selo PRO + Loja e Servicos (Taxa 7%)</div><button class="btn gold small-btn" style="margin-top:6px;width:100%" onclick="startPayment('pro')">${currentUser?.plan==='pro'?'Plano Ativo':'Assinar PRO por R$ 29,90'}</button></div>
     </div></div>`;
   }else if(type==='selfie'){
-    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" style="text-align:center"><div class="modal-head"><div class="modal-title">Verificacao Facial</div><button class="close" onclick="closeModal()">X</button></div><p class="small">Posicione seu rosto no circulo.</p><div class="selfie-frame"><img class="selfie-preview" src="${currentUser?.avatar||''}" onerror="this.src='https://via.placeholder.com/150'"><div class="scan-line"></div></div><div class="small" style="color:var(--green);font-weight:700;margin-bottom:12px">Rosto Identificado</div><button class="btn" style="width:100%" onclick="validateSelfie()">Validar Identidade</button></div></div>`;
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" style="text-align:center"><div class="modal-head"><div class="modal-title">Verificacao Facial</div><button class="close" onclick="closeModal()">X</button></div><p class="small">Posicione seu rosto no circulo.</p><div class="selfie-frame"><img class="selfie-preview" src="${su(currentUser?.avatar||'')}" onerror="this.src='https://via.placeholder.com/150'"><div class="scan-line"></div></div><div class="small" style="color:var(--green);font-weight:700;margin-bottom:12px">Rosto Identificado</div><button class="btn" style="width:100%" onclick="validateSelfie()">Validar Identidade</button></div></div>`;
   }else if(type==='checkout'){
     if(!activeProductCheckout)return;
     const c=activeProductCheckout;
@@ -793,7 +795,7 @@ async function openModal(type){
   }else if(type==='petDetail'&&viewingPet){
     const p=viewingPet;const isOwner=currentUser&&(p.user_id===currentUser.id);
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">${esc(p.name)}</div><button class="close" onclick="closeModal()">X</button></div>
-      <div style="text-align:center"><img src="${p.image}" style="width:120px;height:120px;border-radius:50%;object-fit:cover" onerror="this.src='https://via.placeholder.com/120'" alt="${esc(p.name)}">
+      <div style="text-align:center"><img src="${su(p.image)}" style="width:120px;height:120px;border-radius:50%;object-fit:cover" onerror="this.src='https://via.placeholder.com/120'" alt="${esc(p.name)}">
       <div style="font-weight:800;font-size:18px;margin:8px 0">${esc(p.name)}</div>
       <div class="small">${esc(p.species)} | ${esc(p.breed)} | ${esc(p.age)}</div>
       <div class="small">${esc(p.zodiac)} | ${p.is_castrated?'Castrado':'Nao castrado'}</div>
@@ -811,7 +813,7 @@ async function openModal(type){
     const u=viewingProfile;
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Perfil</div><button class="close" onclick="closeModal()">X</button></div>
       <div class="profile-view">
-        <img src="${u.avatar||''}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76'" alt="${esc(u.name)}">
+        <img src="${su(u.avatar||'')}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76'" alt="${esc(u.name)}">
         <div style="font-weight:800;font-size:16px;margin:6px 0 2px">${esc(u.name)} ${getBadge(u.plan)}</div>
         <div class="small">${esc(u.bio||'')}</div>
         <div class="small">${esc(u.location||'')}</div>
@@ -821,14 +823,14 @@ async function openModal(type){
           <div class="small"><b>${u.stats?.matches||0}</b> Matches</div>
         </div>
       </div>
-      ${(u.pets||[]).map(p=>`<div class="pet-card"><div style="display:flex;gap:8px"><img src="${p.image}" style="width:40px;height:40px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'"><div><b>${esc(p.name)}</b><div class="small">${esc(p.species)} | ${esc(p.breed)}</div></div></div></div>`).join('')}
+      ${(u.pets||[]).map(p=>`<div class="pet-card"><div style="display:flex;gap:8px"><img src="${su(p.image)}" style="width:40px;height:40px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'"><div><b>${esc(p.name)}</b><div class="small">${esc(p.species)} | ${esc(p.breed)}</div></div></div></div>`).join('')}
     </div></div>`;
   }else if(type==='chat'){
     renderChatModal();
     document.body.appendChild(root);return;
   }else if(type==='editAvatar'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Alterar Foto de Perfil</div><button class="close" onclick="closeModal()">X</button></div>
-      <div style="text-align:center;margin-bottom:12px"><img src="${currentUser?.selfie_url||currentUser?.avatar||''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/80'"></div>
+      <div style="text-align:center;margin-bottom:12px"><img src="${su(currentUser?.selfie_url||currentUser?.avatar||'')}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/80'"></div>
       <div class="field"><label>URL da Nova Foto</label><input id="newAvatarUrl" type="url" placeholder="https://exemplo.com/foto.jpg" value="${esc(currentUser?.avatar||'')}"></div>
       <button class="btn" style="width:100%" onclick="saveAvatar()">Salvar Foto</button>
       ${currentUser?.avatar?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="saveAvatar('')">Remover Foto</button>`:''}
@@ -1038,8 +1040,8 @@ async function renderChatModal(){
     if(!root)return;
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Chat</div><button class="close" onclick="closeModal()">X</button></div>
       ${matches.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum match ainda. Use o Match para encontrar amigos!</p>':''}
-      ${matches.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line);cursor:pointer" onclick="openChat(${m.id},'${esc(m.partner_name)}','${esc(m.partner_avatar||'')}')">
-        <div class="avatar"><img src="${m.partner_avatar||''}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
+      ${matches.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line);cursor:pointer" onclick="openChat(${m.id},'${sj(m.partner_name)}','${sj(m.partner_avatar||'')}')">
+        <div class="avatar"><img src="${su(m.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
         <div style="flex:1"><b style="font-size:13px">${esc(m.partner_name)}</b><div class="small">Clique para conversar</div></div>
       </div>`).join('')}
     </div></div>`;
@@ -1106,12 +1108,12 @@ function showStorySlide(){
   el.innerHTML=`<div class="story-viewer-inner">
     <div class="story-progress">${viewingStory.stories.map((_,i)=>`<div class="story-progress-bar"><div class="fill" id="sp-${i}" style="width:${i<storyIdx?'100%':'0%'}"></div></div>`).join('')}</div>
     <div class="story-viewer-header">
-      <img src="${viewingStory.user_avatar||''}" onerror="this.style.display='none'" alt="">
+      <img src="${su(viewingStory.user_avatar||'')}" onerror="this.style.display='none'" alt="">
       <b>${esc(viewingStory.user_name)}</b>
       <span>${formatDate(s.created_at)}</span>
     </div>
     <div class="story-close" onclick="closeStory()">&#10005;</div>
-    <img class="story-viewer-img" src="${s.image_url}" alt="">
+    <img class="story-viewer-img" src="${su(s.image_url)}" alt="">
     ${s.caption?`<div class="story-caption">${esc(s.caption)}</div>`:''}
     <div class="story-nav prev" onclick="prevStorySlide()"></div>
     <div class="story-nav next" onclick="nextStorySlide()"></div>
@@ -1181,7 +1183,7 @@ function renderReels(){
   screen.innerHTML=header('Reels','',{icon:'+',click:"openModal('addReel')"})+`
   <div class="reels-container">${reelsData.map(r=>`
     <div class="reel-card" id="reel-${r.id}">
-      ${r.video_url?`<video class="reel-video" src="${esc(r.video_url)}" loop muted playsinline onclick="this.paused?this.play():this.pause();this.muted=false" poster="${esc(r.thumbnail||'')}" preload="metadata"></video>`:`<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:48px">&#127916;</div>`}
+      ${r.video_url?`<video class="reel-video" src="${su(r.video_url)}" loop muted playsinline onclick="this.paused?this.play():this.pause();this.muted=false" poster="${su(r.thumbnail||'')}" preload="metadata"></video>`:`<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:48px">&#127916;</div>`}
       <div class="reel-overlay">
         <b>@${esc(r.user_name)} ${getBadge(r.user_plan)}</b>
         <p>${esc(r.caption)}</p>
@@ -1220,7 +1222,7 @@ async function openReelComments(reelId){
     body.innerHTML=`
       <div style="max-height:50vh;overflow-y:auto;margin-bottom:12px">
         ${comments.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum comentario ainda</p>':''}
-        ${comments.map(c=>`<div style="display:flex;gap:8px;margin-bottom:10px"><div class="avatar" style="width:28px;height:28px;min-width:28px"><img src="${c.user_avatar||''}" onerror="this.style.display='none'" alt=""></div><div><b style="font-size:11px">${esc(c.user_name)}</b><p style="margin:2px 0 0;font-size:12px">${esc(c.text)}</p></div></div>`).join('')}
+        ${comments.map(c=>`<div style="display:flex;gap:8px;margin-bottom:10px"><div class="avatar" style="width:28px;height:28px;min-width:28px"><img src="${su(c.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div><div><b style="font-size:11px">${esc(c.user_name)}</b><p style="margin:2px 0 0;font-size:12px">${esc(c.text)}</p></div></div>`).join('')}
       </div>
       <div style="display:flex;gap:6px"><input id="reelCommentInput" placeholder="Comentar..." style="flex:1" onkeydown="if(event.key==='Enter')sendReelComment(${reelId})"><button class="btn small-btn" onclick="sendReelComment(${reelId})">Enviar</button></div>
     `;
@@ -1298,9 +1300,9 @@ function renderNearbyMarkers(){
   mapaInst.eachLayer(l=>{if(l instanceof L.CircleMarker&&l.getPopup()?.getContent()!=='Voce esta aqui')mapaInst.removeLayer(l);});
   nearbyPets.forEach(p=>{
     if(!p.latitude||!p.longitude)return;
-    const icon=L.divIcon({className:'',html:`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);background:#fff"><img src="${p.image||''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='&#128062;'"></div>`,iconSize:[36,36],iconAnchor:[18,18]});
+    const icon=L.divIcon({className:'',html:`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);background:#fff"><img src="${su(p.image||'')}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='&#128062;'"></div>`,iconSize:[36,36],iconAnchor:[18,18]});
     L.marker([p.latitude,p.longitude],{icon}).addTo(mapaInst)
-      .bindPopup(`<div style="text-align:center;min-width:120px"><img src="${p.image||''}" style="width:60px;height:60px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><br><b style="font-size:12px">${esc(p.name)}</b><br><span style="font-size:10px;color:#666">${esc(p.breed)} ${p.distance}km</span><br><button onclick="viewUserProfile(${p.user_id})" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver Tutor</button></div>`);
+      .bindPopup(`<div style="text-align:center;min-width:120px"><img src="${su(p.image||'')}" style="width:60px;height:60px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><br><b style="font-size:12px">${esc(p.name)}</b><br><span style="font-size:10px;color:#666">${esc(p.breed)} ${p.distance}km</span><br><button onclick="viewUserProfile(${p.user_id})" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver Tutor</button></div>`);
   });
   lostPets.forEach(lp => {
     if(!lp.latitude||!lp.longitude) return;
@@ -1314,7 +1316,7 @@ function renderNearbyList(){
   if(nearbyPets.length===0){el.innerHTML='<p style="text-align:center;color:var(--soft);padding:12px">Nenhum pet encontrado nearby</p>';return;}
   el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--soft);margin-bottom:6px;padding:0 4px">${nearbyPets.length} pets por perto</div>`+
     nearbyPets.map(p=>`<div class="map-pet-card" onclick="viewUserProfile(${p.user_id})">
-      <img src="${p.image||''}" onerror="this.src='https://via.placeholder.com/40'" alt="">
+      <img src="${su(p.image||'')}" onerror="this.src='https://via.placeholder.com/40'" alt="">
       <div style="flex:1"><b style="font-size:12px">${esc(p.name)}</b><div style="font-size:10px;color:var(--soft)">${esc(p.breed)} &bull; ${p.distance}km</div></div>
       <div style="font-size:10px;color:var(--green);font-weight:600">${esc(p.zodiac||'')}</div>
     </div>`).join('');
@@ -1327,7 +1329,7 @@ async function viewUserProfile(userId){
     screen.innerHTML=header(u.name,'',{icon:'&#8592;',click:"setTab('inicio')"})+`
     <div class="content">
       <div class="social-user-header">
-        <img class="avatar-lg" src="${u.avatar||''}" onerror="this.src='https://via.placeholder.com/72'" alt="">
+        <img class="avatar-lg" src="${su(u.avatar||'')}" onerror="this.src='https://via.placeholder.com/72'" alt="">
         <div style="font-weight:800">${esc(u.name)} ${getBadge(u.plan)}</div>
         <div class="small">${esc(u.location||'')} ${u.is_human_verified?'&#128275; Verificado':''}</div>
         <div class="small" style="margin-top:4px">${esc(u.bio||'')}</div>
@@ -1341,8 +1343,8 @@ async function viewUserProfile(userId){
         ${u.is_private&&userId!==currentUser?.id&&!u.i_follow?`<button class="btn small-btn outline" style="width:100%;margin-top:4px" onclick="requestFollow(${userId})">Solicitar Seguir</button>`:''}
         ${userId!==currentUser?.id?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="openChatWith(${userId})">&#128172; Mensagem</button>`:''}
       </div>
-      ${pets.length>0?`<div class="section"><h2>Pets</h2></div><div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0">${pets.map(p=>`<div style="min-width:100px;text-align:center;cursor:pointer" onclick="viewPetProfile(${p.id})"><img src="${p.image||''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--line)" onerror="this.src='https://via.placeholder.com/80'"><div style="font-size:11px;font-weight:600;margin-top:4px">${esc(p.name)}</div><div style="font-size:9px;color:var(--soft)">${esc(p.breed)}</div></div>`).join('')}</div>`:''}
-      ${posts.length>0?`<div class="section"><h2>Postagens Recentes</h2></div>${posts.map(p=>`<div class="post"><div class="post-head"><div class="avatar"><img src="${p.user_avatar||''}" onerror="this.style.display='none'" alt=""></div><div style="flex:1"><div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div><div class="post-meta">${formatDate(p.created_at)}</div></div></div><div class="post-text">${esc(p.text)}</div><div class="post-actions"><button class="action" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button><button class="action">&#128172; ${p.comments_count||0}</button></div></div>`).join('')}</div>`:''}
+      ${pets.length>0?`<div class="section"><h2>Pets</h2></div><div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0">${pets.map(p=>`<div style="min-width:100px;text-align:center;cursor:pointer" onclick="viewPetProfile(${p.id})"><img src="${su(p.image||'')}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--line)" onerror="this.src='https://via.placeholder.com/80'"><div style="font-size:11px;font-weight:600;margin-top:4px">${esc(p.name)}</div><div style="font-size:9px;color:var(--soft)">${esc(p.breed)}</div></div>`).join('')}</div>`:''}
+      ${posts.length>0?`<div class="section"><h2>Postagens Recentes</h2></div>${posts.map(p=>`<div class="post"><div class="post-head"><div class="avatar"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div><div style="flex:1"><div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div><div class="post-meta">${formatDate(p.created_at)}</div></div></div><div class="post-text">${esc(p.text)}</div><div class="post-actions"><button class="action" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button><button class="action">&#128172; ${p.comments_count||0}</button></div></div>`).join('')}</div>`:''}
     </div>`;
   }catch(e){alert('Erro ao carregar perfil');console.error(e);}
 }
@@ -1362,12 +1364,12 @@ async function viewPetProfile(petId){
     screen.innerHTML=header(pet.name,'',{icon:'&#8592;',click:"setTab('pets')"})+`
     <div class="content">
       <div style="text-align:center;margin-bottom:12px">
-        <img src="${pet.image||''}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/96'">
+        <img src="${su(pet.image||'')}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/96'">
         <h3 style="margin:8px 0 2px">${esc(pet.name)}</h3>
         <div class="small">${esc(pet.breed)} &bull; ${esc(pet.age)} &bull; &#9800; ${esc(pet.zodiac||'')}</div>
         <div style="margin-top:6px"><button class="btn small-btn" onclick="openModal('addPhoto');document.getElementById('addPhotoPetId').value=${petId}">+ Foto</button> <button class="btn small-btn outline" onclick="openModal('addMilestone');document.getElementById('milestonePetId').value=${petId}">+ Marco</button></div>
       </div>
-      ${photos.length>0?`<div class="section"><h2>Fotos</h2></div><div class="gallery-grid">${photos.map(p=>`<img src="${p.image_url}" alt="${esc(p.caption)}" onclick="openLightbox('${p.image_url}')" onerror="this.style.display='none'">`).join('')}</div>`:''}
+      ${photos.length>0?`<div class="section"><h2>Fotos</h2></div><div class="gallery-grid">${photos.map(p=>`<img src="${su(p.image_url)}" alt="${esc(p.caption)}" onclick="openLightbox('${su(p.image_url)}')" onerror="this.style.display='none'">`).join('')}</div>`:''}
       ${milestones.length>0?`<div class="section"><h2>Timeline</h2></div><div class="timeline">${milestones.map(m=>`<div class="timeline-item"><div class="date">${m.date}</div><b style="font-size:12px">&#${m.icon||'128062'}; ${esc(m.title)}</b><p style="font-size:11px;color:var(--soft);margin:2px 0 0">${esc(m.description)}</p></div>`).join('')}</div>`:''}
       ${photos.length===0&&milestones.length===0?'<p style="text-align:center;color:var(--soft);padding:24px">Nenhuma foto ou marco ainda</p>':''}
     </div>`;
@@ -1464,7 +1466,7 @@ function renderCart() {
   screen.innerHTML = header('Meu Carrinho','')+`<div class="content">
     ${cartItems.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Carrinho vazio<br><br><button class="btn" onclick="setTab(\'inicio\')">Ver Produtos</button></p>':''}
     ${cartItems.map(c=>`<div style="display:flex;gap:10px;background:var(--card);border-radius:12px;padding:10px;margin-bottom:8px">
-      <img src="${c.image||''}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">
+      <img src="${su(c.image||'')}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">
       <div style="flex:1"><b style="font-size:12px">${esc(c.title)}</b><div class="product-price">R$ ${(c.price*c.quantity).toFixed(2)}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
         <button class="btn small-btn outline" onclick="updateCartQty(${c.id},${c.quantity-1})">-</button>
@@ -1645,7 +1647,7 @@ function renderLostPets() {
     ${lostPets.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum pet reportado</p>':''}
     ${lostPets.map(lp=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px;border-left:4px solid ${lp.status==='lost'?'var(--coral)':'var(--green)'}">
       <div style="display:flex;gap:10px">
-        ${lp.image?`<img src="${lp.image}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">`:''}
+        ${lp.image?`<img src="${su(lp.image)}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">`:''}
         <div style="flex:1">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <b style="font-size:13px">${esc(lp.pet_name)}</b>
@@ -1693,7 +1695,7 @@ async function renderLoja() {
       <div id="lojaProducts">
         ${currentUser?.plan==='pro'?`<button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('addProduct')">+ Cadastrar Produto</button>`:''}
         <div class="grid">${(productsData.products||productsData||[]).map(p=>`<div class="product-card">
-          <img src="${p.image||''}" onerror="this.style.display='none'" alt="${esc(p.title)}">
+          <img src="${su(p.image||'')}" onerror="this.style.display='none'" alt="${esc(p.title)}">
           <div class="product-info"><div style="font-size:11px;font-weight:600">${esc(p.title)}</div>
           <div class="product-price">R$ ${(p.price||0).toFixed(2)}</div>
           <div class="small">${esc(p.seller_name||'Vendedor')}</div>
