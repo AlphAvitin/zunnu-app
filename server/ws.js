@@ -2,7 +2,7 @@ const { WebSocketServer } = require('ws');
 const jwt = require('jsonwebtoken');
 const { get } = require('./db');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'zunnu_secret_key_2026_mudar_em_producao';
+const { JWT_SECRET } = require('./config');
 
 const clients = new Map();
 
