@@ -82,8 +82,31 @@ CREATE TABLE IF NOT EXISTS pets (
   image TEXT DEFAULT '',
   is_castrated INTEGER DEFAULT 0,
   zodiac TEXT DEFAULT '',
+  sex TEXT DEFAULT '',
+  birth_date TEXT DEFAULT '',
+  porte TEXT DEFAULT '',
+  cor TEXT DEFAULT '',
+  peso DOUBLE PRECISION,
+  microchip TEXT DEFAULT '',
+  traits TEXT DEFAULT '',
+  visibility TEXT DEFAULT 'public',
   latitude DOUBLE PRECISION,
   longitude DOUBLE PRECISION,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS sex TEXT DEFAULT '';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS birth_date TEXT DEFAULT '';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS porte TEXT DEFAULT '';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS cor TEXT DEFAULT '';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS peso DOUBLE PRECISION;
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS microchip TEXT DEFAULT '';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS traits TEXT DEFAULT '';
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'public';
+CREATE TABLE IF NOT EXISTS pet_health_records (
+  id SERIAL PRIMARY KEY,
+  pet_id INTEGER NOT NULL,
+  category TEXT NOT NULL,
+  text TEXT NOT NULL,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS vaccines (
@@ -437,6 +460,30 @@ function createTables(db) {
     image TEXT DEFAULT '',
     is_castrated INTEGER DEFAULT 0,
     zodiac TEXT DEFAULT '',
+    sex TEXT DEFAULT '',
+    birth_date TEXT DEFAULT '',
+    porte TEXT DEFAULT '',
+    cor TEXT DEFAULT '',
+    peso REAL,
+    microchip TEXT DEFAULT '',
+    traits TEXT DEFAULT '',
+    visibility TEXT DEFAULT 'public',
+    created_at TEXT DEFAULT (datetime('now'))
+  )`);
+  try { db.run(`ALTER TABLE pets ADD COLUMN sex TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN birth_date TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN porte TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN cor TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN peso REAL`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN microchip TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN traits TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE pets ADD COLUMN visibility TEXT DEFAULT 'public'`); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS pet_health_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pet_id INTEGER NOT NULL,
+    category TEXT NOT NULL,
+    text TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now'))
   )`);
   db.run(`

@@ -335,6 +335,95 @@ button,input,textarea,select{font:inherit}
 .sr-item b{font-size:12px;display:block}
 .sr-item .small{font-size:10px}
 .sr-go{width:22px;height:22px;font-size:11px}
+
+/* ===== Perfil do Pet (Etapa 3) ===== */
+.pp-hero{background:linear-gradient(150deg,var(--green) 0%,var(--green2) 100%);border-radius:0 0 26px 26px;padding:14px 16px 18px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.pp-hero::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06);right:-45px;top:-45px}
+.pp-hero::before{content:'';position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.05);right:80px;bottom:-50px}
+.pp-avatar{width:106px;height:106px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 6px 18px rgba(0,0,0,.28);margin:6px auto 10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:44px}
+.pp-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pp-name{font-size:23px;font-weight:900;letter-spacing:.3px;text-transform:capitalize}
+.pp-breed{font-size:12px;font-weight:600;color:rgba(255,255,255,.92);margin-top:3px}
+.pp-loc{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;background:rgba(255,255,255,.14);padding:4px 11px;border-radius:20px;margin-top:9px}
+.pp-vax{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;border-radius:20px;padding:4px 11px;margin-top:8px}
+.pp-vax.ok{background:#0F3229;color:#8FD6B8;border:1px solid rgba(143,214,184,.5)}
+.pp-vax.warn{background:#FFF0DB;color:#8A4B00;border:1px solid rgba(255,170,90,.6)}
+.pp-actions{display:flex;gap:8px;justify-content:center;margin-top:13px}
+.pp-actions .btn{background:#fff;color:var(--green);border:none;font-weight:800}
+.pp-actions .btn.alt{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.55)}
+.pp-card{background:linear-gradient(135deg,#1A3C33,#2E5F4F);border-radius:24px;color:#fff;padding:18px;margin-top:16px;box-shadow:0 12px 28px rgba(20,60,50,.38);position:relative;overflow:hidden;animation:fadeIn .3s ease}
+.pp-card::before{content:'';position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07);right:-35px;top:-35px}
+.pp-card::after{content:'';position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.05);left:-25px;bottom:-30px}
+.pp-card-top{display:flex;align-items:center;gap:12px;position:relative}
+.pp-card-logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#FFE259,#FFA751);color:#5A3900;font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.pp-card-name{font-size:21px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.pp-card-sub{font-size:11px;color:rgba(255,255,255,.78)}
+.pp-card-badge{margin-left:auto;flex-shrink:0;font-size:8px;font-weight:900;letter-spacing:.6px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);padding:5px 9px;border-radius:20px}
+.pp-card-traits{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;position:relative}
+.pp-card-trait{font-size:9px;font-weight:800;background:rgba(255,255,255,.13);padding:4px 9px;border-radius:12px}
+.pp-card-empty{font-size:10px;color:rgba(255,255,255,.5);font-weight:600}
+.pp-card-rows{margin-top:13px;border-top:1px solid rgba(255,255,255,.14);padding-top:10px;position:relative}
+.pp-card-row{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;padding:4px 0}
+.pp-card-row .muted{color:rgba(255,255,255,.88)}
+.pp-info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.pp-info-item{background:var(--card);border-radius:14px;padding:11px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.pp-info-item .k{font-size:9px;font-weight:800;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
+.pp-info-item .v{font-size:13px;font-weight:800;margin-top:3px;color:var(--ink);text-transform:capitalize}
+.pp-info-item .v .dash{color:var(--soft)}
+.pp-panel{background:var(--card);border-radius:18px;padding:14px;box-shadow:0 3px 10px rgba(0,0,0,.05);animation:fadeIn .3s ease}
+.pp-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pp-panel-head b{font-size:13px;color:var(--ink)}
+.pp-panel-add{border:none;background:var(--greenSoft);color:var(--green);font-weight:800;font-size:10px;padding:5px 11px;border-radius:16px;cursor:pointer}
+.pp-health-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.pp-health-row:last-child{border-bottom:none}
+.pp-h-ico{width:36px;height:36px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--greenSoft)}
+.pp-h-body{flex:1;min-width:0}
+.pp-h-body b{font-size:12px;display:block;color:var(--ink)}
+.pp-h-body p{margin:2px 0 0;font-size:11px;color:var(--soft);white-space:pre-wrap;line-height:1.45}
+.pp-h-tools{display:flex;gap:4px;flex-shrink:0}
+.pp-h-tools button{border:none;background:none;cursor:pointer;font-size:12px;padding:2px}
+.pp-vaccine-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.pp-vaccine-row:last-child{border-bottom:none}
+.pp-vaccine-row .vname{font-size:12px;font-weight:700;color:var(--ink)}
+.pp-vaccine-row .vdate{font-size:10px;color:var(--soft)}
+.pp-v-status{font-size:9px;font-weight:800;border-radius:12px;padding:3px 9px;margin-left:auto;white-space:nowrap}
+.pp-v-status.ok{background:var(--greenSoft);color:var(--green)}
+.pp-v-status.warn{background:var(--orangeSoft);color:#B26A00}
+.pp-trait-chips{display:flex;flex-wrap:wrap;gap:8px}
+.pp-trait{border:1px solid var(--line);background:var(--card);color:var(--soft);font-size:11px;font-weight:800;padding:8px 13px;border-radius:20px;cursor:pointer;transition:all .15s}
+.pp-trait.active{background:linear-gradient(135deg,#2E5F4F,#1A3C33);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(30,80,70,.32)}
+.pp-trait.locked{cursor:default;opacity:1}
+.pp-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;border-radius:14px;overflow:hidden;background:var(--card);padding:3px}
+.pp-gallery-item{position:relative;aspect-ratio:1;overflow:hidden;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:28px}
+.pp-gallery-item img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.pp-g-empty{grid-column:1/-1;padding:20px 10px;text-align:center;font-size:11px;color:var(--soft);background:var(--bg);border-radius:10px}
+.pp-g-actions{position:absolute;top:4px;right:4px;display:flex;gap:4px}
+.pp-g-btn{width:26px;height:26px;border-radius:50%;border:none;font-size:11px;font-weight:900;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.pp-g-star{background:#FFD54F;color:#5A3900}
+.pp-g-del{background:var(--coral);color:#fff}
+.pp-main-badge{position:absolute;left:5px;top:5px;background:rgba(0,0,0,.55);color:#FFD54F;font-size:8px;font-weight:900;padding:3px 7px;border-radius:10px}
+.pp-add-photo-card{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:8px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--green);font-size:10px;font-weight:800;cursor:pointer}
+.pp-social-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pp-social-item{text-align:center;background:var(--bg);border-radius:12px;padding:11px 4px}
+.pp-social-item b{font-size:17px;font-weight:900;display:block;color:var(--green)}
+.pp-social-item span{font-size:9px;color:var(--soft)}
+.pp-social-note{text-align:center;font-size:9px;color:var(--soft);margin-top:9px}
+.pp-privacy{display:flex;gap:6px;background:var(--card);border-radius:14px;padding:6px;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.pp-privacy button{flex:1;border:none;background:transparent;padding:9px 4px;border-radius:10px;font-size:10px;font-weight:800;color:var(--soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .15s}
+.pp-privacy button.active{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(36,92,79,.3)}
+.pp-privacy button .lock-icon{font-size:15px}
+.my-pets-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.my-pet-card{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06);cursor:pointer;animation:fadeIn .3s ease;transition:transform .15s}
+.my-pet-card:active{transform:scale(.97)}
+.my-pet-photo{height:118px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden}
+.my-pet-photo img{width:100%;height:100%;object-fit:cover}
+.my-pet-info{padding:10px}
+.my-pet-info b{font-size:13px;display:block;text-transform:capitalize}
+.my-pet-info .small{font-size:10px}
+.my-pet-age{display:inline-block;font-size:9px;font-weight:800;color:var(--green);background:var(--greenSoft);border-radius:12px;padding:3px 9px;margin-top:7px}
+.my-pet-add{border:1.5px dashed var(--line);box-shadow:none;background:transparent;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--green);font-weight:800;font-size:12px;cursor:pointer;min-height:180px}
+.my-pet-add .plus{width:42px;height:42px;border-radius:50%;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:20px}
+@media (min-width:600px){.pp-gallery{grid-template-columns:repeat(4,1fr)}.pp-info-grid{grid-template-columns:repeat(3,1fr)}.my-pets-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
@@ -383,6 +472,14 @@ let cartItems = [];
 let cartCount = 0;
 let lostPets = [];
 let homeNearby = [];
+let currentPetProfile = null;
+let petPhotos = [];
+let petMilestones = [];
+let editingPetId = null;
+let editingVaccine = null;
+let editingHealthRec = null;
+let healthModalCat = 'observacoes';
+let petProfileBack = "setTab('pets')";
 
 function connectWS() {
   if (!token) return;
@@ -613,13 +710,75 @@ function petHomeStatus(p){
 }
 function openServices(){setTab('loja');setTimeout(()=>showLojaSection('services'),120);}
 
+/* ===== Perfil do Pet - dados e helpers ===== */
+const PET_TRAITS=['Sociavel','Brincalhao','Calmo','Ativo','Timido','Carinhoso','Independente','Medroso','Protetor','Convive bem com outros animais','Convive bem com criancas'];
+const PET_SPECIES=['Cachorro','Gato','Ave','Coelho','Roedor','Reptil','Peixe','Outro'];
+const PET_BREEDS={
+  Cachorro:['SRD','Golden Retriever','Labrador','Pastor Alemao','Poodle','Buldogue','Shih Tzu','Yorkshire','Pinscher','Beagle','Vira-lata'],
+  Gato:['SRD','Siames','Persa','Sphynx','Maine Coon','Angora','Frajola','Rajado'],
+  Ave:['Calopsita','Papagaio','Periquito','Canario','Agapornis'],
+  Coelho:['Angora','Holandes','Lionhead','Mini Lop'],
+  Roedor:['Hamster','Porquinho da India','Chinchila','Rato'],
+  Reptil:['Tartaruga','Jabuti','Lagarto','Gecko'],
+  Peixe:['Beta','Goldfish','Neons','Acara'],
+  Outro:[]
+};
+const SPECIES_OPTS=PET_SPECIES.map(s=>`<option>${s}</option>`).join('');
+const HEALTH_CATS=[['vermifugos','Vermifugos','&#129712;'],['medicamentos','Medicamentos','&#128138;'],['alergias','Alergias','&#129319;'],['restricoes','Restricoes alimentares','&#128683;'],['veterinario','Veterinario','&#129658;'],['observacoes','Observacoes','&#128221;']];
+const PRIV_LABEL={public:'&#127757; Publico',friends:'&#128101; Amigos',private:'&#128274; Privado'};
+function petBreedOptions(species){
+  const dl=document.getElementById('petBreeds');if(!dl)return;
+  const list=PET_BREEDS[species]||[];
+  dl.innerHTML=list.map(b=>`<option value="${esc(b)}"></option>`).join('');
+}
+function zodiacFromDate(bd){
+  if(!bd)return'';
+  const b=new Date(bd);if(isNaN(b.getTime()))return'';
+  const m=b.getMonth()+1,d=b.getDate();
+  if((m===1&&d>=20)||(m===2&&d<=18))return'Aquario';
+  if((m===2&&d>=19)||(m===3&&d<=20))return'Peixes';
+  if((m===3&&d>=21)||(m===4&&d<=19))return'Aries';
+  if((m===4&&d>=20)||(m===5&&d<=20))return'Touro';
+  if((m===5&&d>=21)||(m===6&&d<=20))return'Gemeos';
+  if((m===6&&d>=21)||(m===7&&d<=22))return'Cancer';
+  if((m===7&&d>=23)||(m===8&&d<=22))return'Leao';
+  if((m===8&&d>=23)||(m===9&&d<=22))return'Virgem';
+  if((m===9&&d>=23)||(m===10&&d<=22))return'Libra';
+  if((m===10&&d>=23)||(m===11&&d<=21))return'Escorpiao';
+  if((m===11&&d>=22)||(m===12&&d<=21))return'Sagitario';
+  return'Capricornio';
+}
+function petAgeText(bd){
+  if(!bd)return'';
+  const b=new Date(bd);if(isNaN(b.getTime()))return'';
+  const n=new Date();
+  let y=n.getFullYear()-b.getFullYear();
+  const m=n.getMonth()-b.getMonth(),d=n.getDate()-b.getDate();
+  if(m<0||(m===0&&d<0))y--;
+  const mo=y*12+m+(d<0?-1:0);
+  if(y>=1)return y+' ano'+(y>1?'s':'');
+  if(mo>=1)return mo+' mes'+(mo>1?'es':'');
+  const dd=Math.max(1,Math.floor((n-b)/86400000));
+  return dd+' dia'+(dd>1?'s':'');
+}
+function petIdade(p){return petAgeText(p&&p.birth_date)||(p&&p.age)||'idade nao informada';}
+function petTraitsList(t){return String(t||'').split(',').map(s=>s.trim()).filter(Boolean);}
+function formatDateBR(s){
+  const m=s?String(s).match(/^(\d{4})-(\d{2})-(\d{2})/):null;
+  return m?m[3]+'/'+m[2]+'/'+m[1]:String(s||'');
+}
+function petHealthChip(p){
+  const st=petHomeStatus(p);
+  return`<span class="pp-vax ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</span>`;
+}
+
 function renderInicio(){
   const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
   const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat')" aria-label="Mensagens"><span>&#128172;</span></button>`:'';
   const cartBtn=currentUser?`<button class="icon-btn" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
-  const speciesEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Reptil:'&#129422;'};
+  const speciesEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Coelho:'&#128048;',Roedor:'&#128057;',Reptil:'&#129422;',Peixe:'&#128031;'};
   const petStatus=(p)=>{const st=petHomeStatus(p);return`<div class="home-pet-status ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</div>`;};
   let petsArea;
   if(pets.length===0){
@@ -868,35 +1027,134 @@ async function respondPartnership(requestId, accept) {
 function renderPets(){
   screen.innerHTML=header('Meus Pets','',{icon:'+',click:"openModal('addPet')"})+`
   <div class="content">
-    ${pets.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum pet cadastrado</p>':''}
-    ${pets.map(p=>`
-      <div class="pet-card" onclick="viewPetDetail(${p.id})" style="cursor:pointer">
-        <div style="display:flex;gap:10px">
-          <img src="${su(p.image)}" style="width:60px;height:60px;border-radius:12px;object-fit:cover" onerror="this.src='https://via.placeholder.com/60?text=Pet'" alt="${esc(p.name)}">
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between">
-              <div style="font-weight:800">${esc(p.name)}</div>
-              <span class="small" style="color:var(--orange)">${esc(p.zodiac)}</span>
-            </div>
-            <div class="small">${esc(p.species)} ${esc(p.breed)} | ${esc(p.age)} | ${p.is_castrated?'Castrado':'Nao castrado'}</div>
-            <div class="small" style="color:var(--pink);font-weight:700;margin-top:2px">${esc(p.match?.status||'')}</div>
+    <div class="home-section-title"><h2>&#128062; Sua familia</h2><button class="home-more" onclick="setTab('mapa')">Perto de voce</button></div>
+    ${pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu pet e crie um perfil completo.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar Pet</button></div>`:''}
+    <div class="my-pets-grid">
+      ${pets.map(p=>{
+        const emo=petEmoji(p.species);
+        return`<div class="my-pet-card" onclick="openPetProfile(${p.id})">
+          <div class="my-pet-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt="">`:emo}</div>
+          <div class="my-pet-info"><b>${esc(p.name)}</b>
+            <div class="small">${emo} ${esc(p.species||'Pet')} &bull; ${esc(p.breed||'SRD')}</div>
+            <span class="my-pet-age">${esc(petIdade(p))}</span>
           </div>
-        </div>
-        <div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px" class="small">
-          <div style="font-weight:800;color:var(--green)">Vacinas:</div>
-          ${(p.vaccines||[]).map(v=>`<div>${esc(v.name)}: <b>${esc(v.date)}</b> <span style="color:${v.status==='Em dia'?'var(--green)':'var(--orange)'}">${esc(v.status)}</span></div>`).join('')||'Nenhuma vacina registrada'}
-        </div>
-      </div>
-    `).join('')}
+        </div>`;
+      }).join('')}
+      <div class="my-pet-add" onclick="openModal('addPet')"><div class="plus">+</div>Adicionar Pet</div>
+    </div>
+    ${pets.length?`<div style="margin-top:14px"><button class="btn outline" style="width:100%" onclick="openModal('addPet')">+ Adicionar outro Pet</button></div>`:''}
   </div>`;
 }
 
-async function viewPetDetail(id){
+async function openPetProfile(petId){
+  viewingPet=null;
   try{
-    const pet=await api('/api/pets/'+id);
-    viewingPet=pet;
-    openModal('petDetail');
+    const pet=await api('/api/pets/'+petId);
+    currentPetProfile=pet;
+    if(!Array.isArray(pet.health))pet.health=[];
+    petPhotos=await api('/api/petgallery/'+petId+'/photos').catch(()=>[]);
+    petMilestones=await api('/api/petgallery/'+petId+'/milestones').catch(()=>[]);
+    renderPetProfilePage();
   }catch(e){alert(e.message);}
+}
+
+async function refreshPetProfile(){
+  if(!currentPetProfile)return;
+  await openPetProfile(currentPetProfile.id);
+}
+
+function viewPetProfile(petId){openPetProfile(petId);}
+
+function renderPetProfilePage(){
+  const pp=currentPetProfile;
+  if(!pp)return;
+  const isOwner=currentUser&&pp.user_id===currentUser.id;
+  const loc=pp.location||pp.tutor_location||(currentUser?currentUser.location:'')||'Localizacao nao informada';
+  const age=petIdade(pp);
+  const traits=petTraitsList(pp.traits);
+  const vax=petHomeStatus(pp);
+  const emo=petEmoji(pp.species);
+  const dash='<span class="dash">&mdash;</span>';
+  const infoItem=(k,v)=>`<div class="pp-info-item"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const sexTxt=pp.sex?(pp.sex==='Macho'?'&#9794; Macho':esc(pp.sex)):dash;
+  const pesoTxt=(pp.peso!==null&&pp.peso!==undefined&&pp.peso!=='')?(String(pp.peso).replace('.',',')+' kg'):dash;
+  const heroes=`${isOwner?`<button class="btn" onclick="openModal('editPet')">&#9998; Editar Perfil</button>`:`<button class="btn" onclick="requestPartnership(${pp.user_id},${pp.id})">&#128153; Pedir Parceria</button><button class="btn alt" onclick="viewUserProfile(${pp.user_id})">&#128100; Ver Tutor</button>`}`;
+  const vacRows=(pp.vaccines||[]).map(v=>`<div class="pp-vaccine-row"><span style="font-size:15px">&#128137;</span><div style="flex:1;min-width:0"><div class="vname">${esc(v.name)}</div><div class="vdate">${esc(v.date||'Data nao informada')}</div></div><span class="pp-v-status ${v.status==='Em dia'?'ok':'warn'}">${esc(v.status||'A agendar')}</span>${isOwner?`<div class="pp-h-tools"><button onclick="editVaccine(${v.id})" title="Editar">&#9998;</button><button onclick="deleteVaccine(${pp.id},${v.id})" title="Remover">&#10060;</button></div>`:''}</div>`).join('');
+  const healthBlocks=HEALTH_CATS.map(cat=>{
+    const rows=(pp.health||[]).filter(h=>h.category===cat[0]);
+    const rowsHtml=rows.map(h=>`<div class="pp-health-row"><div class="pp-h-ico">${cat[2]}</div><div class="pp-h-body"><p>${esc(h.text)}</p></div>${isOwner?`<div class="pp-h-tools"><button onclick="openHealthModal('${cat[0]}',${h.id})" title="Editar">&#9998;</button><button onclick="deleteHealth(${pp.id},${h.id})" title="Remover">&#10060;</button></div>`:''}</div>`).join('');
+    return`<div class="pp-panel" style="margin-top:10px"><div class="pp-panel-head"><b>${cat[2]} ${cat[1]}</b>${isOwner?`<button class="pp-panel-add" onclick="openHealthModal('${cat[0]}',null)">+ Adicionar</button>`:''}</div>${rowsHtml||'<div class="small" style="color:var(--soft);padding:4px 0">Nenhum registro</div>'}</div>`;
+  }).join('');
+  const galleryItems=petPhotos.map(ph=>{
+    const isMain=pp.image&&ph.image_url===pp.image;
+    return`<div class="pp-gallery-item"><img src="${su(ph.image_url)}" onclick="openLightbox('${su(ph.image_url)}')" onerror="this.style.display='none'">${isMain?'<span class="pp-main-badge">&#9733; Principal</span>':''}${isOwner?`<div class="pp-g-actions">${isMain?'':`<button class="pp-g-btn pp-g-star" onclick="setMainPhoto(${ph.id})" title="Definir como principal">&#9733;</button>`}<button class="pp-g-btn pp-g-del" onclick="deletePetPhoto(${ph.id})" title="Excluir">&#10005;</button></div>`:''}</div>`;
+  }).join('');
+  const social=[['&#128172;','Publicacoes',null],['&#128247;','Fotos',petPhotos.length],['&#10084;','Curtidas',null],['&#128101;','Amigos',null],['&#128100;','Seguidores',null],['&#128205;','Check-ins',null]];
+  const socialGrid=social.map(s=>`<div class="pp-social-item"><b style="${!s[2]?'color:var(--soft)':''}">${s[2]===null?'&mdash;':s[2]}</b><span>${s[1]}</span></div>`).join('');
+  const privNote=pp.visibility==='public'?'Qualquer usuario da comunidade pode visualizar este perfil.':pp.visibility==='friends'?'Somente conexoes/amigos podem visualizar este perfil.':'Somente o tutor pode visualizar este perfil.';
+  screen.innerHTML=header(pp.name+' '+'&#128062;','',{icon:'&#8592;',click:petProfileBack})+`
+  <div class="content" style="padding-top:0">
+    <div class="pp-hero">
+      <div class="pp-avatar">${pp.image?`<img src="${su(pp.image)}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt="">`:emo}</div>
+      <div class="pp-name">${esc(pp.name)}</div>
+      <div class="pp-breed">${emo} ${esc(pp.species||'Pet')}${pp.breed?' &bull; '+esc(pp.breed):''}</div>
+      <div style="margin-top:9px"><span class="pp-loc">&#128205; ${esc(loc)}</span>${isOwner&&pp.visibility&&PRIV_LABEL[pp.visibility]?`<span class="pp-loc" style="margin-left:6px">${PRIV_LABEL[pp.visibility]}</span>`:''}</div>
+      <div style="margin-top:6px">${petHealthChip(pp)}</div>
+      <div class="pp-actions">${heroes}</div>
+    </div>
+    <div class="pp-card">
+      <div class="pp-card-top">
+        <div class="pp-card-logo">P</div>
+        <div style="flex:1;min-width:0"><div class="pp-card-name">${esc(pp.name)}</div><div class="pp-card-sub">${esc(pp.breed||pp.species)} &bull; ${esc(age)}</div></div>
+        <span class="pp-card-badge">PATA&Iacute; VIP</span>
+      </div>
+      <div class="pp-card-traits">${traits.length?traits.map(t=>`<span class="pp-card-trait">${esc(t)}</span>`).join(''):'<span class="pp-card-empty">Adicione a personalidade abaixo</span>'}</div>
+      <div class="pp-card-rows">
+        <div class="pp-card-row"><span>&#128205;</span><span class="muted">${esc(loc)}</span></div>
+        <div class="pp-card-row"><span>&#128137;</span><span class="muted">${esc(vax.txt)}</span></div>
+        <div class="pp-card-row"><span>&#127942;</span><span class="muted">${petMilestones.length} ${petMilestones.length===1?'conquista':'conquistas'}</span></div>
+      </div>
+    </div>
+    <div class="section"><h2>Informacoes</h2></div>
+    <div class="pp-info-grid">
+      ${infoItem('Sexo',sexTxt)}
+      ${infoItem('Nascimento',pp.birth_date?formatDateBR(pp.birth_date):dash)}
+      ${infoItem('Porte',pp.porte?esc(pp.porte):dash)}
+      ${infoItem('Peso',pesoTxt)}
+      ${infoItem('Cor',pp.cor?esc(pp.cor):dash)}
+      ${infoItem('Raca',pp.breed?esc(pp.breed):dash)}
+      ${pp.microchip?infoItem('Microchip','<span style="font-size:10px">'+esc(pp.microchip)+'</span>'):''}
+    </div>
+    <div class="section"><h2>Saude &#128138;</h2></div>
+    <div class="pp-panel">
+      <div class="pp-panel-head"><b>&#128137; Vacinas</b>${isOwner?`<button class="pp-panel-add" onclick="openModal('addVaccine')">+ Adicionar</button>`:''}</div>
+      ${vacRows||'<div class="small" style="color:var(--soft);padding:4px 0">Nenhuma vacina registrada</div>'}
+    </div>
+    ${healthBlocks}
+    <div class="section"><h2>Personalidade &#10084;</h2></div>
+    <div class="pp-trait-chips">${PET_TRAITS.map(t=>`<button class="pp-trait ${traits.includes(t)?'active':''} ${isOwner?'':'locked'}" ${isOwner?`onclick="toggleTrait('${t.replace(/'/g,"\\'")}')"`:''}>${esc(t)}</button>`).join('')}</div>
+    <div class="section"><h2>Galeria &#128247;</h2></div>
+    <div class="pp-gallery">
+      ${galleryItems}
+      ${isOwner?`<div class="pp-add-photo-card" onclick="openModal('addPhoto');setTimeout(function(){var el=document.getElementById('addPhotoPetId');if(el)el.value=${pp.id};},0)">+<span>Foto</span></div>`:''}
+      ${petPhotos.length===0&&!isOwner?'<div class="pp-g-empty">Sem fotos na galeria ainda</div>':''}
+    </div>
+    ${petMilestones.length?`<div class="section"><h2>Timeline &amp; Conquistas &#127942;</h2></div><div class="timeline">${petMilestones.map(m=>`<div class="timeline-item"><div class="date">${esc(m.date)}</div><b style="font-size:12px">&#${m.icon||'128062'}; ${esc(m.title)}</b><p style="font-size:11px;color:var(--soft);margin:2px 0 0">${esc(m.description)}</p></div>`).join('')}</div>`:''}
+    <div class="pp-panel" style="margin-top:10px">
+      <div class="pp-panel-head"><b>&#127942; Conquistas</b>${isOwner?`<button class="pp-panel-add" onclick="openModal('addMilestone');setTimeout(function(){var el=document.getElementById('milestonePetId');if(el)el.value=${pp.id};},0)">+ Marco</button>`:''}</div>
+      ${petMilestones.length?'<div class="small" style="color:var(--green);font-weight:700">'+petMilestones.length+' marco'+(petMilestones.length>1?'s':'')+' registrado'+(petMilestones.length>1?'s':'')+'</div>':'<div class="small" style="color:var(--soft);padding:4px 0">Nenhum marco ainda</div>'}
+    </div>
+    <div class="section"><h2>Area Social &#128062;</h2></div>
+    <div class="pp-social-grid">${socialGrid}</div>
+    <div class="pp-social-note">&#128274; Publicacoes, curtidas, amigos, seguidores e check-ins chegam na proxima fase do Pata&iacute;.</div>
+    <div class="section"><h2>Privacidade &#128274;</h2></div>
+    ${isOwner?`<div class="pp-privacy">
+      <button class="${pp.visibility==='public'?'active':''}" onclick="setPetPrivacy('public')"><span class="lock-icon">&#127757;</span>Publico</button>
+      <button class="${pp.visibility==='friends'?'active':''}" onclick="setPetPrivacy('friends')"><span class="lock-icon">&#128101;</span>Amigos</button>
+      <button class="${pp.visibility==='private'?'active':''}" onclick="setPetPrivacy('private')"><span class="lock-icon">&#128274;</span>Privado</button>
+    </div>`:`<div class="pp-panel"><div class="small" style="text-align:center;color:var(--soft)">${PRIV_LABEL[pp.visibility]||''}</div></div>`}
+    <div class="pp-social-note" style="margin-top:8px">${esc(privNote)}</div>
+  </div>`;
 }
 
 function renderPerfil(){
@@ -985,8 +1243,46 @@ async function openModal(type){
   <div class="field"><label>URL do Video (opcional)</label><input id="postVideo" type="url" placeholder="https://exemplo.com/video.mp4"></div>
   <button class="btn" style="width:100%" onclick="savePost()">Publicar</button></div></div>`;
     setTimeout(()=>{const bar=document.getElementById('emojiBar');if(bar){bar.innerHTML='<div class="emoji-picker" id="emojiPicker"></div>';loadEmojis();}},100);
-  }else if(type==='addPet'){
-    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Pet</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Nome do Pet</label><input id="pName" placeholder="Ex: Thor"></div><div class="field"><label>Especie</label><select id="pSpecies"><option>Cachorro</option><option>Gato</option><option>Ave</option><option>Reptil</option><option>Outro</option></select></div><div class="field"><label>Raca</label><input id="pBreed" placeholder="Ex: SRD"></div><div class="field"><label>Idade</label><input id="pAge" placeholder="Ex: 2 anos"></div><div class="field"><label>Signo</label><input id="pZodiac" placeholder="Ex: Aries"></div><button class="btn" style="width:100%" onclick="savePet()">Salvar Pet</button></div></div>`;
+}else if(type==='addPet'){
+    editingPetId=null;editingVaccine=null;editingHealthRec=null;
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Pet</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="field"><label>Foto do pet (URL)</label><input id="pImage" type="url" placeholder="https://exemplo.com/foto.jpg"></div>
+      <div class="field"><label>Nome do Pet *</label><input id="pName" placeholder="Ex: Thor"></div>
+      <div class="field"><label>Especie *</label><select id="pSpecies" onchange="petBreedOptions(this.value)">${SPECIES_OPTS}</select></div>
+      <div class="field"><label>Raca</label><input id="pBreed" list="petBreeds" placeholder="Selecione ou digite a raca"><datalist id="petBreeds"></datalist></div>
+      <div class="field"><label>Sexo</label><select id="pSex"><option value="">Nao informado</option><option>Macho</option><option>Femea</option></select></div>
+      <div class="field"><label>Data de nascimento</label><input id="pBirth" type="date"></div>
+      <div class="field"><label>Porte</label><select id="pPorte"><option value="">Nao informado</option><option>Pequeno</option><option>Medio</option><option>Grande</option><option>Gigante</option></select></div>
+      <div class="field"><label>Cor</label><input id="pCor" placeholder="Ex: Caramelo"></div>
+      <div class="field"><label>Peso (kg)</label><input id="pPeso" type="number" step="0.1" min="0" placeholder="Ex: 12.5"></div>
+      <div class="field"><label>Microchip (opcional)</label><input id="pChip" placeholder="Codigo do microchip"></div>
+      <button class="btn" style="width:100%" onclick="savePet()">Criar Pet</button></div></div>`;
+    setTimeout(()=>{petBreedOptions('Cachorro');},0);
+  }else if(type==='editPet'&&currentPetProfile){
+    const p=currentPetProfile;editingPetId=p.id;editingVaccine=null;editingHealthRec=null;
+    const sel=(selId,val,opts)=>opts.map(o=>`<option value="${esc(o)}" ${o===val?'selected':''}>${esc(o)}</option>`).join('');
+    const sp=String(p.species||'Cachorro');
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Editar Perfil de ${esc(p.name)}</div><button class="close" onclick="closeModal()">X</button></div>
+      <div style="text-align:center;margin-bottom:10px"><img src="${su(p.image||'')}" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--green);background:var(--bg)" onerror="this.style.display='none'"></div>
+      <div class="field"><label>Foto do pet (URL)</label><input id="pImage" type="url" placeholder="https://exemplo.com/foto.jpg" value="${esc(p.image||'')}"></div>
+      <div class="field"><label>Nome do Pet *</label><input id="pName" value="${esc(p.name)}"></div>
+      <div class="field"><label>Especie *</label><select id="pSpecies" onchange="petBreedOptions(this.value)">${sel('pSpecies',sp,PET_SPECIES)}</select></div>
+      <div class="field"><label>Raca</label><input id="pBreed" list="petBreeds" value="${esc(p.breed||'')}"><datalist id="petBreeds"></datalist></div>
+      <div class="field"><label>Sexo</label><select id="pSex"><option value="">Nao informado</option><option ${p.sex==='Macho'?'selected':''}>Macho</option><option ${p.sex==='Femea'?'selected':''}>Femea</option></select></div>
+      <div class="field"><label>Data de nascimento</label><input id="pBirth" type="date" value="${esc(p.birth_date||'')}"></div>
+      <div class="field"><label>Porte</label><select id="pPorte">${['','Pequeno','Medio','Grande','Gigante'].map(o=>`<option value="${esc(o)}" ${String(p.porte||'')===o?'selected':''}>${o||'Nao informado'}</option>`).join('')}</select></div>
+      <div class="field"><label>Cor</label><input id="pCor" value="${esc(p.cor||'')}"></div>
+      <div class="field"><label>Peso (kg)</label><input id="pPeso" type="number" step="0.1" min="0" value="${p.peso!==null&&p.peso!==undefined&&p.peso!==''?p.peso:''}"></div>
+      <div class="field"><label>Microchip (opcional)</label><input id="pChip" value="${esc(p.microchip||'')}"></div>
+      <button class="btn" style="width:100%" onclick="savePet()">Salvar Alteracoes</button>
+      <button class="btn danger" style="width:100%;margin-top:8px" onclick="deletePet()">Excluir Pet</button></div></div>`;
+    setTimeout(()=>{petBreedOptions(sp);},0);
+  }else if(type==='health'){
+    const catOpts=HEALTH_CATS.map(c=>`<option value="${c[0]}" ${c[0]===healthModalCat?'selected':''}>${c[1]}</option>`).join('');
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">${editingHealthRec?'Editar Registro':'Novo Registro de Saude'}</div><button class="close" onclick="closeModal()">X</button></div>
+      <div class="field"><label>Categoria</label><select id="healthCat">${catOpts}</select></div>
+      <div class="field"><label>Informacao *</label><textarea id="healthText" rows="3" placeholder="Ex: Dose anual aplicada em ...">${esc(editingHealthRec?editingHealthRec.text:'')}</textarea></div>
+      <button class="btn" style="width:100%" onclick="saveHealth()">Salvar</button></div></div>`;
   }else if(type==='addProduct'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Produto</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Titulo</label><input id="prodTitle" placeholder="Nome do produto"></div><div class="field"><label>Preco (R$)</label><input id="prodPrice" type="number" step="0.01" placeholder="49.90"></div><div class="field"><label>URL da Imagem</label><input id="prodImage" placeholder="https://..."></div><button class="btn" style="width:100%" onclick="saveProduct()">Cadastrar Produto</button></div></div>`;
   }else if(type==='petDetail'&&viewingPet){
@@ -1004,8 +1300,10 @@ async function openModal(type){
         ${isOwner?`<button class="btn small-btn outline" style="width:100%;margin-top:8px" onclick="openModal('addVaccine')">+ Adicionar Vacina</button>`:''}
       </div>
     </div></div>`;
-  }else if(type==='addVaccine'){
-    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Adicionar Vacina</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Nome da Vacina</label><input id="vName" placeholder="Ex: Antirrabica"></div><div class="field"><label>Data</label><input id="vDate" placeholder="DD/MM/AAAA"></div><div class="field"><label>Status</label><select id="vStatus"><option>Em dia</option><option>Agendada</option><option>A agendar</option></select></div><button class="btn" style="width:100%" onclick="saveVaccine()">Salvar</button></div></div>`;
+}else if(type==='addVaccine'){
+    const ev=editingVaccine||{name:'',date:'',status:'A agendar'};
+    const statusSel=['Em dia','Agendada','A agendar'].map(s=>`<option ${ev.status===s?'selected':''}>${s}</option>`).join('');
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">${editingVaccine?'Editar Vacina':'Adicionar Vacina'}</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Nome da Vacina</label><input id="vName" placeholder="Ex: Antirrabica" value="${esc(ev.name)}"></div><div class="field"><label>Data</label><input id="vDate" placeholder="DD/MM/AAAA" value="${esc(ev.date||'')}"></div><div class="field"><label>Status</label><select id="vStatus">${statusSel}</select></div><button class="btn" style="width:100%" onclick="saveVaccine()">${editingVaccine?'Salvar Alteracoes':'Salvar'}</button></div></div>`;
   }else if(type==='userProfile'&&viewingProfile){
     const u=viewingProfile;
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Perfil</div><button class="close" onclick="closeModal()">X</button></div>
@@ -1111,17 +1409,54 @@ async function savePost(){
 }
 
 async function savePet(){
-  const name=document.getElementById('pName')?.value.trim();
+  const name=(document.getElementById('pName')?.value||'').trim();
   if(!name){alert('Nome obrigatorio');return;}
+  const species=document.getElementById('pSpecies')?.value||'Pet';
+  const birth=document.getElementById('pBirth')?.value||'';
+  const pesoEl=document.getElementById('pPeso');
   try{
-    const p=await api('/api/pets',{method:'POST',body:JSON.stringify({
-      name,species:document.getElementById('pSpecies')?.value||'Pet',
-      breed:document.getElementById('pBreed')?.value||'SRD',
-      age:document.getElementById('pAge')?.value||'',
-      zodiac:document.getElementById('pZodiac')?.value||'',
-      image:'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80'
-    })});
-    pets.unshift(p);closeModal();setTab('pets');
+    const body={
+      name,
+      species,
+      breed:document.getElementById('pBreed')?.value.trim()||'SRD',
+      sex:document.getElementById('pSex')?.value||'',
+      birthDate:birth,
+      porte:document.getElementById('pPorte')?.value||'',
+      cor:document.getElementById('pCor')?.value.trim()||'',
+      peso:(pesoEl&&pesoEl.value!=='')?parseFloat(pesoEl.value):null,
+      microchip:document.getElementById('pChip')?.value.trim()||'',
+      image:document.getElementById('pImage')?.value.trim()||'',
+      age:petAgeText(birth),
+      zodiac:zodiacFromDate(birth),
+      traits:editingPetId&&currentPetProfile?(currentPetProfile.traits||''):'',
+      visibility:editingPetId&&currentPetProfile?(currentPetProfile.visibility||'public'):'public'
+    };
+    let p;
+    if(editingPetId){
+      p=await api('/api/pets/'+editingPetId,{method:'PUT',body:JSON.stringify(body)});
+      const idx=pets.findIndex(x=>x.id===p.id);
+      if(idx>=0)pets[idx]=p;else pets.unshift(p);
+      closeModal();
+      currentPetProfile=p;
+      await refreshPetProfile();
+    }else{
+      p=await api('/api/pets',{method:'POST',body:JSON.stringify(body)});
+      pets.unshift(p);
+      closeModal();
+      openPetProfile(p.id);
+    }
+  }catch(e){alert(e.message);}
+}
+
+async function deletePet(){
+  if(!currentPetProfile)return;
+  if(!confirm('Remover '+currentPetProfile.name+' e todos os dados associados?'))return;
+  try{
+    await api('/api/pets/'+currentPetProfile.id,{method:'DELETE'});
+    pets=pets.filter(x=>x.id!==currentPetProfile.id);
+    currentPetProfile=null;
+    closeModal();
+    setTab('pets');
   }catch(e){alert(e.message);}
 }
 
@@ -1138,15 +1473,27 @@ async function saveProduct(){
 }
 
 async function saveVaccine(){
-  if(!viewingPet)return;
-  const name=document.getElementById('vName')?.value.trim();
+  const pid=currentPetProfile?currentPetProfile.id:(viewingPet?viewingPet.id:null);
+  if(!pid)return;
+  const name=(document.getElementById('vName')?.value||'').trim();
   if(!name){alert('Nome da vacina obrigatorio');return;}
+  const date=document.getElementById('vDate')?.value||'';
+  const status=document.getElementById('vStatus')?.value||'A agendar';
   try{
-    const vaccines=await api('/api/pets/'+viewingPet.id+'/vaccines',{method:'POST',body:JSON.stringify({
-      name,date:document.getElementById('vDate')?.value||'',
-      status:document.getElementById('vStatus')?.value||'A agendar'
-    })});
-    viewingPet.vaccines=vaccines;closeModal();openModal('petDetail');
+    let vaccines;
+    if(editingVaccine){
+      vaccines=await api('/api/pets/'+pid+'/vaccines/'+editingVaccine.id,{method:'PUT',body:JSON.stringify({name,date,status})});
+    }else{
+      vaccines=await api('/api/pets/'+pid+'/vaccines',{method:'POST',body:JSON.stringify({name,date,status})});
+    }
+    closeModal();editingVaccine=null;
+    if(currentPetProfile){
+      currentPetProfile.vaccines=vaccines;
+      renderPetProfilePage();
+    }else if(viewingPet){
+      viewingPet.vaccines=vaccines;
+      openModal('petDetail');
+    }
   }catch(e){alert(e.message);}
 }
 
@@ -1154,8 +1501,87 @@ async function deleteVaccine(petId,vaccineId){
   if(!confirm('Remover vacina?'))return;
   try{
     const vaccines=await api('/api/pets/'+petId+'/vaccines/'+vaccineId,{method:'DELETE'});
-    if(viewingPet)viewingPet.vaccines=vaccines;
-    closeModal();openModal('petDetail');
+    if(currentPetProfile){currentPetProfile.vaccines=vaccines;renderPetProfilePage();}
+    else{closeModal();openModal('petDetail');}
+  }catch(e){alert(e.message);}
+}
+
+function editVaccine(id){
+  const v=(currentPetProfile?.vaccines||[]).find(x=>x.id===id);
+  if(!v)return;
+  editingVaccine=v;
+  openModal('addVaccine');
+}
+
+function openHealthModal(cat,id){
+  editingHealthRec=id?((currentPetProfile?.health||[]).find(h=>h.id===id)||null):null;
+  healthModalCat=cat;
+  openModal('health');
+}
+
+async function saveHealth(){
+  const pid=currentPetProfile?currentPetProfile.id:null;
+  if(!pid)return;
+  const cat=document.getElementById('healthCat')?.value;
+  const text=(document.getElementById('healthText')?.value||'').trim();
+  if(!text){alert('Descreva a informacao');return;}
+  try{
+    let records;
+    if(editingHealthRec){
+      records=await api('/api/pets/'+pid+'/health/'+editingHealthRec.id,{method:'PUT',body:JSON.stringify({text})});
+    }else{
+      records=await api('/api/pets/'+pid+'/health',{method:'POST',body:JSON.stringify({category:cat,text})});
+    }
+    currentPetProfile.health=records;
+    closeModal();editingHealthRec=null;
+    renderPetProfilePage();
+  }catch(e){alert(e.message);}
+}
+
+async function deleteHealth(pid,id){
+  if(!confirm('Remover registro?'))return;
+  try{
+    const records=await api('/api/pets/'+pid+'/health/'+id,{method:'DELETE'});
+    if(currentPetProfile)currentPetProfile.health=records;
+    renderPetProfilePage();
+  }catch(e){alert(e.message);}
+}
+
+async function toggleTrait(t){
+  if(!currentPetProfile)return;
+  const arr=petTraitsList(currentPetProfile.traits);
+  const i=arr.indexOf(t);
+  if(i>=0)arr.splice(i,1);else arr.push(t);
+  try{
+    const p=await api('/api/pets/'+currentPetProfile.id,{method:'PUT',body:JSON.stringify({traits:arr.join(',')})});
+    currentPetProfile=p;
+  }catch(e){alert(e.message);}
+  renderPetProfilePage();
+}
+
+async function setPetPrivacy(v){
+  if(!currentPetProfile)return;
+  try{
+    const p=await api('/api/pets/'+currentPetProfile.id,{method:'PUT',body:JSON.stringify({visibility:v})});
+    currentPetProfile=p;
+  }catch(e){alert(e.message);}
+  renderPetProfilePage();
+}
+
+async function deletePetPhoto(photoId){
+  if(!confirm('Remover foto?'))return;
+  try{
+    await api('/api/petgallery/photos/'+photoId,{method:'DELETE'});
+    await refreshPetProfile();
+  }catch(e){alert(e.message);}
+}
+
+async function setMainPhoto(photoId){
+  const ph=petPhotos.find(x=>x.id===photoId);
+  if(!ph||!currentPetProfile)return;
+  try{
+    await api('/api/pets/'+currentPetProfile.id,{method:'PUT',body:JSON.stringify({image:ph.image_url})});
+    await refreshPetProfile();
   }catch(e){alert(e.message);}
 }
 
@@ -1458,7 +1884,7 @@ let exploreSvcFilter='all';
 let exploreAllPets=[];
 let exploreAllUsers=[];
 let exploreAllLP=[];
-function petEmoji(species){const m={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Reptil:'&#129422;'};return m[species]||'&#128062;';}
+function petEmoji(species){const m={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Coelho:'&#128048;',Roedor:'&#128057;',Reptil:'&#129422;',Peixe:'&#128031;'};return m[species]||'&#128062;';}
 function fmtDist(km){if(km==null||isNaN(km))return'';if(km<1)return'A '+Math.max(1,Math.round(km*1000))+' m de voce';return'A '+(Math.round(km*10)/10)+' km de voce';}
 function exploreDist(a,b,c,d){const R=6371,rad=x=>x*Math.PI/180;const dLa=rad(c-a),dLo=rad(d-b);const x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function updateExplorerLoc(){
@@ -1655,7 +2081,7 @@ function filterExploreServices(kw){
   exploreSvcFilter=kw;renderExploreServices();
   document.querySelectorAll('.svc-chip').forEach(c=>c.classList.toggle('active',c.dataset.k===kw));
 }
-function openPetDetail(id){const p=(exploreAllPets||[]).find(x=>x.id===id);if(p){viewingPet=p;openModal('petDetail');}}
+function openPetDetail(id){const p=(exploreAllPets||[]).find(x=>x.id===id);if(p){petProfileBack="setTab('mapa')";openPetProfile(p.id);}}
 async function exploreSearch(){
   const inp=document.getElementById('exploreSearchInput');
   const q=(inp?.value||'').trim().toLowerCase();
@@ -1704,7 +2130,7 @@ async function viewUserProfile(userId){
         ${u.is_private&&userId!==currentUser?.id&&!u.i_follow?`<button class="btn small-btn outline" style="width:100%;margin-top:4px" onclick="requestFollow(${userId})">Solicitar Seguir</button>`:''}
         ${userId!==currentUser?.id?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="openChatWith(${userId})">&#128172; Mensagem</button>`:''}
       </div>
-      ${pets.length>0?`<div class="section"><h2>Pets</h2></div><div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0">${pets.map(p=>`<div style="min-width:100px;text-align:center;cursor:pointer" onclick="viewPetProfile(${p.id})"><img src="${su(p.image||'')}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--line)" onerror="this.src='https://via.placeholder.com/80'"><div style="font-size:11px;font-weight:600;margin-top:4px">${esc(p.name)}</div><div style="font-size:9px;color:var(--soft)">${esc(p.breed)}</div></div>`).join('')}</div>`:''}
+      ${pets.length>0?`<div class="section"><h2>Pets</h2></div><div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0">${pets.map(p=>`<div style="min-width:100px;text-align:center;cursor:pointer" onclick="petProfileBack='viewUserProfile(${userId})';openPetProfile(${p.id})"><img src="${su(p.image||'')}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--line)" onerror="this.src='https://via.placeholder.com/80'"><div style="font-size:11px;font-weight:600;margin-top:4px">${esc(p.name)}</div><div style="font-size:9px;color:var(--soft)">${esc(p.breed)}</div></div>`).join('')}</div>`:''}
       ${posts.length>0?`<div class="section"><h2>Postagens Recentes</h2></div>${posts.map(p=>`<div class="post"><div class="post-head"><div class="avatar"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div><div style="flex:1"><div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div><div class="post-meta">${formatDate(p.created_at)}</div></div></div><div class="post-text">${esc(p.text)}</div><div class="post-actions"><button class="action" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button><button class="action">&#128172; ${p.comments_count||0}</button></div></div>`).join('')}</div>`:''}
     </div>`;
   }catch(e){alert('Erro ao carregar perfil');console.error(e);}
@@ -1712,29 +2138,6 @@ async function viewUserProfile(userId){
 
 async function toggleFollow(userId){
   try{await api('/api/social/follow/'+userId,{method:'POST'});viewUserProfile(userId);}catch(e){alert(e.message);}
-}
-
-async function viewPetProfile(petId){
-  try{
-    const [photos,milestones]=await Promise.all([
-      api('/api/petgallery/'+petId+'/photos').catch(()=>[]),
-      api('/api/petgallery/'+petId+'/milestones').catch(()=>[])
-    ]);
-    const pet=pets?.find(p=>p.id===petId);
-    if(!pet)return;
-    screen.innerHTML=header(pet.name,'',{icon:'&#8592;',click:"setTab('pets')"})+`
-    <div class="content">
-      <div style="text-align:center;margin-bottom:12px">
-        <img src="${su(pet.image||'')}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/96'">
-        <h3 style="margin:8px 0 2px">${esc(pet.name)}</h3>
-        <div class="small">${esc(pet.breed)} &bull; ${esc(pet.age)} &bull; &#9800; ${esc(pet.zodiac||'')}</div>
-        <div style="margin-top:6px"><button class="btn small-btn" onclick="openModal('addPhoto');document.getElementById('addPhotoPetId').value=${petId}">+ Foto</button> <button class="btn small-btn outline" onclick="openModal('addMilestone');document.getElementById('milestonePetId').value=${petId}">+ Marco</button></div>
-      </div>
-      ${photos.length>0?`<div class="section"><h2>Fotos</h2></div><div class="gallery-grid">${photos.map(p=>`<img src="${su(p.image_url)}" alt="${esc(p.caption)}" onclick="openLightbox('${su(p.image_url)}')" onerror="this.style.display='none'">`).join('')}</div>`:''}
-      ${milestones.length>0?`<div class="section"><h2>Timeline</h2></div><div class="timeline">${milestones.map(m=>`<div class="timeline-item"><div class="date">${m.date}</div><b style="font-size:12px">&#${m.icon||'128062'}; ${esc(m.title)}</b><p style="font-size:11px;color:var(--soft);margin:2px 0 0">${esc(m.description)}</p></div>`).join('')}</div>`:''}
-      ${photos.length===0&&milestones.length===0?'<p style="text-align:center;color:var(--soft);padding:24px">Nenhuma foto ou marco ainda</p>':''}
-    </div>`;
-  }catch(e){console.error(e);}
 }
 
 async function renderAiSuggestions(){
@@ -1769,20 +2172,20 @@ function openChatWith(userId){
 }
 
 async function addPetPhoto(){
-  const petId=document.getElementById('addPhotoPetId')?.value;
+  const petId=document.getElementById('addPhotoPetId')?.value||(currentPetProfile?currentPetProfile.id:'');
   const url=document.getElementById('photoUrl')?.value.trim();
   const caption=document.getElementById('photoCaption')?.value.trim()||'';
   if(!url||!petId){alert('Insira a URL da foto');return;}
-  try{await api('/api/petgallery/'+petId+'/photos',{method:'POST',body:JSON.stringify({image_url:url,caption})});closeModal();viewPetProfile(parseInt(petId));}catch(e){alert(e.message);}
+  try{await api('/api/petgallery/'+petId+'/photos',{method:'POST',body:JSON.stringify({image_url:url,caption})});closeModal();await refreshPetProfile();}catch(e){alert(e.message);}
 }
 
 async function addPetMilestone(){
-  const petId=document.getElementById('milestonePetId')?.value;
+  const petId=document.getElementById('milestonePetId')?.value||(currentPetProfile?currentPetProfile.id:'');
   const title=document.getElementById('milestoneTitle')?.value.trim();
   const desc=document.getElementById('milestoneDesc')?.value.trim()||'';
   const date=document.getElementById('milestoneDate')?.value||'';
   if(!title||!petId){alert('Insira um titulo');return;}
-  try{await api('/api/petgallery/'+petId+'/milestones',{method:'POST',body:JSON.stringify({title,description:desc,date})});closeModal();viewPetProfile(parseInt(petId));}catch(e){alert(e.message);}
+  try{await api('/api/petgallery/'+petId+'/milestones',{method:'POST',body:JSON.stringify({title,description:desc,date})});closeModal();await refreshPetProfile();}catch(e){alert(e.message);}
 }
 
 function renderOnboarding(){

@@ -31,8 +31,9 @@ router.get('/pets', authMiddleware, async (req, res) => {
       FROM pets p
       JOIN users u ON p.user_id = u.id
       WHERE p.latitude IS NOT NULL AND p.longitude IS NOT NULL
+      AND (p.visibility IS NULL OR p.visibility IN ('public','friends') OR p.user_id = ?)
     `;
-    const params = [req.userId];
+    const params = [req.userId, req.userId];
 
     if (species) {
       query += ` AND p.species = ?`;
