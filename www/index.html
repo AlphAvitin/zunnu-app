@@ -356,6 +356,35 @@ button,input,textarea,select{font:inherit}
 .comment-pet{display:inline-block;background:var(--greenSoft);color:var(--green);border-radius:8px;padding:1px 7px;font-size:9px;font-weight:700;margin-right:5px}
 .comment-del{border:0;background:none;color:var(--coral);font-size:12px;cursor:pointer;float:right}
 
+/* ===== Descobrir (Etapa 5) ===== */
+.disc-search{background:var(--card);border-radius:14px;padding:2px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin:10px 16px}
+.disc-search input{flex:1;border:0;background:none;outline:none;font-size:14px;padding:11px 0;color:var(--text)}
+.disc-search .disc-s-icon{font-size:15px;color:var(--green)}
+.disc-chips{display:flex;gap:7px;overflow-x:auto;padding:2px 16px 6px;scrollbar-width:none}
+.disc-chips::-webkit-scrollbar{display:none}
+.disc-chip{flex-shrink:0;background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:20px;padding:7px 13px;font-size:11px;font-weight:700;color:var(--soft);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.disc-chip.on{background:var(--green);border-color:var(--green);color:#fff}
+.disc-note{font-size:11px;color:var(--soft);padding:8px 16px 2px}
+.disc-hr{margin:14px 16px 6px;border:0;border-top:1px solid rgba(0,0,0,.07)}
+.disc-card{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s;animation:fadeIn .3s ease}
+.disc-card:active{transform:scale(.97)}
+.disc-photo{height:96px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden}
+.disc-photo img{width:100%;height:100%;object-fit:cover}
+.disc-card-info{padding:9px 10px}
+.disc-card-info b{font-size:12.5px;display:block}
+.disc-card-info span{font-size:10.5px;color:var(--soft)}
+.disc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:10px 16px}
+.sr-item .sr-person{margin-right:4px}
+.disc-user{background:var(--card);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05);animation:fadeIn .3s ease}
+.disc-user .avatar{width:42px;height:42px;border-radius:50%;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--green);flex-shrink:0;overflow:hidden}
+.disc-user .avatar img{width:100%;height:100%;object-fit:cover}
+.disc-user b{font-size:13px;display:block}
+.disc-user span{font-size:11px;color:var(--soft)}
+.disc-hist{display:flex;flex-wrap:wrap;gap:7px;padding:4px 16px}
+.disc-hist-chip{background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--soft);cursor:pointer}
+.disc-loc-btn{border:0;background:var(--greenSoft);color:var(--green);border-radius:12px;padding:10px;font-size:12px;font-weight:800;cursor:pointer;width:100%;margin-top:8px}
+.modal-scroll{max-height:80vh;overflow-y:auto}
+
 /* ===== Perfil do Pet (Etapa 3) ===== */
 .pp-hero{background:linear-gradient(150deg,var(--green) 0%,var(--green2) 100%);border-radius:0 0 26px 26px;padding:14px 16px 18px;color:#fff;text-align:center;position:relative;overflow:hidden}
 .pp-hero::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06);right:-45px;top:-45px}
@@ -451,6 +480,7 @@ button,input,textarea,select{font:inherit}
   <div id="screen"></div>
   <div class="bottom-nav" id="bottomNav" style="display:none">
     <button class="nav-btn active" data-tab="inicio" aria-label="Inicio"><span class="nav-icon">&#8962;</span>Inicio</button>
+    <button class="nav-btn" data-tab="descobrir" aria-label="Descobrir"><span class="nav-icon">&#128269;</span>Descobrir</button>
     <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon">&#128205;</span>Mapa</button>
     <button class="nav-btn" data-tab="pontos" aria-label="Pontos"><span class="nav-icon">&#11088;</span>Pontos</button>
     <button class="nav-btn" data-tab="pets" aria-label="Pets"><span class="nav-icon">&#128062;</span>Pets</button>
@@ -1064,6 +1094,163 @@ async function reportPost(id){
   try{await api('/api/posts/'+id+'/report',{method:'POST',body:JSON.stringify({reason,category:category})});alert('Denuncia recebida!');}catch(e){alert(e.message);}
 }
 
+/* ===== Descobrir / Busca (Etapa 5) ===== */
+const DISC_HIST_KEY='zunnu_disc_hist';
+const DISC_SPECIES=[['','Todos','&#128062;'],['Cachorro','Cachorro','&#128054;'],['Gato','Gato','&#128049;'],['Ave','Ave','&#128036;'],['Coelho','Coelho','&#128048;'],['Roedor','Roedor','&#128057;'],['Reptil','Reptil','&#129422;'],['Peixe','Peixe','&#128031;'],['Outro','Outro','&#128062;']];
+let discQ='',discSpecies='',discResults=null,discLoading=false,discTimer=null,discFeatured=[],discNearby=[],discAllPosts=[],discCity='';
+function getDiscHist(){try{return JSON.parse(localStorage.getItem(DISC_HIST_KEY)||'[]');}catch(e){return [];}}
+function saveDiscHist(q){let h=getDiscHist().filter(x=>x.toLowerCase()!==q.toLowerCase());h.unshift(q);h=h.slice(0,8);localStorage.setItem(DISC_HIST_KEY,JSON.stringify(h));}
+function clearDiscHist(){localStorage.removeItem(DISC_HIST_KEY);renderDescobrir();if(discResults)discResults=null;}
+async function renderDescobrir(){
+  nav.style.display='flex';
+  if(!discFeatured.length&&!discLoading){
+    try{const data=await api('/api/pets/all?limit=12').catch(()=>[]);discFeatured=(Array.isArray(data)?data:(data.pets||[])).filter(p=>!currentUser||p.user_id!==currentUser.id).slice(0,9);}catch(e){discFeatured=[];}
+  }
+  screen.innerHTML=header('Descobrir','Encontre pets, pessoas e novidades')+`<div class="content" style="padding-top:0">
+    <div class="disc-search"><span class="disc-s-icon">&#128269;</span><input id="discInput" placeholder="Buscar pet, tutor ou publicacao" value="${discQ?esc(discQ):''}" oninput="discTick()" onkeydown="if(event.key==='Enter'){event.preventDefault();doDiscoverSearch();}">
+      ${discQ?`<button style="border:0;background:none;color:var(--soft);font-size:13px;cursor:pointer" onclick="discQ='';discResults=null;renderDescobrir();">&#10005;</button>`:''}
+    </div>
+    <div class="disc-chips">${DISC_SPECIES.map(s=>`<button class="disc-chip ${discSpecies===s[0]?'on':''}" onclick="discSpecies='${s[0]}';renderDescobrir();doDiscoverSearch();">${s[1]} ${s[2]}</button>`).join('')}</div>
+    <div id="discResults"></div>
+  </div>`;
+  const el=document.getElementById('discResults');
+  el.innerHTML=discResults?renderDiscResults():renderDiscBase();
+  window.scrollTo(0,0);
+}
+function discTick(){clearTimeout(discTimer);discTimer=setTimeout(doDiscoverSearch,350);}
+function renderDiscBase(){
+  return`${renderDiscFeatured()}
+  <hr class="disc-hr">
+  <div class="home-section-title"><h2>&#128205; Pets perto de voce</h2></div>
+  <div style="padding:2px 16px">${renderDiscNearby()}</div>
+  <hr class="disc-hr">
+  <div class="home-section-title"><h2>&#128337; Pesquisas recentes</h2><button class="home-more" onclick="clearDiscHist()">Limpar</button></div>
+  ${(()=>{const h=getDiscHist();return h.length?`<div class="disc-hist">${h.map(x=>`<button class="disc-hist-chip" onclick="discQ='${esc(x)}';renderDescobrir();doDiscoverSearch();">&#128269; ${esc(x)}</button>`).join('')}</div>`:`<div class="disc-note">Suas ultimas buscas aparecerao aqui.</div>`;})()}
+  <hr class="disc-hr">
+  <div class="home-section-title"><h2>&#127968; Buscar por cidade</h2></div>
+  <div style="padding:2px 16px;display:flex;gap:8px"><input id="discCityIn" placeholder="Ex.: Sao Luis (MA)" value="${discCity?esc(discCity):''}" onkeydown="if(event.key==='Enter')discSearchCity()" class="disc-search" style="flex:1;border:1px solid rgba(0,0,0,.07);box-shadow:none;border-radius:12px"><button class="btn" style="padding:0 14px;flex-shrink:0" onclick="discSearchCity()">Buscar</button></div>`;
+}
+function renderDiscNearby(){
+  if(discNearby.length)return`<div class="home-pets-scroll">${discNearby.map(p=>{
+    return`<div class="home-pet-card" onclick="petProfileBack='setTab(&#39;descobrir&#39;)';openPetProfile(${p.id})">
+      <div class="home-pet-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.innerHTML='${petEmoji(p.species)}'">`:petEmoji(p.species)}</div>
+      <div class="home-pet-name">${esc(p.name)}</div>
+      <div class="home-pet-breed">${esc(p.breed||p.species)}</div>
+    </div>`;
+  }).join('')}</div><div class="disc-note">${discNearby.length} pets encontrados no raio de 20 km.</div>`;
+  const hasLoc=window._userLat&&window._userLng;
+  return hasLoc
+    ?`<div class="disc-note">Localizacao ativa. Buscando pets ao redor...</div><button class="disc-loc-btn" onclick="discLocate()">&#128373;&#65039; Atualizar localizacao</button>`
+    :`<div class="disc-note">Use sua localizacao para ver pets (publicos) proximos a voce. Ou busque por cidade acima.</div><button class="disc-loc-btn" onclick="discLocate()">&#128373;&#65039; Usar minha localizacao</button>`;
+}
+function discLocate(){
+  if(!navigator.geolocation){alert('Geolocalizacao indisponivel neste dispositivo.');return;}
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    window._userLat=pos.coords.latitude;window._userLng=pos.coords.longitude;
+    try{discNearby=await api('/api/nearby/pets?lat='+window._userLat+'&lng='+window._userLng);}catch(e){discNearby=[];}
+    renderDescobrir();
+  },()=>{
+    discNearby=[];window._userLat=undefined;window._userLng=undefined;
+    const el=document.getElementById('discResults');if(el)el.innerHTML=renderDiscBase();
+    alert('Permissao de localizacao negada. Voce pode usar a busca por cidade acima.');
+  });
+}
+function renderDiscFeatured(){
+  const f=discFeatured||[];
+  return`<div class="home-section-title"><h2>&#11088; Pets em destaque</h2><button class="home-more" onclick="setTab('mapa')">Explorar</button></div>
+  ${f.length?`<div class="discover-scroll">${f.map(p=>`<div class="discover-pet" onclick="petProfileBack='setTab(&#39;descobrir&#39;)';openPetProfile(${p.id})"><div class="discover-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.innerHTML='${petEmoji(p.species)}'">`:petEmoji(p.species)}</div><div class="discover-info"><b>${esc(p.name)}</b><span>${esc(p.breed||p.species||'')}</span></div></div>`).join('')}</div>`:`<div class="disc-note">Ainda nao ha pets publicos para destacar.</div>`}`;
+}
+async function doDiscoverSearch(){
+  const q=discQ.trim();
+  if(!q&&!discSpecies&&!discCity){discResults=null;discAllPosts=[];const el=document.getElementById('discResults');if(el)el.innerHTML=renderDiscBase();return;}
+  discLoading=true;
+  const el=document.getElementById('discResults');
+  if(el)el.innerHTML='<div class="loading" style="margin:36px auto"></div>';
+  if(q)saveDiscHist(q);
+  try{
+    const p='q='+encodeURIComponent(q)+(discSpecies?'&species='+encodeURIComponent(discSpecies):'')+(discCity?'&city='+encodeURIComponent(discCity):'');
+    const d=await api('/api/search?'+p);
+    discResults=d;discAllPosts=d.posts||[];discLoading=false;
+    const r=document.getElementById('discResults');
+    if(r)r.innerHTML=renderDiscResults();
+  }catch(e){
+    discLoading=false;
+    const r=document.getElementById('discResults');
+    if(r)r.innerHTML=`<div class="home-empty"><b>Nao foi possivel buscar agora</b><span class="small">${esc(e.message)}</span><button class="btn" style="margin-top:10px;width:100%" onclick="doDiscoverSearch()">Tentar novamente</button></div>`;
+  }
+}
+function discSearchCity(){
+  const v=document.getElementById('discCityIn');
+  discCity=v?v.value.trim():'';
+  if(!discCity){discResults=null;renderDescobrir();return;}
+  renderDescobrir();doDiscoverSearch();
+}
+function renderDiscResults(){
+  const d=discResults;if(!d)return renderDiscBase();
+  const total=d.pets.length+d.users.length+d.posts.length;
+  if(total===0)return`<div class="home-empty"><div style="font-size:34px">&#128269;</div><b style="display:block;margin:6px 0 2px">Nada encontrado</b><span class="small">Tente outro termo, ajuste os filtros ou limpe a busca.</span><button class="btn" style="margin-top:10px;width:100%" onclick="discQ='';discSpecies='';discCity='';discResults=null;renderDescobrir();">Limpar busca</button></div>`;
+  let h='';
+  h+=`<div class="home-section-title"><h2>&#128062; Pets</h2><span class="home-more">${d.pets.length}</span></div>`;
+  h+=`<div class="disc-grid">${d.pets.map(p=>`<div class="disc-card" onclick="petProfileBack='setTab(&#39;descobrir&#39;)';openPetProfile(${p.id})"><div class="disc-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.innerHTML='${petEmoji(p.species)}'">`:petEmoji(p.species)}</div><div class="disc-card-info"><b>${esc(p.name)}</b><span>${esc(p.breed||p.species||'')}${p.location?` &bull; ${esc(p.location)}`:''}</span></div></div>`).join('')}</div>`;
+  if(d.users.length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#128101; Pessoas</h2><span class="home-more">${d.users.length}</span></div><div style="display:flex;flex-direction:column;gap:8px;padding:2px 16px">${d.users.map(u=>{
+    const ini=(u.name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+    return`<div class="disc-user" onclick="viewUserProfile(${u.id})"><div class="avatar">${u.avatar?`<img src="${su(u.avatar)}" onerror="this.style.display='none';this.parentNode.innerHTML='${esc(ini)}'">`:esc(ini)}</div><div style="flex:1"><b>${esc(u.name)} ${getBadge(u.plan)}</b><span>${u.pets_count||0} pet(s)${u.location?` &bull; ${esc(u.location)}`:''}</span></div><span style="font-size:15px;color:var(--green)">&#10148;</span></div>`;
+  }).join('')}</div>`;}
+  if(d.posts.length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#128172; Publicacoes</h2><span class="home-more">${d.posts.length}</span></div><div style="padding:2px 16px">${d.posts.map(p=>{
+    const emo=petEmoji(p.pet_species);
+    return`<div class="post">
+      <div class="post-head">
+        <div class="avatar" onclick="event.stopPropagation();viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
+        <div style="flex:1"><div class="post-user">${esc(p.user_name)} ${getBadge(p.user_plan)}</div><div class="post-meta">${esc(p.time||'')}${p.post_location?` &bull; <span class="post-loc">&#128205; ${esc(p.post_location)}</span>`:''}</div></div>
+      </div>
+      ${p.pet_id?`<div class="post-pet" onclick="event.stopPropagation();petProfileBack='setTab(&#39;descobrir&#39;)';openPetProfile(${p.pet_id})">${p.pet_image?`<img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.style.paddingLeft='0'">`:`<span class="post-pet-emoji">${emo}</span>`}<span>com ${esc(p.pet_name||'')}</span></div>`:''}
+      <div class="post-text">${esc(p.text)}</div>
+      ${p.image?`<div class="media" onclick="event.stopPropagation();openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
+      <div class="post-actions">
+        <button class="action">&#9829; ${p.likes||0}</button>
+        <button class="action">&#128172; ${p.comments_count||0}</button>
+        <button class="action" onclick="event.stopPropagation();openPostDetailId(${p.id})">&#128228; Abrir</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;}
+  return h;
+}
+function openPostDetailId(id){
+  const p=(discAllPosts||[]).find(x=>x.id===id);if(!p)return;
+  if(document.getElementById('modal-root'))document.getElementById('modal-root').remove();
+  const root=document.createElement('div');root.id='modal-root';
+  const emo=petEmoji(p.pet_species);
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal modal-scroll">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="post">
+      <div class="post-head">
+        <div class="avatar" onclick="viewUserProfile(${p.user_id});closeModal()" style="cursor:pointer"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
+        <div style="flex:1"><div class="post-user">${esc(p.user_name)} ${getBadge(p.user_plan)}</div><div class="post-meta">${esc(p.time||'')}${p.post_location?` &bull; <span class="post-loc">&#128205; ${esc(p.post_location)}</span>`:''}</div></div>
+      </div>
+      ${p.pet_id?`<div class="post-pet" onclick="closeModal();petProfileBack='setTab(&#39;descobrir&#39;)';openPetProfile(${p.pet_id})">${p.pet_image?`<img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.style.paddingLeft='0'">`:`<span class="post-pet-emoji">${emo}</span>`}<span>com ${esc(p.pet_name||'')}</span></div>`:''}
+      <div class="post-text">${esc(p.text)}</div>
+      ${p.image?`<div class="media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'"></div>`:''}
+      ${p.video_url?`<video class="media-video" src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video>`:''}
+      <div class="post-actions">
+        <button class="action" id="pd-like-${p.id}" onclick="likeFromModal(${p.id},this)">&#9829; ${p.likes||0}</button>
+        <button class="action">&#128172; ${p.comments_count||0}</button>
+        <button class="action" onclick="sharePost(${p.id})">&#128228; ${p.shares||0} Compartilhar</button>
+      </div>
+      <div class="comments" id="comments-${p.id}" style="display:block;margin-top:8px">
+        <div class="comment-item" id="comm-box">Carregando comentarios...</div>
+        <div id="commentsList-${p.id}"></div>
+      </div>
+      <form class="comm-form" onsubmit="event.preventDefault();addComment(${p.id})"><input id="commentInput-${p.id}" placeholder="Adicionar comentario" maxlength="150"><button type="submit">Enviar</button></form>
+    </div>
+  </div></div>`;
+  document.body.appendChild(root);
+  showComments[p.id]=true;
+  setTimeout(()=>loadComments(p.id),60);
+}
+async function likeFromModal(id,btn){
+  try{const d=await api('/api/posts/'+id+'/like',{method:'POST'});btn.innerHTML='&#9829; '+(d.likes||0);btn.style.color=d.liked?'var(--pink)':'#8c8c8e';}catch(e){alert(e.message);}
+}
+
 
 function renderConexao(){
   if(matchDeck.length===0){
@@ -1367,6 +1554,7 @@ function render(){
   if(viewingPet){return;}
   nav.style.display='flex';
   if(tab==='inicio')renderInicio();
+  if(tab==='descobrir')renderDescobrir();
   if(tab==='mapa')renderMapa();
   if(tab==='pontos')renderPontos();
   if(tab==='pets')renderPets();
