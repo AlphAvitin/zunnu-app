@@ -2,79 +2,148 @@ const express = require('express');
 const { run, get, all } = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 const { sendToUser } = require('../ws');
+const { creditPoints } = require('./points');
 
 const router = express.Router();
 
-router.get('/deck', authMiddleware, (req, res) => {
+// Send partnership request
+router.post('/request', authMiddleware, (req, res) => {
   try {
-    const swiped = all('SELECT swiped_id FROM match_swipes WHERE swiper_id = ?', [req.userId]).map(r => r.swiped_id);
-
-    const pets = all(`
-      SELECT p.*, u.name as tutor_name, u.avatar as tutor_avatar, u.bio as tutor_bio
-      FROM pets p
-      JOIN users u ON p.user_id = u.id
-      WHERE p.user_id != ? ${swiped.length ? `AND p.user_id NOT IN (${swiped.map(() => '?').join(',')})` : ''}
-      ORDER BY RANDOM()
-      LIMIT 20
-    `, [req.userId, ...swiped]);
-
-    res.json(pets);
+    const { targetUserId, targetPetId, requesterPetId } = req.body;
+    if (!targetUserId) return res.status(400).json({ error: 'Destinatario obrigatorio' });
+    if (targetUserId === req.userId) return res.status(400).json({ error: 'Nao pode pedir parceria para si mesmo' });
+    
+    // Check if already connected
+    const existingMatch = get('SELECT * FROM matches WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)',
+      [req.userId, targetUserId, targetUserId, req.userId]);
+    if (existingMatch) return res.status(400).json({ error: 'Ja sao parceiros' });
+    
+    // Check if pending request already exists
+    const existing = get('SELECT * FROM partnership_requests WHERE requester_id = ? AND target_id = ? AND status = ?',
+      [req.userId, targetUserId, 'pending']);
+    if (existing) return res.status(400).json({ error: 'Solicitacao ja enviada' });
+    
+    const result = run('INSERT INTO partnership_requests (requester_id, requester_pet_id, target_id, target_pet_id) VALUES (?, ?, ?, ?)',
+      [req.userId, requesterPetId || null, targetUserId, targetPetId || null]);
+    
+    // Get requester name for notification
+    const user = get('SELECT name FROM users WHERE id = ?', [req.userId]);
+    
+    run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+      [targetUserId, 'partnership_request', `${user?.name || 'Alguem'} pediu parceria para os pets!`, result.lastInsertRowid]);
+    
+    sendToUser(targetUserId, {
+      type: 'partnership_request',
+      requestId: result.lastInsertRowid,
+      fromUserId: req.userId,
+      fromUserName: user?.name,
+      message: `${user?.name || 'Alguem'} pediu parceria para os pets!`
+    });
+    
+    sendToUser(targetUserId, {
+      type: 'notification',
+      notification: { type: 'partnership_request', message: `Nova solicitacao de parceria!` }
+    });
+    
+    res.json({ success: true, requestId: result.lastInsertRowid });
   } catch (err) {
-    console.error('Match deck error:', err);
+    console.error('Partnership request error:', err);
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.post('/swipe/:targetUserId', authMiddleware, (req, res) => {
+// Accept/reject partnership
+router.post('/respond/:requestId', authMiddleware, (req, res) => {
   try {
-    const { isLike } = req.body;
-    const targetUserId = parseInt(req.params.targetUserId);
+    const { accept } = req.body;
+    const requestId = parseInt(req.params.requestId);
+    
+    const request = get('SELECT * FROM partnership_requests WHERE id = ? AND target_id = ? AND status = ?',
+      [requestId, req.userId, 'pending']);
+    if (!request) return res.status(404).json({ error: 'Solicitacao nao encontrada' });
+    
+    if (accept) {
+      // Create match
+      run('INSERT INTO matches (user1_id, user2_id) VALUES (?, ?)', [request.requester_id, request.target_id]);
+      const match = get('SELECT * FROM matches ORDER BY id DESC LIMIT 1', []);
+      
+      run('UPDATE partnership_requests SET status = ? WHERE id = ?', ['accepted', requestId]);
+      
+      // Notify requester
+      run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+        [request.requester_id, 'partnership_accepted', 'Sua solicitacao de parceria foi aceita!', match.id]);
+      
+      const user = get('SELECT name FROM users WHERE id = ?', [req.userId]);
+      sendToUser(request.requester_id, { type: 'new_match', matchId: match.id, partnerId: req.userId });
+      sendToUser(request.requester_id, { type: 'notification', notification: { type: 'partnership_accepted', message: `${user?.name} aceitou sua parceria!` } });
 
-    if (targetUserId === req.userId) return res.status(400).json({ error: 'Nao pode curtir a si mesmo' });
+      // Award points
+      creditPoints(req.userId, 'partnership_accepted');
+      creditPoints(request.requester_id, 'partnership_accepted');
 
-    const existing = get('SELECT * FROM match_swipes WHERE swiper_id = ? AND swiped_id = ?',
-      [req.userId, targetUserId]);
-
-    if (existing) {
-      if (existing.is_like && isLike) {
-        return res.json({ match: false, message: 'Ja curtiu este perfil' });
-      }
-      run('UPDATE match_swipes SET is_like = ? WHERE swiper_id = ? AND swiped_id = ?',
-        [isLike ? 1 : 0, req.userId, targetUserId]);
+      res.json({ success: true, match: true, matchId: match.id });
     } else {
-      run('INSERT INTO match_swipes (swiper_id, swiped_id, is_like) VALUES (?, ?, ?)',
-        [req.userId, targetUserId, isLike ? 1 : 0]);
+      run('UPDATE partnership_requests SET status = ? WHERE id = ?', ['rejected', requestId]);
+      
+      run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+        [request.requester_id, 'partnership_rejected', 'Sua solicitacao de parceria foi recusada.', requestId]);
+      
+      sendToUser(request.requester_id, { type: 'notification', notification: { type: 'partnership_rejected', message: 'Parceria recusada.' } });
+      
+      res.json({ success: true, match: false });
     }
-
-    if (isLike) {
-      const mutualSwipe = get('SELECT * FROM match_swipes WHERE swiper_id = ? AND swiped_id = ? AND is_like = 1',
-        [targetUserId, req.userId]);
-
-      if (mutualSwipe) {
-        const existingMatch = get(
-          'SELECT * FROM matches WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)',
-          [req.userId, targetUserId, targetUserId, req.userId]
-        );
-
-        if (!existingMatch) {
-          run('INSERT INTO matches (user1_id, user2_id) VALUES (?, ?)', [req.userId, targetUserId]);
-          const match = get('SELECT * FROM matches ORDER BY id DESC LIMIT 1', []);
-
-          run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
-            [targetUserId, 'match', `Voce e ${req.userId} fizeram match!`, match.id]);
-
-          sendToUser(targetUserId, { type: 'new_match', matchId: match.id, partnerId: req.userId });
-          sendToUser(req.userId, { type: 'new_match', matchId: match.id, partnerId: targetUserId });
-          sendToUser(targetUserId, { type: 'notification', notification: { type: 'match', message: `Voce fizeram match!` } });
-
-          return res.json({ match: true, matchId: match.id });
-        }
-      }
-    }
-
-    res.json({ match: false });
   } catch (err) {
-    console.error('Swipe error:', err);
+    console.error('Partnership respond error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+// Get pending partnership requests (received)
+router.get('/requests', authMiddleware, (req, res) => {
+  try {
+    const requests = all(`
+      SELECT pr.*, u.name as requester_name, u.avatar as requester_avatar,
+        p.name as requester_pet_name, p.image as requester_pet_image
+      FROM partnership_requests pr
+      JOIN users u ON pr.requester_id = u.id
+      LEFT JOIN pets p ON pr.requester_pet_id = p.id
+      WHERE pr.target_id = ? AND pr.status = 'pending'
+      ORDER BY pr.created_at DESC
+    `, [req.userId]);
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+// Get sent partnership requests
+router.get('/requests/sent', authMiddleware, (req, res) => {
+  try {
+    const requests = all(`
+      SELECT pr.*, u.name as target_name, u.avatar as target_avatar,
+        p.name as target_pet_name
+      FROM partnership_requests pr
+      JOIN users u ON pr.target_id = u.id
+      LEFT JOIN pets p ON pr.target_pet_id = p.id
+      WHERE pr.requester_id = ? AND pr.status = 'pending'
+      ORDER BY pr.created_at DESC
+    `, [req.userId]);
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+// Check if partnership exists between two users
+router.get('/status/:userId', authMiddleware, (req, res) => {
+  try {
+    const targetId = parseInt(req.params.userId);
+    const match = get('SELECT * FROM matches WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)',
+      [req.userId, targetId, targetId, req.userId]);
+    const pending = get('SELECT * FROM partnership_requests WHERE requester_id = ? AND target_id = ? AND status = ?',
+      [req.userId, targetId, 'pending']);
+    res.json({ connected: !!match, pending: !!pending, matchId: match?.id });
+  } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });

@@ -1,6 +1,7 @@
 const express = require('express');
 const { run, get, all } = require('../db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');
+const { creditPoints } = require('./points');
 
 const router = express.Router();
 
@@ -78,6 +79,9 @@ router.post('/', authMiddleware, (req, res) => {
     const pet = get('SELECT * FROM pets WHERE id = ?', [result.lastInsertRowid]);
     pet.vaccines = [];
     pet.is_castrated = !!pet.is_castrated;
+
+    creditPoints(req.userId, 'add_pet');
+
     res.json(pet);
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });

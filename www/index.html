@@ -201,6 +201,7 @@ button,input,textarea,select{font:inherit}
 .connection-dot.online{background:#4CAF50}.connection-dot.offline{background:#f44336}
 
 .cart-icon{position:relative}.cart-badge{position:absolute;top:-2px;right:-2px;background:var(--coral);color:#fff;font-size:7px;font-weight:800;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.media-video{width:100%;max-height:280px;background:var(--greenSoft)}
 </style>
 </head>
 <body>
@@ -209,7 +210,7 @@ button,input,textarea,select{font:inherit}
   <div class="bottom-nav" id="bottomNav" style="display:none">
     <button class="nav-btn active" data-tab="inicio" aria-label="Inicio"><span class="nav-icon">&#8962;</span>Inicio</button>
     <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon">&#128205;</span>Mapa</button>
-    <button class="nav-btn" data-tab="reels" aria-label="Reels"><span class="nav-icon">&#127916;</span>Reels</button>
+    <button class="nav-btn" data-tab="pontos" aria-label="Pontos"><span class="nav-icon">&#11088;</span>Pontos</button>
     <button class="nav-btn" data-tab="pets" aria-label="Pets"><span class="nav-icon">&#128062;</span>Pets</button>
     <button class="nav-btn" data-tab="loja" aria-label="Loja"><span class="nav-icon">&#128722;</span>Loja</button>
     <button class="nav-btn" data-tab="perfil" aria-label="Perfil"><span class="nav-icon">&#128100;</span>Perfil</button>
@@ -310,6 +311,12 @@ function handleWSMessage(msg) {
       break;
     case 'new_match':
       showToast('Novo match! Voce e alguem se curtiram!');
+      break;
+    case 'partnership_request':
+      showToast(msg.message || 'Nova solicitacao de parceria!');
+      break;
+    case 'partnership_accepted':
+      showToast(msg.message || 'Parceria aceita!');
       break;
     case 'new_follower':
       showToast('Alguem comecou a te seguir!');
@@ -440,22 +447,18 @@ async function loadAll(){
     if(!currentUser)await loadProfile();
     if(!currentUser){renderAuth();return;}
     applyTheme();
-    const[postsData,notifData,matchDeckData,petsData,storiesDataRaw,reelsDataRaw]=await Promise.all([
+const[postsData,notifData,petsData,storiesDataRaw]=await Promise.all([
       api('/api/posts?page='+postPage+'&limit=10').catch(()=>({posts:[],total:0,pages:1})),
       api('/api/notifications').catch(()=>({notifications:[],unreadCount:0})),
-      api('/api/match/deck').catch(()=>[]),
       api('/api/pets').catch(()=>[]),
       api('/api/stories').catch(()=>({stories:[],my_story:null})),
-      api('/api/reels').catch(()=>[]),
       loadCart().catch(()=>{}),
       loadLostPets().catch(()=>{})
     ]);
     posts=postsData.posts||[];postPages=postsData.pages||1;
     notifications=notifData.notifications||[];unreadCount=notifData.unreadCount||0;
-    matchDeck=Array.isArray(matchDeckData)?matchDeckData:[];
     pets=Array.isArray(petsData)?petsData:[];
     storiesData=storiesDataRaw.stories||[];myStory=storiesDataRaw.my_story||null;
-    reelsData=Array.isArray(reelsDataRaw)?reelsDataRaw:[];
     render();
   }catch(e){console.error(e);renderAuth();}
 }
@@ -499,7 +502,7 @@ function renderInicio(){
           ${menu}
         </div>
         <div class="post-text">${esc(p.text)}</div>
-        ${p.image?`<div class="media" onclick="openLightbox('${p.image}')" style="cursor:pointer"><img src="${p.image}" onerror="this.style.display='none'" alt=""></div>`:''}
+        ${p.video_url?`<video class="media-video" src="${esc(p.video_url)}" controls playsinline preload="metadata" poster="${esc(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${p.image}')" style="cursor:pointer"><img src="${p.image}" onerror="this.style.display='none'" alt=""></div>`:''}
         <div class="post-actions">
           <button class="action" onclick="toggleLike(${p.id})" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button>
           <button class="action" onclick="toggleComments(${p.id})">&#128172; ${p.comments_count||0}</button>
@@ -617,6 +620,52 @@ async function nextConexao(isLike){
   }
   currentMatchIdx++;renderConexao();
 }
+async function requestPartnership(targetUserId, targetPetId) {
+  const myPet = pets.find(p=>p.user_id===currentUser?.id) || pets[0];
+  if(!myPet){ alert('Cadastre um pet primeiro!'); return; }
+  try {
+    await api('/api/match/request',{method:'POST',body:JSON.stringify({targetUserId, targetPetId, requesterPetId: myPet.id})});
+    alert('Solicitacao de parceria enviada!');
+  } catch(e) { alert(e.message); }
+}
+
+async function renderPartnershipPending() {
+  try {
+    const [received, sent] = await Promise.all([
+      api('/api/match/requests').catch(()=>[]),
+      api('/api/match/requests/sent').catch(()=>[])
+    ]);
+    screen.innerHTML = header('Parcerias','')+`<div class="content">
+      <div class="section"><h2>Solicitacoes Recebidas</h2></div>
+      ${received.length===0?'<p style="text-align:center;color:var(--soft);padding:20px">Nenhuma solicitacao recebida</p>':''}
+      ${received.map(r=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;gap:10px;align-items:center">
+          ${r.requester_pet_image?`<img src="${r.requester_pet_image}" style="width:48px;height:48px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">`:`<div class="avatar">${esc(r.requester_pet_name||'?')[0]||''}</div>`}
+          <div style="flex:1"><b style="font-size:13px">${esc(r.requester_name)}</b><div class="small">${esc(r.requester_pet_name||'')} quer ser parceiro(a) dos seus pets</div></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn small-btn" style="flex:1" onclick="respondPartnership(${r.id},true)">&#10003; Aceitar</button>
+          <button class="btn small-btn outline" style="flex:1" onclick="respondPartnership(${r.id},false)">&#10005; Recusar</button>
+        </div>
+      </div>`).join('')}
+      <div class="section"><h2>Solicitacoes Enviadas</h2></div>
+      ${sent.length===0?'<p style="text-align:center;color:var(--soft);padding:20px">Nenhuma solicitacao enviada</p>':''}
+      ${sent.map(r=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:12px">Para: ${esc(r.target_name)}</div>
+        <div class="small">Pet: ${esc(r.target_pet_name||'')} &bull; <span style="color:var(--orange)">Aguardando resposta</span></div>
+      </div>`).join('')}
+    </div>`;
+  } catch(e) { console.error(e); }
+}
+
+async function respondPartnership(requestId, accept) {
+  try {
+    const d = await api('/api/match/respond/'+requestId,{method:'POST',body:JSON.stringify({accept})});
+    if(d.match){ alert('Parceria aceita! Chat liberado!'); }
+    else { alert(accept?'Parceria criada!':'Parceria recusada.'); }
+    renderPartnershipPending();
+  } catch(e) { alert(e.message); }
+}
 function renderPets(){
   screen.innerHTML=header('Meus Pets','',{icon:'+',click:"openModal('addPet')"})+`
   <div class="content">
@@ -669,7 +718,7 @@ function renderPerfil(){
         <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
-      <button class="btn pink" style="width:100%;margin-top:12px" onclick="renderConexao()">&#128153; Criar Conexao</button>
+      <button class="btn pink" style="width:100%;margin-top:12px" onclick="renderPartnershipPending()">&#128153; Solicitacoes de Parceria</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('plans')">Gerenciar Plano</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('business')">Perfil Comercial</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="togglePrivate()">${currentUser.is_private?'Perfil Publico':'Perfil Privado'}</button>
@@ -705,7 +754,7 @@ function render(){
   nav.style.display='flex';
   if(tab==='inicio')renderInicio();
   if(tab==='mapa')renderMapa();
-  if(tab==='reels')renderReels();
+  if(tab==='pontos')renderPontos();
   if(tab==='pets')renderPets();
   if(tab==='loja')renderLoja();
   if(tab==='perfil')renderPerfil();
@@ -732,7 +781,10 @@ async function openModal(type){
     const copySection=c.pixCopyPaste?`<div style="margin:10px 0"><div class="small" style="margin-bottom:4px">Ou copie o codigo Pix:</div><div style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:10px;font-family:monospace;word-break:break-all;max-height:60px;overflow:auto" id="pixCopyCode">${esc(c.pixCopyPaste)}</div><button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="copyPixCode()">Copiar Codigo Pix</button></div>`:'';
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Checkout Pix</div><button class="close" onclick="closeModal()">X</button></div><div style="font-weight:800">${esc(c.title)}</div><div class="product-price">R$ ${c.price?.toFixed(2)||'0.00'}</div><div style="background:#fff;border:2px dashed var(--pix);border-radius:12px;padding:16px;text-align:center;margin:12px 0">${qrImg}</div>${copySection}<button class="btn pix" style="width:100%" onclick="confirmPixPayment()">Ja Paguei - Confirmar</button><div class="small" style="text-align:center;margin-top:8px">Escaneie o QR Code com o app do seu banco</div></div></div>`;
   }else if(type==='post'){
-    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Nova Publicacao</div><button class="close" onclick="closeModal()">X</button></div><div id="emojiBar"></div><div class="field"><label>Mensagem</label><textarea id="postTxt" placeholder="Compartilhe uma historia..." rows="4"></textarea></div><button class="btn" style="width:100%" onclick="savePost()">Publicar</button></div></div>`;
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Nova Publicacao</div><button class="close" onclick="closeModal()">X</button></div><div id="emojiBar"></div><div class="field"><label>Mensagem</label><textarea id="postTxt" placeholder="Compartilhe uma historia..." rows="3"></textarea></div>
+  <div class="field"><label>URL da Imagem (opcional)</label><input id="postImage" type="url" placeholder="https://exemplo.com/foto.jpg"></div>
+  <div class="field"><label>URL do Video (opcional)</label><input id="postVideo" type="url" placeholder="https://exemplo.com/video.mp4"></div>
+  <button class="btn" style="width:100%" onclick="savePost()">Publicar</button></div></div>`;
     setTimeout(()=>{const bar=document.getElementById('emojiBar');if(bar){bar.innerHTML='<div class="emoji-picker" id="emojiPicker"></div>';loadEmojis();}},100);
   }else if(type==='addPet'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Pet</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Nome do Pet</label><input id="pName" placeholder="Ex: Thor"></div><div class="field"><label>Especie</label><select id="pSpecies"><option>Cachorro</option><option>Gato</option><option>Ave</option><option>Reptil</option><option>Outro</option></select></div><div class="field"><label>Raca</label><input id="pBreed" placeholder="Ex: SRD"></div><div class="field"><label>Idade</label><input id="pAge" placeholder="Ex: 2 anos"></div><div class="field"><label>Signo</label><input id="pZodiac" placeholder="Ex: Aries"></div><button class="btn" style="width:100%" onclick="savePet()">Salvar Pet</button></div></div>`;
@@ -746,6 +798,7 @@ async function openModal(type){
       <div class="small">${esc(p.species)} | ${esc(p.breed)} | ${esc(p.age)}</div>
       <div class="small">${esc(p.zodiac)} | ${p.is_castrated?'Castrado':'Nao castrado'}</div>
       <div class="small" style="margin-top:4px">Tutor: <b>${esc(p.tutor_name)}</b></div></div>
+      ${!isOwner?`<div style="margin-top:10px"><button class="btn pink" style="width:100%" onclick="requestPartnership(${p.user_id},${p.id})">&#128153; Pedir Parceria</button></div>`:''}
       <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:8px">
         <div style="font-weight:800;color:var(--green);font-size:12px">Vacinas</div>
         ${(p.vaccines||[]).map(v=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--line)"><span>${esc(v.name)}</span><span>${esc(v.date)}</span><span style="color:${v.status==='Em dia'?'var(--green)':'var(--orange)'}">${esc(v.status)}</span>${isOwner?`<button style="border:none;background:none;color:var(--coral);cursor:pointer" onclick="deleteVaccine(${p.id},${v.id})">X</button>`:''}</div>`).join('')||'<p class="small">Nenhuma vacina</p>'}
@@ -853,7 +906,7 @@ async function savePost(){
   const t=document.getElementById('postTxt')?.value.trim();
   if(!t){alert('Escreva algo!');return;}
   try{
-    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t})});
+    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t,image:document.getElementById('postImage')?.value.trim()||'',video_url:document.getElementById('postVideo')?.value.trim()||''})});
     posts.unshift(p);closeModal();setTab('inicio');
   }catch(e){alert(e.message);}
 }
@@ -1070,6 +1123,56 @@ function showStorySlide(){
 function nextStorySlide(){clearInterval(storyTimer);storyIdx++;showStorySlide();}
 function prevStorySlide(){clearInterval(storyTimer);storyIdx=Math.max(0,storyIdx-1);showStorySlide();}
 function closeStory(){clearInterval(storyTimer);viewingStory=null;const el=document.getElementById('storyViewer');if(el)el.remove();}
+
+async function renderPontos() {
+  try {
+    const data = await api('/api/points');
+    const balance = data.balance || 0;
+    const history = data.history || [];
+    const rules = data.rules || {};
+    screen.innerHTML = header('Clube de Pontos','')+`<div class="content">
+      <div style="background:linear-gradient(135deg,#FFE259,#FFA751);border-radius:16px;padding:20px;text-align:center;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:700;color:#5A3900">SEU SALDO</div>
+        <div style="font-size:40px;font-weight:800;color:#5A3900">${balance} <span style="font-size:18px">pts</span></div>
+        <button class="btn gold" style="margin-top:8px;font-size:11px" onclick="claimDailyPoints()">&#128276; Pontos Diarios (+${rules.daily_login?.points||10})</button>
+      </div>
+      <div class="section"><h2>Recompensas</h2></div>
+      <div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:13px">&#128081; Selo de Destaque no Perfil</div>
+        <div class="small">100 pontos</div>
+        <button class="btn small-btn gold" style="margin-top:6px;width:100%" onclick="redeemPoints('highlight_badge')">Resgatar por 100 pts</button>
+      </div>
+      <div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:13px">&#128178; 1 Mes Plano Plus</div>
+        <div class="small">200 pontos</div>
+        <button class="btn small-btn gold" style="margin-top:6px;width:100%" onclick="redeemPoints('plus_month')">Resgatar por 200 pts</button>
+      </div>
+      <div class="section"><h2>Como Ganhar Pontos</h2></div>
+      ${Object.entries(rules).map(([key,r])=>`<div style="display:flex;justify-content:space-between;background:var(--card);border-radius:10px;padding:10px;margin-bottom:6px;font-size:12px"><span>${r.desc}</span><b style="color:var(--green)">+${r.points} pts</b></div>`).join('')}
+      <div class="section"><h2>Historico</h2></div>
+      ${history.length===0?'<p style="text-align:center;color:var(--soft)">Nenhuma transacao ainda</p>':''}
+      ${history.map(h=>`<div style="display:flex;justify-content:space-between;background:var(--card);border-radius:10px;padding:10px;margin-bottom:6px;font-size:11px"><span>${esc(h.reason)} <span class="small">${formatDate(h.created_at)}</span></span><b style="color:${h.amount>0?'var(--green)':'var(--coral)'}">${h.amount>0?'+':''}${h.amount}</b></div>`).join('')}
+    </div>`;
+  } catch(e) { console.error(e); }
+}
+
+async function claimDailyPoints() {
+  try {
+    const d = await api('/api/points/daily-login',{method:'POST'});
+    showToast('Pontos diarios resgatados! Saldo: '+d.balance);
+    renderPontos();
+  } catch(e) { alert(e.message); }
+}
+
+async function redeemPoints(reward) {
+  if(!confirm('Confirmar resgate de pontos?'))return;
+  try {
+    const d = await api('/api/points/redeem',{method:'POST',body:JSON.stringify({reward})});
+    alert(d.message);
+    if(reward==='plus_month'){ if(currentUser) currentUser.plan='plus'; }
+    renderPontos();
+  } catch(e) { alert(e.message); }
+}
 
 function renderReels(){
   if(!reelsData||reelsData.length===0){
@@ -1631,6 +1734,7 @@ document.addEventListener('click',e=>{
 applyTheme();
 
 if(token){
+  api('/api/points/daily-login',{method:'POST'}).catch(()=>{});
   loadAll().then(()=>{checkOnboarding();connectWS();setInterval(()=>{if(ws&&ws.readyState===1)sendWS({type:'ping'});},25000);});
 }else{
   renderAuth();

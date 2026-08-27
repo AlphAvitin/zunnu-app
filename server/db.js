@@ -357,6 +357,27 @@ function createTables(db) {
   try { db.run(`ALTER TABLE users ADD COLUMN is_private INTEGER DEFAULT 0`); } catch(e) {}
   try { db.run(`ALTER TABLE users ADD COLUMN business_type TEXT`); } catch(e) {}
   try { db.run(`ALTER TABLE products ADD COLUMN stock INTEGER DEFAULT 99`); } catch(e) {}
+  try { db.run(`ALTER TABLE posts ADD COLUMN video_url TEXT`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN points_balance INTEGER DEFAULT 0`); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS partnership_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    requester_id INTEGER,
+    requester_pet_id INTEGER,
+    target_id INTEGER,
+    target_pet_id INTEGER,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS points_transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    amount INTEGER,
+    reason TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  try { db.run("ALTER TABLE users ADD COLUMN points_balance INTEGER DEFAULT 0"); } catch(e) {}
 }
 
 function run(sql, params = []) {

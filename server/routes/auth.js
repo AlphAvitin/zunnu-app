@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { run, get, all } = require('../db');
 const { JWT_SECRET, authMiddleware } = require('../middleware/auth');
+const { creditPoints } = require('./points');
 
 const router = express.Router();
 
@@ -98,7 +99,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await get(
-      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, plan, created_at FROM users WHERE id = ?',
+      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, plan, is_private, points_balance, created_at FROM users WHERE id = ?',
       [req.userId]
     );
 
@@ -107,6 +108,8 @@ router.get('/me', authMiddleware, async (req, res) => {
     const pets = await get('SELECT COUNT(*) as count FROM pets WHERE user_id = ?', [req.userId]);
     const posts = await get('SELECT COUNT(*) as count FROM posts WHERE user_id = ?', [req.userId]);
     const matches = await get('SELECT COUNT(*) as count FROM matches WHERE user1_id = ? OR user2_id = ?', [req.userId, req.userId]);
+
+    creditPoints(req.userId, 'daily_login');
 
     res.json({
       ...user,
@@ -119,7 +122,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 
 router.put('/me', authMiddleware, async (req, res) => {
   try {
-    const { name, bio, location, avatar, selfieUrl } = req.body;
+    const { name, bio, location, avatar, selfieUrl, is_private } = req.body;
     const updates = [];
     const params = [];
 
@@ -128,6 +131,7 @@ router.put('/me', authMiddleware, async (req, res) => {
     if (location !== undefined) { updates.push('location = ?'); params.push(location); }
     if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
     if (selfieUrl !== undefined) { updates.push('selfie_url = ?'); params.push(selfieUrl); }
+    if (is_private !== undefined) { updates.push('is_private = ?'); params.push(is_private ? 1 : 0); }
 
     if (updates.length === 0) return res.status(400).json({ error: 'Nada para atualizar' });
 
@@ -135,7 +139,7 @@ router.put('/me', authMiddleware, async (req, res) => {
     await run(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
 
     const user = await get(
-      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, plan FROM users WHERE id = ?',
+      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, plan, is_private, points_balance FROM users WHERE id = ?',
       [req.userId]
     );
 

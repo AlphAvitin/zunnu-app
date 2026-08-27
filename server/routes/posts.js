@@ -2,6 +2,7 @@ const express = require('express');
 const { run, get, all } = require('../db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');
 const { broadcast, sendToUser } = require('../ws');
+const { creditPoints } = require('./points');
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.get('/', optionalAuth, (req, res) => {
     }
 
     const posts = all(`
-      SELECT p.id, p.text, p.image, p.likes, p.comments_count, p.created_at,
+      SELECT p.id, p.text, p.image, p.video_url, p.likes, p.comments_count, p.created_at,
              u.id as user_id, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan
       FROM posts p
       JOIN users u ON p.user_id = u.id
@@ -71,7 +72,7 @@ router.get('/', optionalAuth, (req, res) => {
 
 router.post('/', authMiddleware, (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text, image, video_url } = req.body;
 
     if (!text || !text.trim()) {
       return res.status(400).json({ error: 'Texto e obrigatorio' });
@@ -81,13 +82,15 @@ router.post('/', authMiddleware, (req, res) => {
       return res.status(400).json({ error: 'Mensagem contem termos ofensivos' });
     }
 
-    const result = run('INSERT INTO posts (user_id, text, image) VALUES (?, ?, ?)',
-      [req.userId, text.trim(), image || null]);
+    const result = run('INSERT INTO posts (user_id, text, image, video_url) VALUES (?, ?, ?, ?)',
+      [req.userId, text.trim(), image || null, video_url || null]);
 
     const post = get(`
       SELECT p.*, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan
       FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?
     `, [result.lastInsertRowid]);
+
+    creditPoints(req.userId, 'create_post');
 
     res.json({
       ...post,

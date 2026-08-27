@@ -28,7 +28,6 @@ app.use('/api/match', require('./routes/match'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/stories', require('./routes/stories'));
-app.use('/api/reels', require('./routes/reels'));
 app.use('/api/nearby', require('./routes/nearby'));
 app.use('/api/social', require('./routes/social'));
 app.use('/api/petgallery', require('./routes/petgallery'));
@@ -38,6 +37,7 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/lostpets', require('./routes/lostpets'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/business', require('./routes/business'));
+app.use('/api/points', require('./routes/points'));
 app.use('/api/admin', require('./routes/admin'));
 
 app.get('*', (req, res) => {
