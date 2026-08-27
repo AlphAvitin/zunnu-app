@@ -202,6 +202,54 @@ button,input,textarea,select{font:inherit}
 
 .cart-icon{position:relative}.cart-badge{position:absolute;top:-2px;right:-2px;background:var(--coral);color:#fff;font-size:7px;font-weight:800;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .media-video{width:100%;max-height:280px;background:var(--greenSoft)}
+
+/* ===== Home redesenhada ===== */
+.home-hero{background:linear-gradient(150deg,var(--green) 0%,var(--green2) 100%);border-radius:0 0 28px 28px;padding:18px 16px 16px;color:#fff;position:relative;overflow:hidden}
+.home-hero::after{content:'';position:absolute;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.06);right:-45px;top:-45px}
+.home-hero::before{content:'';position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.05);right:75px;bottom:-55px}
+.home-hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.home-welcome{font-size:11px;font-weight:800;color:#A7CFC3;letter-spacing:.5px;text-transform:uppercase}
+.home-hello{font-size:21px;font-weight:900;margin:2px 0 8px}
+.home-sub{font-size:13px;font-weight:600;color:rgba(255,255,255,.92)}
+.home-hero-icons{display:flex;gap:6px}
+.home-hero-icons .icon-btn{background:rgba(255,255,255,.15);color:#fff;box-shadow:none;backdrop-filter:blur(4px)}
+.home-hero-icons .notif-badge,.home-hero-icons .cart-badge{background:var(--coral);color:#fff;border:1px solid rgba(255,255,255,.4)}
+.home-plan-chip{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:9px;font-weight:800;padding:4px 9px;border-radius:20px;margin-top:12px;cursor:pointer;letter-spacing:.3px}
+.home-section-title{display:flex;align-items:center;gap:6px;margin:20px 0 10px}
+.home-section-title h2{margin:0;font-size:15px;font-weight:800;color:var(--ink)}
+.home-more{margin-left:auto;font-size:10px;color:var(--green);font-weight:800;background:var(--greenSoft);border:none;padding:5px 10px;border-radius:20px;cursor:pointer}
+.home-pets-scroll{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;-ms-overflow-style:none}
+.home-pets-scroll::-webkit-scrollbar{display:none}
+.home-pet-card{min-width:148px;max-width:148px;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 3px 10px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s;animation:fadeIn .3s ease}
+.home-pet-card:active{transform:scale(.97)}
+.home-pet-photo{width:100%;height:104px;border-radius:13px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:34px;overflow:hidden}
+.home-pet-photo img{width:100%;height:100%;object-fit:cover}
+.home-pet-name{font-size:13px;font-weight:800;margin-top:8px}
+.home-pet-breed{font-size:10px;color:var(--soft);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-pet-status{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;border-radius:20px;padding:3px 9px;margin-top:8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.home-pet-status.ok{background:var(--greenSoft);color:var(--green)}
+.home-pet-status.warn{background:var(--orangeSoft);color:#B26A00}
+.home-pet-add{border:1.5px dashed var(--line);box-shadow:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.home-empty{background:var(--card);border-radius:18px;padding:20px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,.05);animation:fadeIn .3s ease}
+.home-map-card{background:var(--card);border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.06);animation:fadeIn .3s ease}
+.home-map-preview{height:108px;position:relative;background-color:var(--greenSoft);background-image:repeating-linear-gradient(0deg,transparent 0 30px,rgba(255,255,255,.6) 30px 32px),repeating-linear-gradient(90deg,transparent 0 34px,rgba(255,255,255,.55) 34px 36px);overflow:hidden}
+.home-map-pin{position:absolute;width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:fadeIn .3s ease}
+.home-map-pin img{width:100%;height:100%;object-fit:cover}
+.home-map-pin.you{width:28px;height:28px;background:var(--coral);display:flex;align-items:center;justify-content:center;font-size:13px;border:2px solid #fff;box-shadow:0 0 0 4px rgba(231,111,81,.25)}
+.home-map-info{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px}
+.home-map-info b{font-size:16px;font-weight:900;color:var(--ink)}
+.home-map-info .small{display:block;color:var(--soft);font-size:10px}
+.home-link{color:var(--blue);font-weight:800;font-size:11px;background:var(--blueSoft);padding:7px 12px;border-radius:20px;flex-shrink:0}
+.home-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.home-quick-item{background:var(--card);border-radius:16px;padding:13px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s;animation:fadeIn .3s ease}
+.home-quick-item:active{transform:scale(.97)}
+.home-quick-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.home-quick-icon.green{background:var(--greenSoft)}
+.home-quick-icon.coral{background:var(--coralSoft)}
+.home-quick-icon.blue{background:var(--blueSoft)}
+.home-quick-icon.gold{background:var(--goldSoft)}
+.home-quick-item b{font-size:11px;font-weight:700;line-height:1.3}
+.home-newpost{background:linear-gradient(135deg,var(--coral),#F29E81);border:none;width:100%;margin-bottom:12px;padding:11px;border-radius:12px;font-weight:800;color:#fff;box-shadow:0 4px 14px rgba(231,111,81,.28)}
 </style>
 </head>
 <body>
@@ -249,6 +297,7 @@ let chatMatchId = null;
 let cartItems = [];
 let cartCount = 0;
 let lostPets = [];
+let homeNearby = [];
 
 function connectWS() {
   if (!token) return;
@@ -449,11 +498,12 @@ async function loadAll(){
     if(!currentUser)await loadProfile();
     if(!currentUser){renderAuth();return;}
     applyTheme();
-const[postsData,notifData,petsData,storiesDataRaw]=await Promise.all([
+const[postsData,notifData,petsData,storiesDataRaw,nearbyData]=await Promise.all([
       api('/api/posts?page='+postPage+'&limit=10').catch(()=>({posts:[],total:0,pages:1})),
       api('/api/notifications').catch(()=>({notifications:[],unreadCount:0})),
       api('/api/pets').catch(()=>[]),
       api('/api/stories').catch(()=>({stories:[],my_story:null})),
+      api('/api/nearby/pets?lat='+(window._userLat||-2.5307)+'&lng='+(window._userLng||-44.2829)+'&radius=20').catch(()=>[]),
       loadCart().catch(()=>{}),
       loadLostPets().catch(()=>{})
     ]);
@@ -461,20 +511,82 @@ const[postsData,notifData,petsData,storiesDataRaw]=await Promise.all([
     notifications=notifData.notifications||[];unreadCount=notifData.unreadCount||0;
     pets=Array.isArray(petsData)?petsData:[];
     storiesData=storiesDataRaw.stories||[];myStory=storiesDataRaw.my_story||null;
+    homeNearby=Array.isArray(nearbyData)?nearbyData:[];
     render();
   }catch(e){console.error(e);renderAuth();}
 }
 
 function logout(){token=null;localStorage.removeItem('zunnu_token');currentUser=null;render();}
+function parseBR(d){const m=d?d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/):null;return m?new Date(+m[3],+m[2]-1,+m[1]):null;}
+function petHomeStatus(p){
+  const vs=p.vaccines||[];
+  if(vs.length===0)return{txt:'Sem vacinas ainda',cl:'ok'};
+  const today=new Date();today.setHours(0,0,0,0);
+  const pending=vs.find(v=>v.status==='Agendada'||v.status==='A agendar')||vs.find(v=>{const d=parseBR(v.date);return d&&d>=today;});
+  if(pending)return{txt:'Proxima vacina: '+(pending.name||'em breve'),cl:'warn'};
+  return{txt:'Tudo em dia',cl:'ok'};
+}
+function openServices(){setTab('loja');setTimeout(()=>showLojaSection('services'),120);}
+
 function renderInicio(){
+  const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
+  const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
+  const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
+  const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat')" aria-label="Mensagens"><span>&#128172;</span></button>`:'';
+  const cartBtn=currentUser?`<button class="icon-btn" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
+  const speciesEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Reptil:'&#129422;'};
+  const petStatus=(p)=>{const st=petHomeStatus(p);return`<div class="home-pet-status ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</div>`;};
+  let petsArea;
+  if(pets.length===0){
+    petsArea=`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`;
+  }else{
+    petsArea=`<div class="home-pets-scroll">${pets.map(p=>{
+      const emo=speciesEmoji[p.species]||'&#128062;';
+      return`<div class="home-pet-card" onclick="viewPetProfile(${p.id})">
+        <div class="home-pet-photo"><img src="${su(p.image||'')}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt=""></div>
+        <div class="home-pet-name">${esc(p.name)} <span class="small" style="font-size:11px">${emo}</span></div>
+        <div class="home-pet-breed">${esc(p.breed||p.species)}</div>${petStatus(p)}
+      </div>`;
+    }).join('')}
+    <div class="home-pet-card home-pet-add" onclick="openModal('addPet')">
+      <div class="home-pet-photo"><span style="font-size:30px;color:var(--green)">+</span></div>
+      <div class="home-pet-name" style="color:var(--green)">Adicionar</div>
+      <div class="home-pet-breed">novo pet</div>
+    </div></div>`;
+  }
+  const pins=homeNearby.slice(0,3).map((p,i)=>{
+    const pst=[[20,18],[58,12],[36,62]][i];
+    return`<div class="home-map-pin" style="left:${pst[0]}%;top:${pst[1]}%" onclick="event.stopPropagation();setTab('mapa')"><img src="${su(p.image||'')}" onerror="this.style.display='none'" alt=""></div>`;
+  }).join('');
+  const n=homeNearby.length;
+  const mapInfo=n>0?`<b>${n}</b><span class="small">${n===1?'pet esta perto de voce':'pets estao perto de voce'}</span>`:`<b>Vamos explorar</b><span class="small">descubra pets perto de voce</span>`;
+  const quick=[['&#128062;','Adicionar pet',"openModal('addPet')",'green'],['&#128248;','Nova postagem',"openModal('post')",'coral'],['&#128197;','Encontrar servicos',"openServices()",'blue'],['&#128722;','Visitar loja',"setTab('loja')",'gold']];
+  const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item" onclick="${q[2]}"><div class="home-quick-icon ${q[3]}">${q[0]}</div><b>${q[1]}</b></div>`).join('')}</div>`;
   let pag='';
   if(postPages>1){
     pag='<div style="display:flex;gap:8px;justify-content:center;margin:14px 0">';
     for(let i=1;i<=postPages;i++)pag+=`<button class="btn small-btn ${i===postPage?'':'outline'}" onclick="goPage(${i})">${i}</button>`;
     pag+='</div>';
   }
-  screen.innerHTML=header('ZUNNU','')+`
+  screen.innerHTML=`<div class="home-hero">
+  <div class="home-hero-row">
+    <div><div class="home-welcome">ZUNNU</div><div class="home-hello">Ola, ${fn} &#128075;</div></div>
+    <div class="home-hero-icons">${cartBtn}${chatBtn}${bell}</div>
+  </div>
+  <div class="home-sub">Como estao seus pets hoje?</div>
+  <button class="home-plan-chip" onclick="openModal('plans')">${planTxt} &#11088; Ver planos</button>
+  </div>
   <div class="content">
+    <div class="home-section-title"><h2>Seus pets &#128062;</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>
+    ${petsArea}
+    <div class="home-section-title"><h2>Perto de voces &#128205;</h2></div>
+    <div class="home-map-card" onclick="setTab('mapa')">
+      <div class="home-map-preview">${pins}<div class="home-map-pin you" style="right:8%;bottom:12%">&#128205;</div></div>
+      <div class="home-map-info"><div>${mapInfo}</div><span class="home-link">Explorar mapa &rarr;</span></div>
+    </div>
+    <div class="home-section-title"><h2>O que voce quer fazer?</h2></div>
+    ${quickArea}
+    <div class="home-section-title"><h2>Acontecendo agora &#128293;</h2></div>
     <div class="stories-row">
       <div class="story-circle" onclick="openModal('addStory')">
         <div class="story-ring add-story"><div class="add-icon">+</div></div>
@@ -489,7 +601,7 @@ function renderInicio(){
     </div>
     ${adHTML()}
     <div class="search-bar"><input id="feedSearch" placeholder="Buscar no feed..." onkeyup="searchFeed()"><button class="btn small-btn" onclick="searchFeed()">Buscar</button></div>
-    <button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('post')">Nova Postagem</button>
+    <button class="btn home-newpost" onclick="openModal('post')">&#128248; Nova Postagem</button>
     ${posts.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum post ainda. Seja o primeiro!</p>':''}
     ${posts.map(p=>{
       const isOwner=currentUser&&(p.user_id===currentUser.id);
