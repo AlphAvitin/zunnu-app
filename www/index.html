@@ -24,6 +24,7 @@ button,input,textarea,select{font:inherit}
 .icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .plan-btn{border:0;background:linear-gradient(135deg,#FFE259,#FFA751);color:#5A3900;font-size:9px;font-weight:800;padding:5px 8px;border-radius:6px;cursor:pointer;letter-spacing:.3px}
 .notif-btn{position:relative}.notif-badge{position:absolute;top:-1px;right:-1px;background:var(--coral);color:#fff;font-size:7px;font-weight:800;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.chat-badge{background:var(--coral);color:#fff;font-size:10px;font-weight:800;line-height:1;min-width:18px;height:18px;border-radius:10px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
 
 .content{padding:8px 16px 80px}
 .section{margin:16px 0 8px}.section h2{margin:0;font-size:13px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
@@ -603,6 +604,8 @@ let ws = null;
 let wsReconnectTimer = null;
 let isTyping = {};
 let chatMatchId = null;
+let chatUnreadTotal = 0;
+let chatList = [];
 let cartItems = [];
 let cartCount = 0;
 let lostPets = [];
@@ -665,6 +668,8 @@ function handleWSMessage(msg) {
         loadChatMessages();
       } else {
         unreadCount++;
+        chatUnreadTotal++;
+        document.querySelectorAll('.chat-badge').forEach(b=>{b.textContent=chatUnreadTotal>9?'9+':chatUnreadTotal;b.style.display='inline-block';});
         showToast('Nova mensagem!');
       }
       break;
@@ -733,7 +738,7 @@ function header(title,subtitle,action=''){
   let planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
   let cartBtn=currentUser?`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
-  let chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat')" aria-label="Chat"><span>&#128172;</span></button>`:'';
+  let chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Chat"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
   return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${action?`<button class="icon-btn" onclick="${action.click}">${action.icon}</button>`:''}</div></div></div>`;
 }
 
@@ -920,7 +925,7 @@ function renderInicio(){
   const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat')" aria-label="Mensagens"><span>&#128172;</span></button>`:'';
+  const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Mensagens"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
   const cartBtn=currentUser?`<button class="icon-btn" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
   const speciesEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Coelho:'&#128048;',Roedor:'&#128057;',Reptil:'&#129422;',Peixe:'&#128031;'};
   const petStatus=(p)=>{const st=petHomeStatus(p);return`<div class="home-pet-status ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</div>`;};
@@ -2420,20 +2425,42 @@ function openLightbox(src){
   lb.onclick=()=>lb.remove();document.body.appendChild(lb);
 }
 
+async function refreshChatBadge(){
+  try{
+    const ms=await api('/api/match/matches');
+    chatList=ms||[];
+    chatUnreadTotal=chatList.reduce((s,m)=>s+(m.unread||0),0);
+    const cb=document.getElementById('chatBadge');
+    if(cb&&chatUnreadTotal>0){cb.textContent=chatUnreadTotal>9?'9+':chatUnreadTotal;cb.style.display='inline-block';}
+    else if(cb){cb.style.display='none';}
+  }catch(e){}
+}
 async function renderChatModal(){
   try{
-    const matches=await api('/api/match/matches');
+    await refreshChatBadge();
+    const matches=chatList;
     const root=document.getElementById('modal-root');
     if(!root)return;
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Chat</div><button class="close" onclick="closeModal()">X</button></div>
       ${matches.length===0?'<p style="text-align:center;color:var(--soft)">Nenhum match ainda. Use o Match para encontrar amigos!</p>':''}
       ${matches.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line);cursor:pointer" onclick="openChat(${m.id},'${sj(m.partner_name)}','${sj(m.partner_avatar||'')}')">
         <div class="avatar"><img src="${su(m.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
-        <div style="flex:1"><b style="font-size:13px">${esc(m.partner_name)}</b><div class="small">Clique para conversar</div></div>
+        <div style="flex:1;min-width:0"><b style="font-size:13px">${esc(m.partner_name)}</b>
+          <div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.last_message?`${m.last_sender_id===currentUser?.id?'Voce: ':''}${esc(typeof m.last_message==='string'?m.last_message:'')}`:'Clique para conversar'}${m.last_message?' &bull; '+shortTime(m.last_message_time):''}</div>
+        </div>
+        ${(m.unread||0)>0?`<span class="chat-badge" style="position:static;flex-shrink:0">${m.unread>9?'9+':m.unread}</span>`:''}
       </div>`).join('')}
     </div></div>`;
     document.body.appendChild(root);
   }catch(e){}
+}
+function shortTime(ts){
+  if(!ts)return '';
+  const d=new Date(String(ts)+'Z');
+  const c=new Date();
+  const sameDay=d.getDate()===c.getDate()&&d.getMonth()===c.getMonth()&&d.getFullYear()===c.getFullYear();
+  if(sameDay)return d.toTimeString().slice(0,5);
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
 }
 
 let currentChatMatchId=null;
@@ -2444,7 +2471,7 @@ async function openChat(matchId,partnerName,partnerAvatar){
   const root=document.getElementById('modal-root');
   if(!root)return;
   root.innerHTML=`<div class="modal-bg" style="height:100%;align-items:stretch" onclick="if(event.target===this)closeModal()"><div class="modal" style="border-radius:0;max-height:100%;height:100%;display:flex;flex-direction:column">
-    <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><b>${esc(partnerName)}</b></div></div>
+    <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><div><b>${esc(partnerName)}</b><div id="chatLastSeen" class="small" style="color:var(--soft);font-weight:400"></div></div></div></div>
     <div class="chat-window"><div class="chat-messages" id="chatMessages"></div>
     <div id="chatTyping" style="display:none;font-size:10px;color:var(--soft);padding:2px 8px">Digitando...</div>
     <div id="stickerPicker" style="display:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;margin-bottom:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
@@ -2457,6 +2484,7 @@ async function openChat(matchId,partnerName,partnerAvatar){
     <div class="chat-input"><input id="chatInput" placeholder="Mensagem..." onkeydown="if(event.key==='Enter')sendChatMsg();if(event.key)sendWS({type:'typing',matchId:${matchId}})"><button class="btn small-btn" onclick="sendChatMsg()">Enviar</button></div>
   </div></div>`;
   document.body.appendChild(root);
+  sendWS({type:'read',matchId});
   await loadChatMessages();
 }
 
@@ -2467,6 +2495,9 @@ async function loadChatMessages(){
     const messages=await api('/api/match/matches/'+currentChatMatchId+'/messages');
     el.innerHTML=messages.map(m=>`<div class="chat-bubble ${m.sender_id===currentUser?.id?'sent':'received'}">${esc(m.text)}<div style="font-size:9px;margin-top:4px;opacity:.7">${formatDate(m.created_at)}</div></div>`).join('');
     el.scrollTop=el.scrollHeight;
+    const mm=chatList.find(x=>x.id===currentChatMatchId);
+    if(mm)mm.unread=0;
+    refreshChatBadge();
   }catch(e){}
 }
 
@@ -2960,10 +2991,11 @@ async function acceptAiMatch(pet1Id,pet2Id,score){
   try{await api('/api/aimatch/accept',{method:'POST',body:JSON.stringify({pet1_id:pet1Id,pet2_id:pet2Id,score})});alert('Match aceito!');}catch(e){alert(e.message);}
 }
 
-function openChatWith(userId){
-  const match=matches.find(m=>m.partner_id===userId);
-  if(match){setTab('match');setTimeout(()=>openChat(match.id,match.partner_name,match.partner_avatar),300);}
-  else{setTab('match');}
+async function openChatWith(userId){
+  if(!chatList.length)await refreshChatBadge();
+  const match=chatList.find(m=>m.partner_id===userId);
+  setTab('match');
+  if(match)setTimeout(()=>openChat(match.id,match.partner_name,match.partner_avatar),300);
 }
 
 async function addPetPhoto(){

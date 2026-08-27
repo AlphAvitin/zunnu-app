@@ -219,16 +219,21 @@ router.get('/matches', authMiddleware, async (req, res) => {
       SELECT m.*,
         CASE WHEN m.user1_id = ? THEN u2.id ELSE u1.id END as partner_id,
         CASE WHEN m.user1_id = ? THEN u2.name ELSE u1.name END as partner_name,
-        CASE WHEN m.user1_id = ? THEN u2.avatar ELSE u1.avatar END as partner_avatar
+        CASE WHEN m.user1_id = ? THEN u2.avatar ELSE u1.avatar END as partner_avatar,
+        (SELECT COUNT(*) FROM messages ms WHERE ms.match_id = m.id AND ms.sender_id != ? AND ms.is_read = 0) as unread,
+        (SELECT text FROM messages ms2 WHERE ms2.match_id = m.id ORDER BY ms2.id DESC LIMIT 1) as last_message,
+        (SELECT sender_id FROM messages ms3 WHERE ms3.match_id = m.id ORDER BY ms3.id DESC LIMIT 1) as last_sender_id,
+        (SELECT created_at FROM messages ms4 WHERE ms4.match_id = m.id ORDER BY ms4.id DESC LIMIT 1) as last_message_time
       FROM matches m
       JOIN users u1 ON m.user1_id = u1.id
       JOIN users u2 ON m.user2_id = u2.id
       WHERE m.user1_id = ? OR m.user2_id = ?
-      ORDER BY m.created_at DESC
-    `, [req.userId, req.userId, req.userId, req.userId, req.userId]);
+      ORDER BY COALESCE(last_message_time, m.created_at) DESC
+    `, [req.userId, req.userId, req.userId, req.userId, req.userId, req.userId]);
 
     res.json(matches);
   } catch (err) {
+    console.error('Match list error:', err);
     res.status(500).json({ error: 'Erro interno' });
   }
 });
@@ -240,6 +245,8 @@ router.get('/matches/:matchId/messages', authMiddleware, async (req, res) => {
 
     if (!match) return res.status(403).json({ error: 'Sem acesso a esta conversa' });
 
+    const unreadSenders = await all('SELECT DISTINCT sender_id FROM messages WHERE match_id = ? AND sender_id != ? AND is_read = 0', [req.params.matchId, req.userId]);
+
     const messages = await all(`
       SELECT m.*, u.name as sender_name, u.avatar as sender_avatar
       FROM messages m JOIN users u ON m.sender_id = u.id
@@ -249,6 +256,8 @@ router.get('/matches/:matchId/messages', authMiddleware, async (req, res) => {
 
     await run('UPDATE messages SET is_read = 1 WHERE match_id = ? AND sender_id != ? AND is_read = 0',
       [req.params.matchId, req.userId]);
+
+    unreadSenders.forEach(r => sendToUser(r.sender_id, { type: 'read', matchId: parseInt(req.params.matchId) }));
 
     res.json(messages);
   } catch (err) {
