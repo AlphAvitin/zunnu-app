@@ -508,6 +508,7 @@ async function migrate() {
       'ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0'
     ];
     for (const a of alterations) { try { await _pool.query(a); } catch (e) {} }
+    await _pool.query("UPDATE users SET is_admin = 1 WHERE email = 'mariana@patai.com'");
   } else {
     const addCol = (table, col, ddl) => {
       let cols = [];
@@ -528,6 +529,7 @@ async function migrate() {
     addCol('users', 'longitude', 'longitude REAL');
     addCol('users', 'birth_date', 'birth_date TEXT');
     addCol('messages', 'is_read', 'is_read INTEGER DEFAULT 0');
+    _db.run("UPDATE users SET is_admin = 1 WHERE email = 'mariana@patai.com'");
   }
 }
 
