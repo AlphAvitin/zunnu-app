@@ -116,6 +116,7 @@ router.get('/me', authMiddleware, async (req, res) => {
       stats: { pets: pets.count, posts: posts.count, matches: matches.count }
     });
   } catch (err) {
+    console.error('GET /me error:', err.message);
     res.status(500).json({ error: 'Erro interno' });
   }
 });

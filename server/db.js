@@ -495,6 +495,42 @@ CREATE TABLE IF NOT EXISTS points_transactions (
 );
 `;
 
+async function migrate() {
+  if (USE_PG) {
+    const alterations = [
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin INTEGER DEFAULT 0',
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS points_balance INTEGER DEFAULT 0',
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS selfie_url TEXT',
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS is_private INTEGER DEFAULT 0',
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS business_type TEXT',
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION',
+      'ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION',
+      'ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0'
+    ];
+    for (const a of alterations) { try { await _pool.query(a); } catch (e) {} }
+  } else {
+    const addCol = (table, col, ddl) => {
+      let cols = [];
+      try {
+        const info = _db.exec(`PRAGMA table_info(${table})`);
+        cols = info.length ? info[0].values.map(r => r[1]) : [];
+      } catch (e) {}
+      if (!cols.includes(col)) {
+        try { _db.run(`ALTER TABLE ${table} ADD COLUMN ${ddl}`); } catch (e) {}
+      }
+    };
+    addCol('users', 'is_admin', 'is_admin INTEGER DEFAULT 0');
+    addCol('users', 'points_balance', 'points_balance INTEGER DEFAULT 0');
+    addCol('users', 'selfie_url', 'selfie_url TEXT');
+    addCol('users', 'is_private', 'is_private INTEGER DEFAULT 0');
+    addCol('users', 'business_type', 'business_type TEXT');
+    addCol('users', 'latitude', 'latitude REAL');
+    addCol('users', 'longitude', 'longitude REAL');
+    addCol('users', 'birth_date', 'birth_date TEXT');
+    addCol('messages', 'is_read', 'is_read INTEGER DEFAULT 0');
+  }
+}
+
 async function initDB() {
   if (USE_PG) {
     if (_pool) return _pool;
@@ -505,6 +541,7 @@ async function initDB() {
       connectionTimeoutMillis: 10000
     });
     await _pool.query(PG_SCHEMA);
+    await migrate();
     return _pool;
   }
   if (_db) return _db;
@@ -517,6 +554,7 @@ async function initDB() {
   }
   _db.run('PRAGMA foreign_keys = ON');
   createTables(_db);
+  migrate();
   saveDB();
   return _db;
 }
