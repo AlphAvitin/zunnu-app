@@ -4,7 +4,7 @@ const { authMiddleware, optionalAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', optionalAuth, (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { search } = req.query;
     let where = 'WHERE s.is_active = 1';
@@ -12,7 +12,7 @@ router.get('/', optionalAuth, (req, res) => {
 
     if (search) { where += ' AND (s.title LIKE ? OR u.name LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
 
-    const services = all(`
+    const services = await all(`
       SELECT s.*, u.name as provider_name, u.avatar as provider_avatar, u.plan as provider_plan
       FROM services s JOIN users u ON s.provider_id = u.id
       ${where}
@@ -28,7 +28,7 @@ router.get('/', optionalAuth, (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     if (req.userPlan !== 'pro') {
       return res.status(403).json({ error: 'Apenas assinantes PRO podem cadastrar servicos' });
@@ -37,23 +37,23 @@ router.post('/', authMiddleware, (req, res) => {
     const { title, price, duration, icon, description } = req.body;
     if (!title || !price) return res.status(400).json({ error: 'Titulo e preco obrigatorios' });
 
-    const result = run('INSERT INTO services (provider_id, title, price, duration, icon, description) VALUES (?, ?, ?, ?, ?, ?)',
+    const result = await run('INSERT INTO services (provider_id, title, price, duration, icon, description) VALUES (?, ?, ?, ?, ?, ?)',
       [req.userId, title.trim(), parseFloat(price), duration || '', icon || '🩺', description || '']);
 
-    const service = get('SELECT * FROM services WHERE id = ?', [result.lastInsertRowid]);
+    const service = await get('SELECT * FROM services WHERE id = ?', [result.lastInsertRowid]);
     res.json(service);
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.delete('/:id', authMiddleware, (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const service = get('SELECT * FROM services WHERE id = ?', [req.params.id]);
+    const service = await get('SELECT * FROM services WHERE id = ?', [req.params.id]);
     if (!service) return res.status(404).json({ error: 'Servico nao encontrado' });
     if (service.provider_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
-    run('DELETE FROM services WHERE id = ?', [req.params.id]);
+    await run('DELETE FROM services WHERE id = ?', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });

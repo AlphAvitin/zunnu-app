@@ -109,7 +109,7 @@ router.get('/me', authMiddleware, async (req, res) => {
     const posts = await get('SELECT COUNT(*) as count FROM posts WHERE user_id = ?', [req.userId]);
     const matches = await get('SELECT COUNT(*) as count FROM matches WHERE user1_id = ? OR user2_id = ?', [req.userId, req.userId]);
 
-    creditPoints(req.userId, 'daily_login');
+    await creditPoints(req.userId, 'daily_login');
 
     res.json({
       ...user,

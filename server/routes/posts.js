@@ -20,7 +20,7 @@ function containsOffensiveText(text) {
   return BLOCKED_WORDS.some(w => new RegExp(`\\b${w}\\b`, 'i').test(clean));
 }
 
-router.get('/', optionalAuth, (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -35,7 +35,7 @@ router.get('/', optionalAuth, (req, res) => {
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    const posts = all(`
+    const posts = await all(`
       SELECT p.id, p.text, p.image, p.video_url, p.likes, p.comments_count, p.created_at,
              u.id as user_id, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan
       FROM posts p
@@ -45,7 +45,7 @@ router.get('/', optionalAuth, (req, res) => {
       LIMIT ? OFFSET ?
     `, [...params, limit, offset]);
 
-    const total = get(`
+    const total = await get(`
       SELECT COUNT(*) as count FROM posts p
       JOIN users u ON p.user_id = u.id
       ${whereClause}
@@ -53,7 +53,7 @@ router.get('/', optionalAuth, (req, res) => {
 
     let userLikes = [];
     if (req.userId) {
-      userLikes = all('SELECT post_id FROM post_likes WHERE user_id = ?', [req.userId]).map(r => r.post_id);
+      userLikes = await all('SELECT post_id FROM post_likes WHERE user_id = ?', [req.userId]).then(rows => rows.map(r => r.post_id));
     }
 
     const result = posts.map(p => ({
@@ -70,7 +70,7 @@ router.get('/', optionalAuth, (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const { text, image, video_url } = req.body;
 
@@ -82,15 +82,15 @@ router.post('/', authMiddleware, (req, res) => {
       return res.status(400).json({ error: 'Mensagem contem termos ofensivos' });
     }
 
-    const result = run('INSERT INTO posts (user_id, text, image, video_url) VALUES (?, ?, ?, ?)',
+    const result = await run('INSERT INTO posts (user_id, text, image, video_url) VALUES (?, ?, ?, ?)',
       [req.userId, text.trim(), image || null, video_url || null]);
 
-    const post = get(`
+    const post = await get(`
       SELECT p.*, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan
       FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = ?
     `, [result.lastInsertRowid]);
 
-    creditPoints(req.userId, 'create_post');
+    await creditPoints(req.userId, 'create_post');
 
     res.json({
       ...post,
@@ -111,9 +111,9 @@ router.post('/', authMiddleware, (req, res) => {
   }
 });
 
-router.put('/:id', authMiddleware, (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const post = get('SELECT * FROM posts WHERE id = ?', [req.params.id]);
+    const post = await get('SELECT * FROM posts WHERE id = ?', [req.params.id]);
     if (!post) return res.status(404).json({ error: 'Post nao encontrado' });
     if (post.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
@@ -122,47 +122,47 @@ router.put('/:id', authMiddleware, (req, res) => {
       return res.status(400).json({ error: 'Mensagem contem termos ofensivos' });
     }
 
-    run('UPDATE posts SET text = ? WHERE id = ?', [text || post.text, req.params.id]);
+    await run('UPDATE posts SET text = ? WHERE id = ?', [text || post.text, req.params.id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.delete('/:id', authMiddleware, (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const post = get('SELECT * FROM posts WHERE id = ?', [req.params.id]);
+    const post = await get('SELECT * FROM posts WHERE id = ?', [req.params.id]);
     if (!post) return res.status(404).json({ error: 'Post nao encontrado' });
     if (post.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
-    run('DELETE FROM posts WHERE id = ?', [req.params.id]);
+    await run('DELETE FROM posts WHERE id = ?', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.post('/:id/like', authMiddleware, (req, res) => {
+router.post('/:id/like', authMiddleware, async (req, res) => {
   try {
     const postId = parseInt(req.params.id);
-    const post = get('SELECT user_id FROM posts WHERE id = ?', [postId]);
+    const post = await get('SELECT user_id FROM posts WHERE id = ?', [postId]);
     if (!post) return res.status(404).json({ error: 'Post nao encontrado' });
-    const existing = get('SELECT * FROM post_likes WHERE user_id = ? AND post_id = ?', [req.userId, postId]);
+    const existing = await get('SELECT * FROM post_likes WHERE user_id = ? AND post_id = ?', [req.userId, postId]);
 
     if (existing) {
-      run('DELETE FROM post_likes WHERE user_id = ? AND post_id = ?', [req.userId, postId]);
-      run('UPDATE posts SET likes = MAX(0, likes - 1) WHERE id = ?', [postId]);
+      await run('DELETE FROM post_likes WHERE user_id = ? AND post_id = ?', [req.userId, postId]);
+      await run('UPDATE posts SET likes = MAX(0, likes - 1) WHERE id = ?', [postId]);
     } else {
-      run('INSERT INTO post_likes (user_id, post_id) VALUES (?, ?)', [req.userId, postId]);
-      run('UPDATE posts SET likes = likes + 1 WHERE id = ?', [postId]);
+      await run('INSERT INTO post_likes (user_id, post_id) VALUES (?, ?)', [req.userId, postId]);
+      await run('UPDATE posts SET likes = likes + 1 WHERE id = ?', [postId]);
       if (post.user_id !== req.userId) {
-        const liker = get('SELECT name FROM users WHERE id = ?', [req.userId]);
-        run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+        const liker = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
+        await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
           [post.user_id, 'like', `${liker?.name||'Alguem'} curtiu seu post!`, postId]);
       }
     }
 
-    const updated = get('SELECT likes FROM posts WHERE id = ?', [postId]);
+    const updated = await get('SELECT likes FROM posts WHERE id = ?', [postId]);
     res.json({ likes: updated.likes, liked: !existing });
 
     broadcast({ type: 'post_like', postId, likes: updated.likes, liked: !existing, userId: req.userId }, req.userId);
@@ -171,9 +171,9 @@ router.post('/:id/like', authMiddleware, (req, res) => {
   }
 });
 
-router.get('/:id/comments', optionalAuth, (req, res) => {
+router.get('/:id/comments', optionalAuth, async (req, res) => {
   try {
-    const comments = all(`
+    const comments = await all(`
       SELECT c.id, c.text, c.created_at, u.id as user_id, u.name as user_name, u.avatar as user_avatar
       FROM comments c JOIN users u ON c.user_id = u.id
       WHERE c.post_id = ?
@@ -186,7 +186,7 @@ router.get('/:id/comments', optionalAuth, (req, res) => {
   }
 });
 
-router.post('/:id/comments', authMiddleware, (req, res) => {
+router.post('/:id/comments', authMiddleware, async (req, res) => {
   try {
     const { text } = req.body;
     if (!text || !text.trim()) return res.status(400).json({ error: 'Texto obrigatorio' });
@@ -196,23 +196,23 @@ router.post('/:id/comments', authMiddleware, (req, res) => {
     }
 
     const postId = parseInt(req.params.id);
-    const post = get('SELECT user_id FROM posts WHERE id = ?', [postId]);
+    const post = await get('SELECT user_id FROM posts WHERE id = ?', [postId]);
     if (!post) return res.status(404).json({ error: 'Post nao encontrado' });
 
-    run('INSERT INTO comments (post_id, user_id, text) VALUES (?, ?, ?)',
+    await run('INSERT INTO comments (post_id, user_id, text) VALUES (?, ?, ?)',
       [postId, req.userId, text.trim()]);
 
-    run('UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?', [postId]);
+    await run('UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?', [postId]);
 
-    const comment = get(`
+    const comment = await get(`
       SELECT c.*, u.name as user_name, u.avatar as user_avatar
       FROM comments c JOIN users u ON c.user_id = u.id
       ORDER BY c.id DESC LIMIT 1
     `);
 
     if (post.user_id !== req.userId) {
-      const commenter = get('SELECT name FROM users WHERE id = ?', [req.userId]);
-      run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+      const commenter = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
+      await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
         [post.user_id, 'comment', `${commenter?.name||'Alguem'} comentou no seu post!`, postId]);
     }
 
@@ -224,10 +224,10 @@ router.post('/:id/comments', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/:id/report', authMiddleware, (req, res) => {
+router.post('/:id/report', authMiddleware, async (req, res) => {
   try {
     const { reason } = req.body;
-    run('INSERT INTO reports (reporter_id, post_id, reason) VALUES (?, ?, ?)',
+    await run('INSERT INTO reports (reporter_id, post_id, reason) VALUES (?, ?, ?)',
       [req.userId, req.params.id, reason || 'Nao especificado']);
     res.json({ success: true, message: 'Denuncia recebida' });
   } catch (err) {

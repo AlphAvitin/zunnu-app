@@ -5,10 +5,10 @@ const { sendToUser } = require('../ws');
 
 const router = express.Router();
 
-router.get('/user/:id', authMiddleware, (req, res) => {
+router.get('/user/:id', authMiddleware, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
-    const user = get(`
+    const user = await get(`
       SELECT id, name, avatar, bio, location, plan, created_at, is_human_verified,
         (SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = ?) as i_follow,
         (SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = ?) as they_follow,
@@ -20,8 +20,8 @@ router.get('/user/:id', authMiddleware, (req, res) => {
     `, [req.userId, userId, userId, req.userId, userId, userId, userId, userId, userId]);
     if (!user) return res.status(404).json({ error: 'Usuario nao encontrado' });
 
-    const pets = all('SELECT * FROM pets WHERE user_id = ?', [userId]);
-    const recentPosts = all(`
+    const pets = await all('SELECT * FROM pets WHERE user_id = ?', [userId]);
+    const recentPosts = await all(`
       SELECT p.*, u.name as user_name, u.avatar as user_avatar, u.plan as user_badge,
         (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count,
         (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes,
@@ -38,24 +38,24 @@ router.get('/user/:id', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/follow/:id', authMiddleware, (req, res) => {
+router.post('/follow/:id', authMiddleware, async (req, res) => {
   try {
     const targetId = parseInt(req.params.id);
     if (targetId === req.userId) return res.status(400).json({ error: 'Nao pode seguir a si mesmo' });
 
-    const target = get('SELECT id FROM users WHERE id = ?', [targetId]);
+    const target = await get('SELECT id FROM users WHERE id = ?', [targetId]);
     if (!target) return res.status(404).json({ error: 'Usuario nao encontrado' });
 
-    const existing = get('SELECT * FROM follows WHERE follower_id = ? AND following_id = ?',
+    const existing = await get('SELECT * FROM follows WHERE follower_id = ? AND following_id = ?',
       [req.userId, targetId]);
 
     if (existing) {
-      run('DELETE FROM follows WHERE follower_id = ? AND following_id = ?', [req.userId, targetId]);
+      await run('DELETE FROM follows WHERE follower_id = ? AND following_id = ?', [req.userId, targetId]);
       res.json({ following: false });
     } else {
-      run('INSERT INTO follows (follower_id, following_id) VALUES (?, ?)', [req.userId, targetId]);
-      const follower = get('SELECT name FROM users WHERE id = ?', [req.userId]);
-      run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+      await run('INSERT INTO follows (follower_id, following_id) VALUES (?, ?)', [req.userId, targetId]);
+      const follower = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
+      await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
         [targetId, 'follow', `${follower?.name||'Alguem'} comecou a te seguir!`, req.userId]);
       res.json({ following: true });
       sendToUser(targetId, { type: 'new_follower', followerId: req.userId });
@@ -66,9 +66,9 @@ router.post('/follow/:id', authMiddleware, (req, res) => {
   }
 });
 
-router.get('/followers/:id', authMiddleware, (req, res) => {
+router.get('/followers/:id', authMiddleware, async (req, res) => {
   try {
-    const users = all(`
+    const users = await all(`
       SELECT u.id, u.name, u.avatar, u.plan, u.bio,
         (SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = u.id) as i_follow
       FROM follows f JOIN users u ON f.follower_id = u.id
@@ -81,9 +81,9 @@ router.get('/followers/:id', authMiddleware, (req, res) => {
   }
 });
 
-router.get('/following/:id', authMiddleware, (req, res) => {
+router.get('/following/:id', authMiddleware, async (req, res) => {
   try {
-    const users = all(`
+    const users = await all(`
       SELECT u.id, u.name, u.avatar, u.plan, u.bio,
         (SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = u.id) as i_follow
       FROM follows f JOIN users u ON f.following_id = u.id
@@ -96,13 +96,13 @@ router.get('/following/:id', authMiddleware, (req, res) => {
   }
 });
 
-router.get('/feed', authMiddleware, (req, res) => {
+router.get('/feed', authMiddleware, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const offset = (page - 1) * limit;
 
-    const posts = all(`
+    const posts = await all(`
       SELECT p.*, u.name as user_name, u.avatar as user_avatar, u.plan as user_badge,
         (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comments_count,
         (SELECT COUNT(*) FROM likes WHERE post_id = p.id) as likes,

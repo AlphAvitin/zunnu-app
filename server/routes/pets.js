@@ -5,46 +5,46 @@ const { creditPoints } = require('./points');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    const pets = all('SELECT * FROM pets WHERE user_id = ? ORDER BY created_at DESC', [req.userId]);
-    pets.forEach(p => {
-      p.vaccines = all('SELECT * FROM vaccines WHERE pet_id = ?', [p.id]);
+    const pets = await all('SELECT * FROM pets WHERE user_id = ? ORDER BY created_at DESC', [req.userId]);
+    for (const p of pets) {
+      p.vaccines = await all('SELECT * FROM vaccines WHERE pet_id = ?', [p.id]);
       p.is_castrated = !!p.is_castrated;
-    });
+    }
     res.json(pets);
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.get('/all', optionalAuth, (req, res) => {
+router.get('/all', optionalAuth, async (req, res) => {
   try {
-    const pets = all(`
+    const pets = await all(`
       SELECT p.*, u.name as tutor_name, u.avatar as tutor_avatar
       FROM pets p JOIN users u ON p.user_id = u.id
       ORDER BY p.created_at DESC
     `);
-    pets.forEach(p => {
-      p.vaccines = all('SELECT * FROM vaccines WHERE pet_id = ?', [p.id]);
+    for (const p of pets) {
+      p.vaccines = await all('SELECT * FROM vaccines WHERE pet_id = ?', [p.id]);
       p.is_castrated = !!p.is_castrated;
-    });
+    }
     res.json(pets);
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.get('/:id', optionalAuth, (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
-    const pet = get(`
+    const pet = await get(`
       SELECT p.*, u.name as tutor_name, u.avatar as tutor_avatar, u.id as user_id
       FROM pets p JOIN users u ON p.user_id = u.id WHERE p.id = ?
     `, [req.params.id]);
 
     if (!pet) return res.status(404).json({ error: 'Pet nao encontrado' });
 
-    pet.vaccines = all('SELECT * FROM vaccines WHERE pet_id = ?', [pet.id]);
+    pet.vaccines = await all('SELECT * FROM vaccines WHERE pet_id = ?', [pet.id]);
     pet.is_castrated = !!pet.is_castrated;
 
     res.json(pet);
@@ -53,15 +53,15 @@ router.get('/:id', optionalAuth, (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const { name, species, breed, age, location, image, isCastrated, zodiac } = req.body;
 
     if (!name || !name.trim()) return res.status(400).json({ error: 'Nome do pet obrigatorio' });
 
-    const user = get('SELECT name, location FROM users WHERE id = ?', [req.userId]);
+    const user = await get('SELECT name, location FROM users WHERE id = ?', [req.userId]);
 
-    const result = run(`
+    const result = await run(`
       INSERT INTO pets (user_id, name, species, breed, age, location, image, is_castrated, zodiac)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
@@ -76,11 +76,11 @@ router.post('/', authMiddleware, (req, res) => {
       zodiac || ''
     ]);
 
-    const pet = get('SELECT * FROM pets WHERE id = ?', [result.lastInsertRowid]);
+    const pet = await get('SELECT * FROM pets WHERE id = ?', [result.lastInsertRowid]);
     pet.vaccines = [];
     pet.is_castrated = !!pet.is_castrated;
 
-    creditPoints(req.userId, 'add_pet');
+    await creditPoints(req.userId, 'add_pet');
 
     res.json(pet);
   } catch (err) {
@@ -88,15 +88,15 @@ router.post('/', authMiddleware, (req, res) => {
   }
 });
 
-router.put('/:id', authMiddleware, (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const pet = get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
+    const pet = await get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
     if (!pet) return res.status(404).json({ error: 'Pet nao encontrado' });
     if (pet.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
     const { name, species, breed, age, location, image, isCastrated, zodiac } = req.body;
 
-    run(`
+    await run(`
       UPDATE pets SET name = ?, species = ?, breed = ?, age = ?, location = ?, image = ?, is_castrated = ?, zodiac = ?
       WHERE id = ?
     `, [
@@ -106,8 +106,8 @@ router.put('/:id', authMiddleware, (req, res) => {
       zodiac || pet.zodiac, req.params.id
     ]);
 
-    const updated = get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
-    updated.vaccines = all('SELECT * FROM vaccines WHERE pet_id = ?', [updated.id]);
+    const updated = await get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
+    updated.vaccines = await all('SELECT * FROM vaccines WHERE pet_id = ?', [updated.id]);
     updated.is_castrated = !!updated.is_castrated;
     res.json(updated);
   } catch (err) {
@@ -115,47 +115,47 @@ router.put('/:id', authMiddleware, (req, res) => {
   }
 });
 
-router.delete('/:id', authMiddleware, (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const pet = get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
+    const pet = await get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
     if (!pet) return res.status(404).json({ error: 'Pet nao encontrado' });
     if (pet.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
-    run('DELETE FROM pets WHERE id = ?', [req.params.id]);
+    await run('DELETE FROM pets WHERE id = ?', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.post('/:id/vaccines', authMiddleware, (req, res) => {
+router.post('/:id/vaccines', authMiddleware, async (req, res) => {
   try {
-    const pet = get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
+    const pet = await get('SELECT * FROM pets WHERE id = ?', [req.params.id]);
     if (!pet) return res.status(404).json({ error: 'Pet nao encontrado' });
     if (pet.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
     const { name, date, status } = req.body;
     if (!name) return res.status(400).json({ error: 'Nome da vacina obrigatorio' });
 
-    run('INSERT INTO vaccines (pet_id, name, date, status) VALUES (?, ?, ?, ?)',
+    await run('INSERT INTO vaccines (pet_id, name, date, status) VALUES (?, ?, ?, ?)',
       [req.params.id, name.trim(), date || '', status || 'A agendar']);
 
-    const vaccines = all('SELECT * FROM vaccines WHERE pet_id = ?', [req.params.id]);
+    const vaccines = await all('SELECT * FROM vaccines WHERE pet_id = ?', [req.params.id]);
     res.json(vaccines);
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.delete('/:petId/vaccines/:vaccineId', authMiddleware, (req, res) => {
+router.delete('/:petId/vaccines/:vaccineId', authMiddleware, async (req, res) => {
   try {
-    const pet = get('SELECT * FROM pets WHERE id = ?', [req.params.petId]);
+    const pet = await get('SELECT * FROM pets WHERE id = ?', [req.params.petId]);
     if (!pet) return res.status(404).json({ error: 'Pet nao encontrado' });
     if (pet.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
-    run('DELETE FROM vaccines WHERE id = ? AND pet_id = ?', [req.params.vaccineId, req.params.petId]);
+    await run('DELETE FROM vaccines WHERE id = ? AND pet_id = ?', [req.params.vaccineId, req.params.petId]);
 
-    const vaccines = all('SELECT * FROM vaccines WHERE pet_id = ?', [req.params.petId]);
+    const vaccines = await all('SELECT * FROM vaccines WHERE pet_id = ?', [req.params.petId]);
     res.json(vaccines);
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });

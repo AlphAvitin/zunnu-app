@@ -5,3 +5,4 @@ server/zunnu.db
 android/
 .DS_Store
 *.log
+*.txt

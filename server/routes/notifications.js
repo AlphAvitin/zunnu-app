@@ -4,14 +4,14 @@ const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    const notifications = all(
+    const notifications = await all(
       'SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50',
       [req.userId]
     );
 
-    const unread = get(
+    const unread = await get(
       'SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0',
       [req.userId]
     );
@@ -22,18 +22,18 @@ router.get('/', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/read', authMiddleware, (req, res) => {
+router.post('/read', authMiddleware, async (req, res) => {
   try {
-    run('UPDATE notifications SET is_read = 1 WHERE user_id = ?', [req.userId]);
+    await run('UPDATE notifications SET is_read = 1 WHERE user_id = ?', [req.userId]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
   }
 });
 
-router.post('/read/:id', authMiddleware, (req, res) => {
+router.post('/read/:id', authMiddleware, async (req, res) => {
   try {
-    run('UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
+    await run('UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });

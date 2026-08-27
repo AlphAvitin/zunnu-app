@@ -31,11 +31,11 @@ router.post('/create-pix', authMiddleware, async (req, res) => {
     if (!PLANS[plan]) return res.status(400).json({ error: 'Plano invalido' });
 
     const planData = PLANS[plan];
-    const user = get('SELECT id, name, email FROM users WHERE id = ?', [req.userId]);
+    const user = await get('SELECT id, name, email FROM users WHERE id = ?', [req.userId]);
 
     if (!MP_TOKEN) {
       const txid = `zunnu_${req.userId}_${Date.now()}`;
-      run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
+      await run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
         [req.userId, plan, planData.price, null, txid, 'pending']);
       return res.json({ txid, plan, amount: planData.price, pixQrCode: null, pixCopyPaste: null, sandbox: true });
     }
@@ -54,7 +54,7 @@ router.post('/create-pix', authMiddleware, async (req, res) => {
     const mpId = String(mpRes.data.id);
     const txData = mpRes.data.point_of_interaction?.transaction_data || {};
 
-    run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
+    await run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
       [req.userId, plan, planData.price, txData.qr_code_base64 || null, mpId, 'pending']);
 
     res.json({
@@ -77,11 +77,11 @@ router.post('/create-product-pix', authMiddleware, async (req, res) => {
     const { productId, title, price } = req.body;
     if (!title || !price) return res.status(400).json({ error: 'Dados do produto invalidos' });
 
-    const user = get('SELECT id, name, email FROM users WHERE id = ?', [req.userId]);
+    const user = await get('SELECT id, name, email FROM users WHERE id = ?', [req.userId]);
 
     if (!MP_TOKEN) {
       const txid = `zunnu_prod_${req.userId}_${Date.now()}`;
-      run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
+      await run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
         [req.userId, 'product', price, null, txid, 'pending']);
       return res.json({ txid, title, amount: price, pixQrCode: null, pixCopyPaste: null, sandbox: true });
     }
@@ -100,7 +100,7 @@ router.post('/create-product-pix', authMiddleware, async (req, res) => {
     const mpId = String(mpRes.data.id);
     const txData = mpRes.data.point_of_interaction?.transaction_data || {};
 
-    run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
+    await run('INSERT INTO payments (user_id, plan, amount, pix_code, txid, status) VALUES (?, ?, ?, ?, ?, ?)',
       [req.userId, 'product', price, txData.qr_code_base64 || null, mpId, 'pending']);
 
     res.json({
@@ -120,7 +120,7 @@ router.post('/create-product-pix', authMiddleware, async (req, res) => {
 
 router.post('/confirm/:txid', authMiddleware, async (req, res) => {
   try {
-    const payment = get('SELECT * FROM payments WHERE txid = ? AND user_id = ?',
+    const payment = await get('SELECT * FROM payments WHERE txid = ? AND user_id = ?',
       [req.params.txid, req.userId]);
 
     if (!payment) return res.status(404).json({ error: 'Pagamento nao encontrado' });
@@ -130,9 +130,9 @@ router.post('/confirm/:txid', authMiddleware, async (req, res) => {
       const created = new Date(payment.created_at).getTime();
       const elapsed = Date.now() - created;
       if (elapsed > 5000) {
-        run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?",
+        await run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?",
           [payment.txid]);
-        run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
+        await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
         const { sendToUser } = require('../ws');
         sendToUser(req.userId, { type: 'notification', notification: { type: 'payment', message: `Plano ${payment.plan.toUpperCase()} ativado com sucesso!` } });
         return res.json({ status: 'paid', plan: payment.plan, message: 'Plano ativado com sucesso!' });
@@ -146,9 +146,9 @@ router.post('/confirm/:txid', authMiddleware, async (req, res) => {
 
     const mpStatus = mpRes.data.status;
     if (mpStatus === 'approved') {
-      run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?",
+      await run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?",
         [payment.txid]);
-      run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
+      await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
       return res.json({ status: 'paid', plan: payment.plan, message: 'Plano ativado com sucesso!' });
     }
 
@@ -171,10 +171,10 @@ router.post('/webhook', async (req, res) => {
       const mpPayment = mpRes.data;
       if (mpPayment.status === 'approved') {
         const txid = String(mpPayment.id);
-        const payment = get('SELECT * FROM payments WHERE txid = ?', [txid]);
+        const payment = await get('SELECT * FROM payments WHERE txid = ?', [txid]);
         if (payment && payment.status !== 'paid') {
-          run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?", [txid]);
-          run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, payment.user_id]);
+          await run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?", [txid]);
+          await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, payment.user_id]);
         }
       }
     }
@@ -186,10 +186,10 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
-router.get('/status', authMiddleware, (req, res) => {
+router.get('/status', authMiddleware, async (req, res) => {
   try {
-    const user = get('SELECT plan FROM users WHERE id = ?', [req.userId]);
-    const lastPayment = get(
+    const user = await get('SELECT plan FROM users WHERE id = ?', [req.userId]);
+    const lastPayment = await get(
       'SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
       [req.userId]
     );

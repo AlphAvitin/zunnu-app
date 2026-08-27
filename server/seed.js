@@ -14,7 +14,7 @@ async function seed() {
   ];
 
   for (const u of users) {
-    run('INSERT OR IGNORE INTO users (name, email, password_hash, bio, location, plan, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', u);
+    await run('INSERT OR IGNORE INTO users (name, email, password_hash, bio, location, plan, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', u);
   }
 
   const pets = [
@@ -26,7 +26,7 @@ async function seed() {
   ];
 
   for (const p of pets) {
-    run('INSERT OR IGNORE INTO pets (user_id, name, species, breed, age, location, is_castrated, zodiac, image, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
+    await run('INSERT OR IGNORE INTO pets (user_id, name, species, breed, age, location, is_castrated, zodiac, image, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
   }
 
   const vaccines = [
@@ -38,24 +38,24 @@ async function seed() {
   ];
 
   for (const v of vaccines) {
-    run('INSERT OR IGNORE INTO vaccines (pet_id, name, date, status) VALUES (?, ?, ?, ?)', v);
+    await run('INSERT OR IGNORE INTO vaccines (pet_id, name, date, status) VALUES (?, ?, ?, ?)', v);
   }
 
-  run('INSERT OR IGNORE INTO posts (user_id, text, image, likes, comments_count) VALUES (?, ?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO posts (user_id, text, image, likes, comments_count) VALUES (?, ?, ?, ?, ?)',
     [2, 'Passeio matinal do Thor depois do reforco vacinal!', 'https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=600&q=80', 128, 14]);
-  run('INSERT OR IGNORE INTO posts (user_id, text, image, likes, comments_count) VALUES (?, ?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO posts (user_id, text, image, likes, comments_count) VALUES (?, ?, ?, ?, ?)',
     [3, 'Promocao de coleiras impermeaveis e guias na Loja ZUNNU!', 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=600&q=80', 45, 3]);
 
-  run('INSERT OR IGNORE INTO products (seller_id, title, price, image) VALUES (?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO products (seller_id, title, price, image) VALUES (?, ?, ?, ?)',
     [3, 'Coleira Confort Ajustavel', 49.90, 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=400&q=80']);
-  run('INSERT OR IGNORE INTO products (seller_id, title, price, image) VALUES (?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO products (seller_id, title, price, image) VALUES (?, ?, ?, ?)',
     [1, 'Cama Pet Ortopedica G', 139.00, 'https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?auto=format&fit=crop&w=400&q=80']);
 
-  run('INSERT OR IGNORE INTO services (provider_id, title, price, duration, icon) VALUES (?, ?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO services (provider_id, title, price, duration, icon) VALUES (?, ?, ?, ?, ?)',
     [3, 'Banho & Tosa Higienica', 75.00, '1h 30m', 'B']);
-  run('INSERT OR IGNORE INTO services (provider_id, title, price, duration, icon) VALUES (?, ?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO services (provider_id, title, price, duration, icon) VALUES (?, ?, ?, ?, ?)',
     [3, 'Passeio Educativo', 35.00, '50 min', 'P']);
-  run('INSERT OR IGNORE INTO services (provider_id, title, price, duration, icon) VALUES (?, ?, ?, ?, ?)',
+  await run('INSERT OR IGNORE INTO services (provider_id, title, price, duration, icon) VALUES (?, ?, ?, ?, ?)',
     [3, 'Consulta Veterinaria', 150.00, '1h', 'V']);
 
   const reels = [
@@ -67,7 +67,7 @@ async function seed() {
   ];
 
   for (const r of reels) {
-    run('INSERT OR IGNORE INTO reels (user_id, video_url, caption, music) VALUES (?, ?, ?, ?)', r);
+    await run('INSERT OR IGNORE INTO reels (user_id, video_url, caption, music) VALUES (?, ?, ?, ?)', r);
   }
 
   console.log('Seed concluido!');

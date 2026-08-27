@@ -14,7 +14,7 @@ function haversine(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-router.get('/pets', authMiddleware, (req, res) => {
+router.get('/pets', authMiddleware, async (req, res) => {
   try {
     const lat = parseFloat(req.query.lat);
     const lng = parseFloat(req.query.lng);
@@ -40,7 +40,7 @@ router.get('/pets', authMiddleware, (req, res) => {
     }
 
     query += ` ORDER BY p.created_at DESC`;
-    const pets = all(query, params);
+    const pets = await all(query, params);
 
     const nearby = pets.map(p => {
       const dist = haversine(lat, lng, p.latitude, p.longitude);
@@ -55,7 +55,7 @@ router.get('/pets', authMiddleware, (req, res) => {
   }
 });
 
-router.get('/users', authMiddleware, (req, res) => {
+router.get('/users', authMiddleware, async (req, res) => {
   try {
     const lat = parseFloat(req.query.lat);
     const lng = parseFloat(req.query.lng);
@@ -65,7 +65,7 @@ router.get('/users', authMiddleware, (req, res) => {
       return res.json([]);
     }
 
-    const users = all(`
+    const users = await all(`
       SELECT id, name, avatar, bio, location, plan, latitude, longitude
       FROM users
       WHERE latitude IS NOT NULL AND longitude IS NOT NULL AND id != ?
@@ -84,13 +84,13 @@ router.get('/users', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/location', authMiddleware, (req, res) => {
+router.post('/location', authMiddleware, async (req, res) => {
   try {
     const { latitude, longitude } = req.body;
     if (isNaN(latitude) || isNaN(longitude)) {
       return res.status(400).json({ error: 'Coordenadas invalidas' });
     }
-    run('UPDATE users SET latitude = ?, longitude = ? WHERE id = ?',
+    await run('UPDATE users SET latitude = ?, longitude = ? WHERE id = ?',
       [latitude, longitude, req.userId]);
     res.json({ success: true });
   } catch (err) {

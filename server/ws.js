@@ -110,8 +110,8 @@ function handleMessage(ws, userId, msg) {
   }
 }
 
-function broadcastToMatch(matchId, data, excludeUserId) {
-  const match = get('SELECT user1_id, user2_id FROM matches WHERE id = ?', [matchId]);
+async function broadcastToMatch(matchId, data, excludeUserId) {
+  const match = await get('SELECT user1_id, user2_id FROM matches WHERE id = ?', [matchId]);
   if (!match) return;
 
   const ids = [match.user1_id, match.user2_id].filter(id => id !== excludeUserId);

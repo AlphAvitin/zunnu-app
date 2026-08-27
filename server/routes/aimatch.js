@@ -65,12 +65,12 @@ function calculateMatchScore(pet1, pet2) {
   return { score, reasons: reasons.join(', ') || 'Perfil complementar' };
 }
 
-router.get('/suggestions', authMiddleware, (req, res) => {
+router.get('/suggestions', authMiddleware, async (req, res) => {
   try {
-    const myPets = all('SELECT * FROM pets WHERE user_id = ?', [req.userId]);
+    const myPets = await all('SELECT * FROM pets WHERE user_id = ?', [req.userId]);
     if (myPets.length === 0) return res.json([]);
 
-    const otherPets = all(`
+    const otherPets = await all(`
       SELECT p.*, u.name as owner_name, u.avatar as owner_avatar
       FROM pets p JOIN users u ON p.user_id = u.id
       WHERE p.user_id != ?
@@ -81,7 +81,7 @@ router.get('/suggestions', authMiddleware, (req, res) => {
     for (const myPet of myPets) {
       for (const otherPet of otherPets) {
         if (otherPet.user_id === req.userId) continue;
-        const existing = get('SELECT * FROM pet_ai_match WHERE pet1_id = ? AND pet2_id = ?',
+        const existing = await get('SELECT * FROM pet_ai_match WHERE pet1_id = ? AND pet2_id = ?',
           [myPet.id, otherPet.id]);
         if (existing) continue;
 
@@ -106,10 +106,10 @@ router.get('/suggestions', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/accept', authMiddleware, (req, res) => {
+router.post('/accept', authMiddleware, async (req, res) => {
   try {
     const { pet1_id, pet2_id } = req.body;
-    run('INSERT INTO pet_ai_match (pet1_id, pet2_id, score) VALUES (?, ?, ?)',
+    await run('INSERT INTO pet_ai_match (pet1_id, pet2_id, score) VALUES (?, ?, ?)',
       [pet1_id, pet2_id, req.body.score || 0]);
     res.json({ success: true });
   } catch (err) {

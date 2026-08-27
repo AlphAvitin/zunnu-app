@@ -5,11 +5,11 @@ const { broadcast } = require('../ws');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    run("DELETE FROM stories WHERE expires_at < datetime('now')");
+    await run("DELETE FROM stories WHERE expires_at < datetime('now')");
 
-    const stories = all(`
+    const stories = await all(`
       SELECT s.*, u.name as user_name, u.avatar as user_avatar,
         (SELECT COUNT(*) FROM story_views WHERE story_id = s.id) as view_count,
         (SELECT COUNT(*) FROM story_views WHERE story_id = s.id AND user_id = ?) as i_viewed
@@ -50,17 +50,17 @@ router.get('/', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const { image_url, caption, pet_id } = req.body;
     if (!image_url) return res.status(400).json({ error: 'Imagem obrigatoria' });
 
-    const result = run(
+    const result = await run(
       'INSERT INTO stories (user_id, pet_id, image_url, caption) VALUES (?, ?, ?, ?)',
       [req.userId, pet_id || null, image_url, caption || '']
     );
 
-    const story = get(`
+    const story = await get(`
       SELECT s.*, u.name as user_name, u.avatar as user_avatar
       FROM stories s JOIN users u ON s.user_id = u.id WHERE s.id = ?
     `, [result.lastInsertRowid]);
@@ -74,15 +74,15 @@ router.post('/', authMiddleware, (req, res) => {
   }
 });
 
-router.post('/:id/view', authMiddleware, (req, res) => {
+router.post('/:id/view', authMiddleware, async (req, res) => {
   try {
-    const story = get('SELECT * FROM stories WHERE id = ?', [req.params.id]);
+    const story = await get('SELECT * FROM stories WHERE id = ?', [req.params.id]);
     if (!story) return res.status(404).json({ error: 'Story nao encontrado' });
 
-    const existing = get('SELECT * FROM story_views WHERE story_id = ? AND user_id = ?',
+    const existing = await get('SELECT * FROM story_views WHERE story_id = ? AND user_id = ?',
       [req.params.id, req.userId]);
     if (!existing) {
-      run('INSERT INTO story_views (story_id, user_id) VALUES (?, ?)',
+      await run('INSERT INTO story_views (story_id, user_id) VALUES (?, ?)',
         [req.params.id, req.userId]);
     }
 
@@ -92,13 +92,13 @@ router.post('/:id/view', authMiddleware, (req, res) => {
   }
 });
 
-router.delete('/:id', authMiddleware, (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const story = get('SELECT * FROM stories WHERE id = ?', [req.params.id]);
+    const story = await get('SELECT * FROM stories WHERE id = ?', [req.params.id]);
     if (!story) return res.status(404).json({ error: 'Story nao encontrado' });
     if (story.user_id !== req.userId) return res.status(403).json({ error: 'Sem permissao' });
 
-    run('DELETE FROM stories WHERE id = ?', [req.params.id]);
+    await run('DELETE FROM stories WHERE id = ?', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Erro interno' });
