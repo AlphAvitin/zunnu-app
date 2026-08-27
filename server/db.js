@@ -900,7 +900,7 @@ async function run(sql, params = []) {
     let q = translateToPg(sql);
     const isInsert = /^\s*INSERT/i.test(q);
     if (isInsert && !/ON CONFLICT|RETURNING/i.test(q)) {
-      q = q.replace(/;\s*$/, '') + ' RETURNING id';
+      q = q.replace(/;\s*$/, '') + ' RETURNING *';
     }
     const res = await _pool.query(q, params);
     let lastInsertRowid = 0;
