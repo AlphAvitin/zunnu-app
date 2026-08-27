@@ -96,6 +96,45 @@ router.get('/following/:id', authMiddleware, async (req, res) => {
   }
 });
 
+router.post('/block/:id', authMiddleware, async (req, res) => {
+  try {
+    const targetId = parseInt(req.params.id);
+    if (targetId === req.userId) return res.status(400).json({ error: 'Nao pode bloquear a si mesmo' });
+    const target = await get('SELECT id FROM users WHERE id = ?', [targetId]);
+    if (!target) return res.status(404).json({ error: 'Usuario nao encontrado' });
+    await run('INSERT OR IGNORE INTO blocks (blocker_id, blocked_id) VALUES (?, ?)', [req.userId, targetId]);
+    await run('DELETE FROM follows WHERE (follower_id = ? AND following_id = ?) OR (follower_id = ? AND following_id = ?)',
+      [req.userId, targetId, targetId, req.userId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Block error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+router.delete('/block/:id', authMiddleware, async (req, res) => {
+  try {
+    await run('DELETE FROM blocks WHERE blocker_id = ? AND blocked_id = ?', [req.userId, parseInt(req.params.id)]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+router.get('/blocked', authMiddleware, async (req, res) => {
+  try {
+    const rows = await all(`
+      SELECT b.blocked_id as id, u.name, u.avatar, u.plan
+      FROM blocks b JOIN users u ON u.id = b.blocked_id
+      WHERE b.blocker_id = ?
+      ORDER BY b.created_at DESC
+    `, [req.userId]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
 router.get('/feed', authMiddleware, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;

@@ -56,7 +56,27 @@ CREATE TABLE IF NOT EXISTS posts (
   video_url TEXT,
   likes INTEGER DEFAULT 0,
   comments_count INTEGER DEFAULT 0,
+  pet_id INTEGER,
+  location TEXT DEFAULT '',
+  visibility TEXT DEFAULT 'public',
+  shares INTEGER DEFAULT 0,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS pet_id INTEGER;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS location TEXT DEFAULT '';
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'public';
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS shares INTEGER DEFAULT 0;
+CREATE TABLE IF NOT EXISTS blocks (
+  blocker_id INTEGER NOT NULL,
+  blocked_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (blocker_id, blocked_id)
+);
+CREATE TABLE IF NOT EXISTS hidden_posts (
+  user_id INTEGER NOT NULL,
+  post_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (user_id, post_id)
 );
 CREATE TABLE IF NOT EXISTS comments (
   id SERIAL PRIMARY KEY,
@@ -432,6 +452,25 @@ function createTables(db) {
     likes INTEGER DEFAULT 0,
     comments_count INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
+  )`);
+  try { db.run(`ALTER TABLE posts ADD COLUMN video_url TEXT`); } catch(e) {}
+  try { db.run(`ALTER TABLE posts ADD COLUMN pet_id INTEGER`); } catch(e) {}
+  try { db.run(`ALTER TABLE posts ADD COLUMN location TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE posts ADD COLUMN visibility TEXT DEFAULT 'public'`); } catch(e) {}
+  try { db.run(`ALTER TABLE posts ADD COLUMN shares INTEGER DEFAULT 0`); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS blocks (
+    blocker_id INTEGER NOT NULL,
+    blocked_id INTEGER NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY (blocker_id, blocked_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS hidden_posts (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY (user_id, post_id)
   )`);
   db.run(`
   CREATE TABLE IF NOT EXISTS comments (
