@@ -250,6 +250,91 @@ button,input,textarea,select{font:inherit}
 .home-quick-icon.gold{background:var(--goldSoft)}
 .home-quick-item b{font-size:11px;font-weight:700;line-height:1.3}
 .home-newpost{background:linear-gradient(135deg,var(--coral),#F29E81);border:none;width:100%;margin-bottom:12px;padding:11px;border-radius:12px;font-weight:800;color:#fff;box-shadow:0 4px 14px rgba(231,111,81,.28)}
+
+/* ===== Explorar / Mapa redesenhado ===== */
+.explore-header{padding:20px 16px 18px;background:linear-gradient(180deg,var(--green) 0%,var(--green2) 100%);border-radius:0 0 28px 28px;color:#fff;position:relative;overflow:hidden}
+.explore-header::after{content:'';position:absolute;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.07);right:-40px;top:-50px}
+.explore-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative}
+.explore-title{font-size:22px;font-weight:900}
+.explore-sub{font-size:12px;color:rgba(255,255,255,.85);margin-top:2px;font-weight:600}
+.explore-ai{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10px;font-weight:800;padding:7px 10px;border-radius:20px;cursor:pointer;flex-shrink:0}
+.explore-loc{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.14);font-size:10px;font-weight:700;padding:5px 10px;border-radius:20px;margin-top:12px;color:#fff}
+.explore-loc-ok{color:#B7E4C7;font-weight:800;text-transform:uppercase;font-size:8px;letter-spacing:.4px}
+.explore-search{display:flex;gap:6px;margin-top:12px;position:relative}
+.explore-search input{flex:1;border:none;border-radius:12px;padding:10px 12px;font-size:12px;outline:none;color:var(--ink);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.explore-search button{border:none;background:var(--coral);color:#fff;border-radius:12px;padding:0 14px;font-size:11px;font-weight:800;cursor:pointer}
+.map-hero{background:var(--card);border-radius:22px;padding:10px 10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.06);margin-top:14px;animation:fadeIn .3s ease}
+.map-wrap{height:330px;border-radius:18px;overflow:hidden;position:relative;z-index:1}
+#mapaView{width:100%;height:100%}
+.map-loading{position:absolute;inset:0;border-radius:18px;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;z-index:5;backdrop-filter:blur(2px)}
+.map-locate{position:absolute;top:12px;right:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:none;background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;font-size:17px}
+.explore-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;scrollbar-width:none}
+.explore-chips::-webkit-scrollbar{display:none}
+.chip{border:none;background:var(--bg);color:var(--soft);font-size:11px;font-weight:800;padding:7px 13px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.chip.active{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(36,92,79,.3)}
+.explore-section{margin-top:22px}
+.explore-sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.explore-sec-head h2{margin:0;font-size:15px;font-weight:800;color:var(--ink)}
+.explore-more{border:none;background:var(--greenSoft);color:var(--green);font-size:10px;font-weight:800;padding:6px 11px;border-radius:18px;cursor:pointer}
+.explore-link{color:var(--blue);font-weight:800;font-size:12px;background:var(--blueSoft);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nearby-cards{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.nearby-cards::-webkit-scrollbar{display:none}
+.nearby-card{min-width:140px;max-width:140px;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 3px 10px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s;animation:fadeIn .3s ease}
+.nearby-card:active{transform:scale(.97)}
+.nearby-photo{width:100%;height:96px;border-radius:12px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden}
+.nearby-photo img{width:100%;height:100%;object-fit:cover}
+.nearby-info b{display:block;font-size:13px;margin-top:7px}
+.nearby-type{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--soft);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nearby-dist{display:inline-block;font-size:9px;font-weight:800;color:var(--blue);background:var(--blueSoft);border-radius:12px;padding:2px 7px;margin-top:6px}
+.nearby-sig{font-size:9px;color:var(--soft);margin-top:5px}
+.explore-empty{background:var(--card);border-radius:16px;padding:18px;text-align:center;font-size:12px;color:var(--soft);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.explore-empty.ok{color:var(--green);background:var(--greenSoft)}
+.lost-cards{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+.lost-cards::-webkit-scrollbar{display:none}
+.lost-card{min-width:235px;max-width:235px;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 3px 10px rgba(0,0,0,.06);display:flex;gap:10px;align-items:center;border-left:4px solid var(--coral);animation:fadeIn .3s ease}
+.lost-photo{width:58px;height:58px;border-radius:12px;background:var(--coralSoft);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.lost-photo img{width:100%;height:100%;object-fit:cover}
+.lost-info{flex:1;min-width:0}
+.lost-info b{display:block;font-size:12px}
+.lost-pos{display:inline-block;font-size:9px;font-weight:800;color:var(--coral);background:var(--coralSoft);border-radius:12px;padding:2px 7px;margin-top:4px}
+.lost-met{display:block;font-size:9px;color:var(--soft);margin-top:4px}
+.lost-detail{border:none;background:var(--coral);color:#fff;font-size:9px;font-weight:800;padding:7px 10px;border-radius:10px;cursor:pointer;flex-shrink:0}
+.svc-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+.svc-chips::-webkit-scrollbar{display:none}
+.svc-chip{border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:10px;font-weight:800;padding:7px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.svc-chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.svc-grid{display:flex;flex-direction:column;gap:8px}
+.svc-row{background:var(--card);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);cursor:pointer;animation:fadeIn .3s ease}
+.svc-ico{width:42px;height:42px;border-radius:12px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;font-weight:800;color:var(--green)}
+.svc-info{flex:1;min-width:0}
+.svc-info b{font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svc-meta,.svc-price{font-size:10px;color:var(--soft)}
+.svc-price{color:var(--green);font-weight:800}
+.svc-book{background:var(--green);color:#fff;font-size:9px;font-weight:800;padding:7px 10px;border-radius:10px;flex-shrink:0}
+.svc-all{margin-top:12px;display:block;width:100%}
+.community-teaser{background:var(--card);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.05);animation:fadeIn .3s ease}
+.community-teaser b{font-size:12px;display:block}
+.community-teaser .explore-link{margin-left:auto}
+.explore-quick-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.explore-quick-icon.green{background:var(--greenSoft)}
+.map-marker.pet{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
+.map-marker.pet img{width:100%;height:100%;object-fit:cover}
+.map-marker.lost{width:36px;height:36px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.map-cluster{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.map-wrap .leaflet-control-attribution{font-size:8px}
+#exploreResults{border-radius:18px;padding:12px;margin-top:12px;background:var(--card);box-shadow:0 4px 16px rgba(0,0,0,.06);max-height:60vh;overflow-y:auto;animation:fadeIn .25s ease}
+.sr-head{font-size:11px;color:var(--soft);margin-bottom:8px}
+.sr-group{font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
+.sr-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;cursor:pointer}
+.sr-item:hover{background:var(--greenSoft)}
+.sr-ico{width:38px;height:38px;border-radius:10px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;font-weight:800;color:var(--green)}
+.sr-ico.pet{overflow:hidden;padding:0}
+.sr-ico.pet img{width:100%;height:100%;object-fit:cover}
+.sr-ico.lost{background:var(--coralSoft);color:var(--coral)}
+.sr-ico.user{background:var(--blueSoft);color:var(--blue);font-size:14px}
+.sr-item b{font-size:12px;display:block}
+.sr-item .small{font-size:10px}
+.sr-go{width:22px;height:22px;font-size:11px}
 </style>
 </head>
 <body>
@@ -1368,34 +1453,107 @@ async function createReel(){
 let mapaInst=null;
 let nearbyPets=[];
 let mapaFilter='all';
+let exploreServices=[];
+let exploreSvcFilter='all';
+let exploreAllPets=[];
+let exploreAllUsers=[];
+let exploreAllLP=[];
+function petEmoji(species){const m={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Reptil:'&#129422;'};return m[species]||'&#128062;';}
+function fmtDist(km){if(km==null||isNaN(km))return'';if(km<1)return'A '+Math.max(1,Math.round(km*1000))+' m de voce';return'A '+(Math.round(km*10)/10)+' km de voce';}
+function exploreDist(a,b,c,d){const R=6371,rad=x=>x*Math.PI/180;const dLa=rad(c-a),dLo=rad(d-b);const x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function updateExplorerLoc(){
+  const el=document.getElementById('exploreLoc');if(!el)return;
+  el.innerHTML=window._userLat?(window._userLat.toFixed(3))+'<b class="explore-loc-ok">Localizacao ativa</b>':'(<b>Ativando localizacao...</b>)';
+}
+function centerMap(){const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;if(mapaInst)mapaInst.setView([lat,lng],14);}
+function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function exploreChip(f){
+  document.querySelectorAll('.explore-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
+  if(f==='lost'){scrollToId('exploreLost');return;}
+  if(f==='services'){scrollToId('exploreServices');return;}
+  mapaFilter=f;loadNearbyPets();
+}
+
 function renderMapa(){
-  screen.innerHTML=header('Mapa','',{icon:'AI',click:"renderAiSuggestions()"})+`
-    <div class="map-container">
-      <div class="map-toggle">
-        <button class="${mapaFilter==='all'?'active':''}" onclick="mapaFilter='all';loadNearbyPets()">Todos</button>
-        <button class="${mapaFilter==='Cachorro'?'active':''}" onclick="mapaFilter='Cachorro';loadNearbyPets()">&#128054; Dogs</button>
-        <button class="${mapaFilter==='Gato'?'active':''}" onclick="mapaFilter='Gato';loadNearbyPets()">&#128049; Cats</button>
-        <button onclick="renderLostPets()">&#128680; Perdidos</button>
+  screen.innerHTML=`
+  <div class="explore-header">
+    <div class="explore-top">
+      <div><div class="explore-title">Explorar &#129517;</div><div class="explore-sub">Descubra o mundo pet perto de voce</div></div>
+      <button class="explore-ai" onclick="renderAiSuggestions()">&#129302; Match IA</button>
+    </div>
+    <div class="explore-loc" id="exploreLoc">&#128205; <b>Ativando localizacao...</b></div>
+    <div class="explore-search"><input id="exploreSearchInput" placeholder="Buscar pets, servicos, usuarios, petshops..." onkeydown="if(event.key==='Enter')exploreSearch()"><button onclick="exploreSearch()">Buscar</button></div>
+  </div>
+  <div class="content">
+    <div id="exploreResults" style="display:none"></div>
+    <div class="map-hero" id="exploreMap">
+      <div class="map-wrap">
+        <div id="mapaView"></div>
+        <div class="map-loading" id="mapLoading"><div class="spinner"></div></div>
+        <button class="map-locate" onclick="centerMap()" aria-label="Centralizar localizacao">&#128205;</button>
       </div>
-      <div id="mapaView"></div>
-      <div class="map-pets-list" id="mapPetsList"><p style="text-align:center;color:var(--soft);padding:12px">Carregando...</p></div>
-    </div>`;
+      <div class="explore-chips">
+        <button class="chip ${mapaFilter==='all'?'active':''}" data-f="all" onclick="exploreChip('all')">&#128062; Todos</button>
+        <button class="chip ${mapaFilter==='Cachorro'?'active':''}" data-f="Cachorro" onclick="exploreChip('Cachorro')">&#128054; Caes</button>
+        <button class="chip ${mapaFilter==='Gato'?'active':''}" data-f="Gato" onclick="exploreChip('Gato')">&#128049; Gatos</button>
+        <button class="chip" data-f="lost" onclick="exploreChip('lost')">&#128680; Perdidos</button>
+        <button class="chip" data-f="services" onclick="exploreChip('services')">&#127978; Servicos</button>
+      </div>
+    </div>
+    <div class="explore-section" id="exploreNearby">
+      <div class="explore-sec-head"><h2>Perto de voce</h2><button class="explore-more" onclick="exploreChip('all')">Atualizar</button></div>
+      <div class="nearby-cards" id="nearbyCards"><div class="explore-empty">Carregando pets por perto...</div></div>
+    </div>
+    <div class="explore-section" id="exploreLost">
+      <div class="explore-sec-head"><h2>Atencao na sua regiao &#128680;</h2></div>
+      <div class="lost-cards" id="lostCards"></div>
+    </div>
+    <div class="explore-section" id="exploreServices">
+      <div class="explore-sec-head"><h2>Seu pet precisa de algo?</h2></div>
+      <div class="svc-chips">
+        <button class="svc-chip active" data-k="all" onclick="filterExploreServices('all')">Todos</button>
+        <button class="svc-chip" data-k="vet" onclick="filterExploreServices('vet')">&#129658; Veterinario</button>
+        <button class="svc-chip" data-k="tosa" onclick="filterExploreServices('tosa')">&#9986; Banho e tosa</button>
+        <button class="svc-chip" data-k="hospedagem" onclick="filterExploreServices('hospedagem')">&#127976; Hospedagem</button>
+        <button class="svc-chip" data-k="passeio" onclick="filterExploreServices('passeio')">&#128062; Pet sitter</button>
+        <button class="svc-chip" data-k="shop" onclick="filterExploreServices('shop')">&#128722; Pet shop</button>
+      </div>
+      <div class="svc-grid" id="servicesGrid"><div class="explore-empty">Carregando servicos...</div></div>
+      <button class="explore-more svc-all" onclick="openServices()">Ver todos os servicos &rarr;</button>
+    </div>
+    <div class="explore-section">
+      <div class="explore-sec-head"><h2>Comunidade local</h2></div>
+      <div class="community-teaser" onclick="setTab('inicio')">
+        <div class="explore-quick-icon green">&#128293;</div>
+        <div><b>Veja o que esta acontecendo agora</b><span class="small">Posts, stories e novidades da comunidade pet</span></div>
+        <span class="explore-link">&rarr;</span>
+      </div>
+    </div>
+  </div>`;
+  updateExplorerLoc();
+  renderLostCards();
+  loadExploreServices();
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
       window._userLat=pos.coords.latitude;window._userLng=pos.coords.longitude;
       initMap(pos.coords.latitude,pos.coords.longitude);
       loadNearbyPets();
-    },()=>{initMap(-2.5307,-44.2829);loadNearbyPets();});
-  }else{initMap(-2.5307,-44.2829);loadNearbyPets();}
+      updateExplorerLoc();
+      renderLostCards();
+    },()=>{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();});
+  }else{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();}
 }
 function initMap(lat,lng){
   if(mapaInst){mapaInst.remove();mapaInst=null;}
   mapaInst=L.map('mapaView',{zoomControl:false}).setView([lat,lng],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(mapaInst);
   L.control.zoom({position:'topright'}).addTo(mapaInst);
-  L.circleMarker([lat,lng],{radius:8,fillColor:'#4CAF50',fillOpacity:1,color:'#fff',weight:2}).addTo(mapaInst)
+  L.circleMarker([lat,lng],{radius:9,fillColor:'#245C4F',fillOpacity:1,color:'#fff',weight:3}).addTo(mapaInst)
     .bindPopup('Voce esta aqui');
-  setTimeout(()=>mapaInst.invalidateSize(),200);
+  const lo=document.getElementById('mapLoading');
+  const t=setTimeout(()=>{if(lo)lo.style.display='none';},4000);
+  mapaInst.once('tilesloaded',()=>{clearTimeout(t);if(lo)lo.style.display='none';});
+  setTimeout(()=>mapaInst.invalidateSize(),150);
 }
 async function loadNearbyPets(){
   const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;
@@ -1409,29 +1567,120 @@ async function loadNearbyPets(){
 }
 function renderNearbyMarkers(){
   if(!mapaInst)return;
-  mapaInst.eachLayer(l=>{if(l instanceof L.CircleMarker&&l.getPopup()?.getContent()!=='Voce esta aqui')mapaInst.removeLayer(l);});
-  nearbyPets.forEach(p=>{
-    if(!p.latitude||!p.longitude)return;
-    const icon=L.divIcon({className:'',html:`<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);background:#fff"><img src="${su(p.image||'')}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='&#128062;'"></div>`,iconSize:[36,36],iconAnchor:[18,18]});
-    L.marker([p.latitude,p.longitude],{icon}).addTo(mapaInst)
-      .bindPopup(`<div style="text-align:center;min-width:120px"><img src="${su(p.image||'')}" style="width:60px;height:60px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'"><br><b style="font-size:12px">${esc(p.name)}</b><br><span style="font-size:10px;color:#666">${esc(p.breed)} ${p.distance}km</span><br><button onclick="viewUserProfile(${p.user_id})" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver Tutor</button></div>`);
+  mapaInst.eachLayer(l=>{if(l instanceof L.Marker)mapaInst.removeLayer(l);});
+  const CELL=0.004,items=[];
+  nearbyPets.forEach(p=>{if(!p.latitude||!p.longitude)return;items.push({k:'pet',p});});
+  lostPets.forEach(lp=>{if(!lp.latitude||!lp.longitude)return;items.push({k:'lost',p:lp});});
+  const groups={};
+  items.forEach(it=>{
+    const key=Math.round(it.p.latitude/CELL)+':'+Math.round(it.p.longitude/CELL);
+    (groups[key]=groups[key]||[]).push(it);
   });
-  lostPets.forEach(lp => {
-    if(!lp.latitude||!lp.longitude) return;
-    const icon = L.divIcon({className:'',html:`<div style="width:32px;height:32px;border-radius:50%;background:${lp.status==='lost'?'#E76F51':'#4CAF50'};display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">${lp.status==='lost'?'!':'?'}</div>`,iconSize:[32,32],iconAnchor:[16,16]});
-    L.marker([lp.latitude,lp.longitude],{icon}).addTo(mapaInst)
-      .bindPopup(`<div style="text-align:center;min-width:120px"><b style="font-size:12px;color:${lp.status==='lost'?'#E76F51':'#4CAF50'}">${lp.status==='lost'?'PERDIDO':'ENCONTRADO'}</b><br><b>${esc(lp.pet_name)}</b><br><span style="font-size:10px">${esc(lp.species)} ${esc(lp.breed)}</span><br><span style="font-size:10px">${esc(lp.description)}</span></div>`);
+  Object.values(groups).forEach(g=>{
+    if(g.length>=4){
+      const cy=g.reduce((s,x)=>s+x.p.latitude,0)/g.length;
+      const cx=g.reduce((s,x)=>s+x.p.longitude,0)/g.length;
+      const icon=L.divIcon({className:'',html:'<div class="map-cluster">'+g.length+'</div>',iconSize:[30,30],iconAnchor:[15,15]});
+      L.marker([cy,cx],{icon}).addTo(mapaInst).on('click',()=>mapaInst.setView([cy,cx],mapaInst.getZoom()+1));
+      return;
+    }
+    g.forEach(it=>{
+      if(it.k==='lost'){
+        const p=it.p;
+        const icon=L.divIcon({className:'',html:'<div class="map-marker lost">!</div>',iconSize:[36,36],iconAnchor:[18,18]});
+        L.marker([p.latitude,p.longitude],{icon}).addTo(mapaInst)
+          .bindPopup('<div style="text-align:center;min-width:120px"><b style="font-size:12px;color:#E76F51">'+(p.status==='lost'?'PERDIDO':'ENCONTRADO')+'</b><br><b>'+esc(p.pet_name)+'</b><br><span style="font-size:10px">'+esc(p.species)+' '+esc(p.breed)+'</span><br><button onclick="renderLostPets()" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver detalhes</button></div>');
+        return;
+      }
+      const p=it.p;
+      const icon=L.divIcon({className:'',html:'<div class="map-marker pet"><img src="'+su(p.image||'')+'" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'&#128062;\'"></div>',iconSize:[40,40],iconAnchor:[20,20]});
+      L.marker([p.latitude,p.longitude],{icon}).addTo(mapaInst)
+        .bindPopup('<div style="text-align:center;min-width:120px"><img src="'+su(p.image||'')+'" style="width:60px;height:60px;border-radius:50%;object-fit:cover" onerror="this.style.display=\'none\'"><br><b style="font-size:12px">'+esc(p.name)+'</b><br><span style="font-size:10px;color:#666">'+esc(p.breed)+' '+fmtDist(p.distance)+'</span><br><button onclick="viewUserProfile('+p.user_id+')" style="margin-top:4px;font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer">Ver Tutor</button></div>');
+    });
   });
 }
 function renderNearbyList(){
-  const el=document.getElementById('mapPetsList');if(!el)return;
-  if(nearbyPets.length===0){el.innerHTML='<p style="text-align:center;color:var(--soft);padding:12px">Nenhum pet encontrado nearby</p>';return;}
-  el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--soft);margin-bottom:6px;padding:0 4px">${nearbyPets.length} pets por perto</div>`+
-    nearbyPets.map(p=>`<div class="map-pet-card" onclick="viewUserProfile(${p.user_id})">
-      <img src="${su(p.image||'')}" onerror="this.src='https://via.placeholder.com/40'" alt="">
-      <div style="flex:1"><b style="font-size:12px">${esc(p.name)}</b><div style="font-size:10px;color:var(--soft)">${esc(p.breed)} &bull; ${p.distance}km</div></div>
-      <div style="font-size:10px;color:var(--green);font-weight:600">${esc(p.zodiac||'')}</div>
-    </div>`).join('');
+  const el=document.getElementById('nearbyCards');if(!el)return;
+  if(nearbyPets.length===0){el.innerHTML='<div class="explore-empty">Nenhum pet por perto agora</div>';return;}
+  el.innerHTML=nearbyPets.map(p=>{
+    const emo=petEmoji(p.species);
+    return`<div class="nearby-card" onclick="viewUserProfile(${p.user_id})">
+      <div class="nearby-photo"><img src="${su(p.image||'')}" onerror="this.style.display='none';this.parentNode.innerHTML='${emo}'" alt=""></div>
+      <div class="nearby-info">
+        <b>${esc(p.name)}</b>
+        <span class="nearby-type">${emo} ${esc(p.breed||p.species)}</span>
+        <span class="nearby-dist">${fmtDist(p.distance)}</span>
+      </div>
+      <div class="nearby-sig">${esc(p.zodiac||'')}</div>
+    </div>`;
+  }).join('');
+}
+function renderLostCards(){
+  const el=document.getElementById('lostCards');if(!el)return;
+  const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;
+  const list=(lostPets||[]).filter(x=>x.status==='lost')
+    .map(x=>({x,d:x.latitude&&x.longitude?exploreDist(lat,lng,x.latitude,x.longitude):null}))
+    .sort((a,b)=>(a.d==null?1e9:a.d)-(b.d==null?1e9:b.d));
+  if(list.length===0){el.innerHTML='<div class="explore-empty ok">&#128154; Nenhum pet perdido proximo de voce</div>';return;}
+  el.innerHTML=list.map(({x,d})=>`<div class="lost-card">
+    <div class="lost-photo"><img src="${su(x.image||'')}" onerror="this.style.display='none';this.parentNode.innerHTML='&#128680;'" alt=""></div>
+    <div class="lost-info">
+      <b>${esc(x.pet_name)}</b>
+      <span class="lost-pos">&#128205; ${d!=null?fmtDist(d):'Local em atualizacao'}</span>
+      <span class="lost-met">${esc(x.species||'')} ${esc(x.breed||'')} &bull; reportado ${formatDate(x.created_at)}</span>
+    </div>
+    <button class="lost-detail" onclick="renderLostPets()">Ver detalhes</button>
+  </div>`).join('');
+}
+async function loadExploreServices(){
+  const el=document.getElementById('servicesGrid');if(!el)return;
+  try{const d=await api('/api/services');exploreServices=Array.isArray(d)?d:[];}catch(e){exploreServices=[];}
+  renderExploreServices();
+}
+function renderExploreServices(){
+  const el=document.getElementById('servicesGrid');if(!el)return;
+  const list=exploreSvcFilter==='all'?exploreServices:exploreServices.filter(s=>((s.title||'')+' '+(s.description||'')).toLowerCase().includes(exploreSvcFilter));
+  if(list.length===0){el.innerHTML='<div class="explore-empty">Nenhum servico nesta categoria ainda</div>';return;}
+  el.innerHTML=list.slice(0,8).map(s=>`<div class="svc-row" onclick="openBookingModal(${s.id},'${esc(s.title)}',${s.price})">
+    <div class="svc-ico">${s.icon||'&#128137;'}</div>
+    <div class="svc-info">
+      <b>${esc(s.title)}</b>
+      <span class="svc-meta">${esc(s.provider_name||'')}</span>
+      <span class="svc-price">R$ ${(s.price||0).toFixed(2)}${s.duration?' &bull; '+esc(s.duration):''}</span>
+    </div>
+    <span class="svc-book">Agendar</span>
+  </div>`).join('');
+}
+function filterExploreServices(kw){
+  exploreSvcFilter=kw;renderExploreServices();
+  document.querySelectorAll('.svc-chip').forEach(c=>c.classList.toggle('active',c.dataset.k===kw));
+}
+function openPetDetail(id){const p=(exploreAllPets||[]).find(x=>x.id===id);if(p){viewingPet=p;openModal('petDetail');}}
+async function exploreSearch(){
+  const inp=document.getElementById('exploreSearchInput');
+  const q=(inp?.value||'').trim().toLowerCase();
+  const wrap=document.getElementById('exploreResults');
+  if(!wrap)return;
+  if(!q){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  wrap.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;
+  if(!exploreAllPets.length)exploreAllPets=await api('/api/pets/all').catch(()=>[]);
+  if(!exploreAllUsers.length)exploreAllUsers=await api('/api/nearby/users?lat='+lat+'&lng='+lng+'&radius=100').catch(()=>[]);
+  if(!exploreAllLP.length)exploreAllLP=await api('/api/lostpets').catch(()=>[]);
+  const svc=await api('/api/services').catch(()=>[]);
+  const has=s=>s&&s.toLowerCase().includes(q);
+  const fP=(exploreAllPets||[]).filter(p=>has(p.name)||has(p.breed)||has(p.species));
+  const fU=(exploreAllUsers||[]).filter(u=>has(u.name));
+  const fS=svc.filter(s=>has(s.title)||has(s.description)||has(s.provider_name));
+  const fL=(exploreAllLP||[]).filter(x=>has(x.pet_name)||has(x.breed)||has(x.species));
+  const rows=[];
+  if(fS.length)rows.push('<div class="sr-group">Servicos ('+fS.length+')</div>'+fS.slice(0,5).map(s=>`<div class="sr-item" onclick="openBookingModal(${s.id},'${esc(s.title)}',${s.price})"><div class="sr-ico">${s.icon||'&#128137;'}</div><div><b>${esc(s.title)}</b><span class="small">${esc(s.provider_name||'')} &bull; R$ ${(s.price||0).toFixed(2)}</span></div><span class="explore-link sr-go">&rarr;</span></div>`).join(''));
+  if(fP.length)rows.push('<div class="sr-group">Pets ('+fP.length+')</div>'+fP.slice(0,5).map(p=>`<div class="sr-item" onclick="openPetDetail(${p.id})"><div class="sr-ico pet"><img src="${su(p.image||'')}" onerror="this.style.display='none'" alt=""></div><div><b>${esc(p.name)}</b><span class="small">${petEmoji(p.species)} ${esc(p.breed||p.species)}</span></div><span class="explore-link sr-go">&rarr;</span></div>`).join(''));
+  if(fU.length)rows.push('<div class="sr-group">Usuarios ('+fU.length+')</div>'+fU.slice(0,5).map(u=>`<div class="sr-item" onclick="viewUserProfile(${u.id})"><div class="sr-ico user">${esc((u.name||'?')[0])}</div><div><b>${esc(u.name)}</b><span class="small">${fmtDist(u.distance)}</span></div><span class="explore-link sr-go">&rarr;</span></div>`).join(''));
+  if(fL.length)rows.push('<div class="sr-group">Pets reportados ('+fL.length+')</div>'+fL.slice(0,5).map(x=>`<div class="sr-item" onclick="renderLostPets()"><div class="sr-ico lost">&#128680;</div><div><b>${esc(x.pet_name)}</b><span class="small">${x.status==='lost'?'Perdido':'Encontrado'} &bull; reportado ${formatDate(x.created_at)}</span></div><span class="explore-link sr-go">&rarr;</span></div>`).join(''));
+  if(!rows.length){wrap.innerHTML='<div class="explore-empty">Nenhum resultado para "'+esc(q)+'"</div>';return;}
+  wrap.innerHTML='<div class="sr-head">Resultados para "<b>'+esc(q)+'</b>"</div>'+rows.join('');
 }
 
 async function viewUserProfile(userId){
