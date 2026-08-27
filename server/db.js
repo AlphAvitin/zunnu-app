@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS users (
   avatar TEXT DEFAULT '',
   selfie_url TEXT,
   is_human_verified INTEGER DEFAULT 0,
+  is_admin INTEGER DEFAULT 0,
   plan TEXT DEFAULT 'free',
   latitude DOUBLE PRECISION,
   longitude DOUBLE PRECISION,
@@ -334,6 +335,74 @@ CREATE TABLE IF NOT EXISTS reports_v2 (
   admin_note TEXT,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
+CREATE TABLE IF NOT EXISTS events (
+  id SERIAL PRIMARY KEY,
+  organizer_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  image TEXT DEFAULT '',
+  description TEXT DEFAULT '',
+  date TEXT NOT NULL,
+  time TEXT DEFAULT '',
+  location TEXT DEFAULT '',
+  city TEXT DEFAULT '',
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  category TEXT DEFAULT 'outros',
+  status TEXT DEFAULT 'pending',
+  participant_limit INTEGER,
+  shares INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE TABLE IF NOT EXISTS event_participants (
+  event_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  status TEXT DEFAULT 'going',
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (event_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS event_saves (
+  event_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (event_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS adoption_pets (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  name TEXT DEFAULT 'Pet',
+  species TEXT DEFAULT 'cachorro',
+  sex TEXT DEFAULT '',
+  age TEXT DEFAULT '',
+  porte TEXT DEFAULT '',
+  city TEXT DEFAULT '',
+  story TEXT DEFAULT '',
+  temperament TEXT DEFAULT '',
+  special_needs TEXT DEFAULT '',
+  contact_phone TEXT DEFAULT '',
+  image TEXT DEFAULT '',
+  status TEXT DEFAULT 'available',
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE TABLE IF NOT EXISTS adoption_requests (
+  id SERIAL PRIMARY KEY,
+  adoption_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  message TEXT DEFAULT '',
+  status TEXT DEFAULT 'pending',
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE TABLE IF NOT EXISTS product_favorites (
+  user_id INTEGER NOT NULL,
+  product_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (user_id, product_id)
+);
+CREATE TABLE IF NOT EXISTS service_favorites (
+  user_id INTEGER NOT NULL,
+  service_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (user_id, service_id)
+);
 CREATE TABLE IF NOT EXISTS bookings (
   id SERIAL PRIMARY KEY,
   user_id INTEGER,
@@ -480,6 +549,12 @@ function createTables(db) {
     plan TEXT DEFAULT 'free',
     created_at TEXT DEFAULT (datetime('now'))
   )`);
+  try { db.run(`ALTER TABLE users ADD COLUMN latitude REAL`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN longitude REAL`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN is_private INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN business_type TEXT`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN points_balance INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -788,6 +863,81 @@ function createTables(db) {
     status TEXT DEFAULT 'pending',
     admin_note TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organizer_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    image TEXT DEFAULT '',
+    description TEXT DEFAULT '',
+    date TEXT NOT NULL,
+    time TEXT DEFAULT '',
+    location TEXT DEFAULT '',
+    city TEXT DEFAULT '',
+    latitude REAL,
+    longitude REAL,
+    category TEXT DEFAULT 'outros',
+    status TEXT DEFAULT 'pending',
+    participant_limit INTEGER,
+    shares INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS event_participants (
+    event_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    status TEXT DEFAULT 'going',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (event_id, user_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS event_saves (
+    event_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (event_id, user_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS adoption_pets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT DEFAULT 'Pet',
+    species TEXT DEFAULT 'cachorro',
+    sex TEXT DEFAULT '',
+    age TEXT DEFAULT '',
+    porte TEXT DEFAULT '',
+    city TEXT DEFAULT '',
+    story TEXT DEFAULT '',
+    temperament TEXT DEFAULT '',
+    special_needs TEXT DEFAULT '',
+    contact_phone TEXT DEFAULT '',
+    image TEXT DEFAULT '',
+    status TEXT DEFAULT 'available',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS adoption_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    adoption_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    message TEXT DEFAULT '',
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS product_favorites (
+    user_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, product_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS service_favorites (
+    user_id INTEGER NOT NULL,
+    service_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, service_id)
   )`);
   db.run(`
   CREATE TABLE IF NOT EXISTS bookings (

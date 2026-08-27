@@ -132,10 +132,13 @@ router.post('/confirm/:txid', authMiddleware, async (req, res) => {
       if (elapsed > 5000) {
         await run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?",
           [payment.txid]);
-        await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
-        const { sendToUser } = require('../ws');
-        sendToUser(req.userId, { type: 'notification', notification: { type: 'payment', message: `Plano ${payment.plan.toUpperCase()} ativado com sucesso!` } });
-        return res.json({ status: 'paid', plan: payment.plan, message: 'Plano ativado com sucesso!' });
+        if (payment.plan === 'plus' || payment.plan === 'pro') {
+          await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
+          const { sendToUser } = require('../ws');
+          sendToUser(req.userId, { type: 'notification', notification: { type: 'payment', message: `Plano ${payment.plan.toUpperCase()} ativado com sucesso!` } });
+          return res.json({ status: 'paid', plan: payment.plan, message: 'Plano ativado com sucesso!' });
+        }
+        return res.json({ status: 'paid', kind: 'product', message: 'Pagamento do produto confirmado com sucesso!' });
       }
       return res.json({ status: 'pending', message: 'Aguarde 5 segundos e tente novamente (sandbox).' });
     }
@@ -148,8 +151,11 @@ router.post('/confirm/:txid', authMiddleware, async (req, res) => {
     if (mpStatus === 'approved') {
       await run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?",
         [payment.txid]);
-      await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
-      return res.json({ status: 'paid', plan: payment.plan, message: 'Plano ativado com sucesso!' });
+      if (payment.plan === 'plus' || payment.plan === 'pro') {
+        await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, req.userId]);
+        return res.json({ status: 'paid', plan: payment.plan, message: 'Plano ativado com sucesso!' });
+      }
+      return res.json({ status: 'paid', kind: 'product', message: 'Pagamento do produto confirmado com sucesso!' });
     }
 
     res.json({ status: mpStatus || 'pending', message: 'Pagamento ainda nao confirmado. Aguarde ou escaneie o QR Code novamente.' });
@@ -174,7 +180,9 @@ router.post('/webhook', async (req, res) => {
         const payment = await get('SELECT * FROM payments WHERE txid = ?', [txid]);
         if (payment && payment.status !== 'paid') {
           await run("UPDATE payments SET status = 'paid', paid_at = datetime('now') WHERE txid = ?", [txid]);
-          await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, payment.user_id]);
+          if (payment.plan === 'plus' || payment.plan === 'pro') {
+            await run('UPDATE users SET plan = ? WHERE id = ?', [payment.plan, payment.user_id]);
+          }
         }
       }
     }

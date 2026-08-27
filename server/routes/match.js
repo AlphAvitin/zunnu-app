@@ -148,6 +148,71 @@ router.get('/status/:userId', authMiddleware, async (req, res) => {
   }
 });
 
+// Candidate deck: public pets I haven't swiped yet
+router.get('/deck', authMiddleware, async (req, res) => {
+  try {
+    const pets = await all(`
+      SELECT p.*, u.id as user_id, u.name as tutor_name, u.avatar as tutor_avatar, u.location as tutor_location, u.bio as tutor_bio
+      FROM pets p JOIN users u ON p.user_id = u.id
+      WHERE u.id != ?
+        AND (p.visibility IS NULL OR p.visibility IN ('public','friends'))
+        AND p.user_id NOT IN (SELECT swiped_id FROM match_swipes WHERE swiper_id = ?)
+      ORDER BY RANDOM() LIMIT 30
+    `, [req.userId, req.userId]);
+    res.json(pets);
+  } catch (err) {
+    console.error('Match deck error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+// Swipe (like/dislike). Mutual like creates a match.
+router.post('/swipe/:userId', authMiddleware, async (req, res) => {
+  try {
+    const targetId = parseInt(req.params.userId);
+    if (!targetId || targetId === req.userId) return res.status(400).json({ error: 'Usuario invalido' });
+    const isLike = req.body.isLike ? 1 : 0;
+
+    await run('INSERT INTO match_swipes (swiper_id, swiped_id, is_like) VALUES (?, ?, ?) ON CONFLICT (swiper_id, swiped_id) DO UPDATE SET is_like = ?',
+      [req.userId, targetId, isLike, isLike]);
+
+    if (!isLike) return res.json({ liked: false, match: false });
+
+    const target = await get('SELECT id, name FROM users WHERE id = ?', [targetId]);
+    if (!target) return res.status(404).json({ error: 'Usuario nao encontrado' });
+
+    const mutual = await get('SELECT * FROM match_swipes WHERE swiper_id = ? AND swiped_id = ? AND is_like = 1', [targetId, req.userId]);
+
+    if (!mutual) return res.json({ liked: true, match: false });
+
+    const existingMatch = await get('SELECT * FROM matches WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)',
+      [req.userId, targetId, targetId, req.userId]);
+
+    if (existingMatch) return res.json({ liked: true, match: true, matchId: existingMatch.id });
+
+    const result = await run('INSERT INTO matches (user1_id, user2_id) VALUES (?, ?)', [req.userId, targetId]);
+    const matchId = result.lastInsertRowid;
+
+    const me = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
+
+    await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+      [targetId, 'new_match', `${me?.name || 'Alguem'} deu match com voce!`, matchId]);
+    await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
+      [req.userId, 'new_match', `Novo match com ${target.name}!`, matchId]);
+
+    sendToUser(targetId, { type: 'new_match', matchId, partnerId: req.userId, partnerName: me?.name });
+    sendToUser(targetId, { type: 'notification', notification: { type: 'new_match', message: `Novo match com ${me?.name}!`, referenceId: matchId } });
+
+    await creditPoints(req.userId, 'partnership_accepted');
+    await creditPoints(targetId, 'partnership_accepted');
+
+    res.json({ liked: true, match: true, matchId });
+  } catch (err) {
+    console.error('Match swipe error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
 router.get('/matches', authMiddleware, async (req, res) => {
   try {
     const matches = await all(`
