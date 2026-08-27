@@ -40,4 +40,13 @@ router.post('/read/:id', authMiddleware, async (req, res) => {
   }
 });
 
+router.delete('/', authMiddleware, async (req, res) => {
+  try {
+    await run('DELETE FROM notifications WHERE user_id = ?', [req.userId]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
 module.exports = router;

@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await get(
-      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, plan, is_private, points_balance, created_at FROM users WHERE id = ?',
+      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, is_admin, plan, is_private, points_balance, created_at FROM users WHERE id = ?',
       [req.userId]
     );
 
@@ -139,7 +139,7 @@ router.put('/me', authMiddleware, async (req, res) => {
     await run(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
 
     const user = await get(
-      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, plan, is_private, points_balance FROM users WHERE id = ?',
+      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, is_admin, plan, is_private, points_balance FROM users WHERE id = ?',
       [req.userId]
     );
 
@@ -154,6 +154,22 @@ router.post('/verify-human', authMiddleware, async (req, res) => {
     await run('UPDATE users SET is_human_verified = 1 WHERE id = ?', [req.userId]);
     res.json({ verified: true });
   } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+router.post('/change-password', authMiddleware, async (req, res) => {
+  try {
+    const { current_password, new_password } = req.body;
+    if (!current_password || !new_password) return res.status(400).json({ error: 'Informe a senha atual e a nova senha' });
+    if (new_password.length < 6) return res.status(400).json({ error: 'A nova senha deve ter no minimo 6 caracteres' });
+    const user = await get('SELECT password_hash FROM users WHERE id = ?', [req.userId]);
+    if (!user) return res.status(404).json({ error: 'Usuario nao encontrado' });
+    if (!bcrypt.compareSync(current_password, user.password_hash)) return res.status(401).json({ error: 'Senha atual incorreta' });
+    await run('UPDATE users SET password_hash = ? WHERE id = ?', [bcrypt.hashSync(new_password, 10), req.userId]);
+    res.json({ success: true, message: 'Senha alterada com sucesso' });
+  } catch (err) {
+    console.error('Change password error:', err);
     res.status(500).json({ error: 'Erro interno' });
   }
 });

@@ -537,6 +537,20 @@ button,input,textarea,select{font:inherit}
 .disc-tools{display:flex;gap:6px;padding:8px 16px 2px}
 .disc-tools .pl-chip{background:var(--card);font-size:11px}
 .rem-band{background:var(--goldSoft);border:1px solid var(--gold);border-radius:10px;padding:8px 10px;font-size:11px;font-weight:700;margin:8px 12px;display:flex;gap:6px;align-items:center}
+.disco-badge{background:var(--coral);color:#fff;border-radius:10px;padding:0 6px;font-size:9px;font-weight:800;margin-left:4px}
+.f-row{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.cfg-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.ad-stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
+.ad-stat b{display:block;font-size:20px;color:var(--ink)}
+.ad-stat span{font-size:10px;color:var(--soft)}
+.ad-stat.warn{border-color:var(--gold);background:var(--goldSoft)}
+.notif-row{display:flex;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.notif-row.unread{background:var(--blueSoft)}
+.notif-ico{width:34px;height:34px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.notif-txt{flex:1;font-size:12px;line-height:1.4}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--coral);flex-shrink:0}
+.small-btn-sm{padding:5px 9px !important;font-size:10px !important}
 </style>
 </head>
 <body>
@@ -1876,7 +1890,12 @@ function renderPerfil(){
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
       <button class="btn pink" style="width:100%;margin-top:12px" onclick="renderPartnershipPending()">&#128153; Solicitacoes de Parceria</button>
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('plans')">Gerenciar Plano</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="renderNotificacoes()">&#128276; Notificacoes${unreadCount?` <span class="disco-badge">${unreadCount>9?'9+':unreadCount}</span>`:''}</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openConfig()">&#9881; Configuracoes</button>
+      ${currentUser.plan==='pro'?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderMyEvents()">&#128197; Meus Eventos</button>`:''}
+      ${currentUser.plan==='pro'?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderMyAdoptions()">&#128062; Minha Adocao</button>`:''}
+      ${currentUser.is_admin?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderAdmin()">&#128737; Painel Admin</button>`:''}
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('plans')">Gerenciar Plano${currentUser.plan==='free'?' &bull; Seja PRO':''}</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('business')">Perfil Comercial</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="togglePrivate()">${currentUser.is_private?'Perfil Publico':'Perfil Privado'}</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="toggleDarkMode()">${darkMode?'Modo Claro':'Modo Escuro'}</button>
@@ -1896,8 +1915,9 @@ async function toggleNotifs(){
   const btn=document.querySelector('.notif-btn');
   if(!btn)return;
   const div=document.createElement('div');div.className='notif-dropdown';
-  div.innerHTML=notifications.length===0?'<div style="padding:12px;text-align:center;font-size:11px;color:var(--soft)">Sem notificacoes</div>':
-    notifications.slice(0,10).map(n=>`<div class="notif-item ${n.is_read?'':'unread'}" onclick="readNotif(${n.id})">${esc(n.message)}<br><span class="small">${formatDate(n.created_at)}</span></div>`).join('');
+div.innerHTML=(notifications.length===0?'<div style="padding:12px;text-align:center;font-size:11px;color:var(--soft)">Sem notificacoes</div>':
+    notifications.slice(0,10).map(n=>`<div class="notif-item ${n.is_read?'':'unread'}" onclick="readNotif(${n.id})">${esc(n.message)}<br><span class="small">${formatDate(n.created_at)}</span></div>`).join(''))
+    +`<div style="padding:8px;border-top:1px solid var(--line);text-align:center"><button class="btn small-btn outline" style="width:100%" onclick="document.querySelectorAll('.notif-dropdown').forEach(e=>(e.remove(),0));renderNotificacoes()">Ver todas</button></div>`;
   btn.appendChild(div);
 }
 
@@ -2864,8 +2884,8 @@ async function viewUserProfile(userId){
         <div class="small">${esc(u.location||'')} ${u.is_human_verified?'&#128275; Verificado':''}</div>
         <div class="small" style="margin-top:4px">${esc(u.bio||'')}</div>
         <div class="social-stats">
-          <div><b>${u.followers}</b><span class="small">Seguidores</span></div>
-          <div><b>${u.following}</b><span class="small">Seguindo</span></div>
+          <div style="cursor:pointer" onclick="renderFollowers(${userId},'Seguidores')"><b>${u.followers}</b><span class="small">Seguidores</span></div>
+          <div style="cursor:pointer" onclick="renderFollowing(${userId},'Seguindo')"><b>${u.following}</b><span class="small">Seguindo</span></div>
           <div><b>${u.posts_count}</b><span class="small">Posts</span></div>
           <div><b>${pets.length}</b><span class="small">Pets</span></div>
         </div>
@@ -3583,6 +3603,283 @@ async function submitReport(type,id){
     await api('/api/reports',{method:'POST',body:JSON.stringify({target_type:type,target_id:id,category:document.getElementById('repCat').value,reason:document.getElementById('repReason').value})});
     closeModal();alert('Denuncia enviada. Obrigado por manter a comunidade segura.');
   }catch(e){alert(e.message);}
+}
+
+/* ===== Notificacoes (E12) ===== */
+function notifIcon(type){
+  if(type==='follow')return'&#128100;';
+  if(type==='message')return'&#128172;';
+  if(type==='new_match'||type==='partnership_request'||type==='partnership_accepted')return'&#128153;';
+  if(type==='adoption_request'||type==='adoption_approved')return'&#128062;';
+  if(type==='event_participation')return'&#128197;';
+  if(type==='payment')return'&#128176;';
+  if(type==='moderation')return'&#128737;';
+  if(type==='post_like'||type==='like')return'&#10084;';
+  if(type==='comment'||type==='new_comment')return'&#128172;';
+  return'&#128276;';
+}
+async function renderNotificacoes(){
+  const d=await api('/api/notifications').catch(()=>({notifications:[],unreadCount:0}));
+  notifications=d.notifications||[];unreadCount=d.unreadCount||0;
+  const items=notifications.map(n=>`<div class="notif-row ${n.is_read?'':'unread'}" onclick="readNotifId(${n.id})">
+    <div class="notif-ico">${notifIcon(n.type)}</div>
+    <div class="notif-txt"><div>${esc(n.message)}</div><div class="small">${formatDate(n.created_at)}</div></div>
+    ${n.is_read?'':'<span class="notif-dot"></span>'}
+  </div>`).join('');
+  screen.innerHTML=header('Notificacoes','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
+    <div style="display:flex;gap:6px;margin:12px 0">
+      <button class="btn small-btn" onclick="readNotifId(0)">&#10003; Marcar todas como lidas</button>
+      <button class="btn small-btn outline" onclick="clearNotifs()">Limpar tudo</button>
+    </div>
+    ${notifications.length?items:`<div class="home-empty"><div style="font-size:34px">&#128276;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhuma notificacao</b><span class="small">Likes, comentarios, matches, parcerias, eventos, adocao e mais aparecerao aqui.</span></div>`}
+  </div>`;
+}
+async function readNotifId(id){
+  try{
+    if(id){await api('/api/notifications/read/'+id,{method:'POST'});unreadCount=Math.max(0,unreadCount-1);}
+    else {await api('/api/notifications/read',{method:'POST'});unreadCount=0;}
+  }catch(e){}
+  document.querySelector('.notif-dropdown')?.remove();
+  await renderNotificacoes();
+}
+async function clearNotifs(){
+  if(!confirm('Limpar todas as notificacoes?'))return;
+  try{await api('/api/notifications',{method:'DELETE'});notifications=[];unreadCount=0;await renderNotificacoes();}catch(e){alert(e.message);}
+}
+
+/* ===== Seguidores / seguindo (E14/E15) ===== */
+async function renderFollowers(userId,title){
+  let users;try{users=await api('/api/social/followers/'+userId);}catch(e){users=[];}
+  const buf=await api('/auth/me');void buf;
+  screen.innerHTML=header(title||'Seguidores','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
+    ${users.length?users.map(u=>`<div class="f-row">
+      <div class="avatar" onclick="viewUserProfile(${u.id})" style="cursor:pointer"><img src="${su(u.avatar||'')}" onerror="this.parentNode.textContent='${esc((u.name||'?')[0]||'?')}'"></div>
+      <div style="flex:1" onclick="viewUserProfile(${u.id})"><b style="font-size:12px">${esc(u.name)}</b><div class="small">${esc(u.bio||'')}</div></div>
+      ${u.i_follow?'<button class="btn small-btn outline" onclick="toggleFollowFromList(${u.id})">Seguindo</button>':'<button class="btn small-btn pink" onclick="toggleFollowFromList(${u.id})">Seguir</button>'}
+    </div>`).join(''):`<div class="home-empty"><div style="font-size:34px">&#128100;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Ninguem por aqui</b></div>`}
+  </div>`;
+}
+async function renderFollowing(userId,title){
+  let users;try{users=await api('/api/social/following/'+userId);}catch(e){users=[];}
+  screen.innerHTML=header(title||'Seguindo','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
+    ${users.length?users.map(u=>`<div class="f-row">
+      <div class="avatar" onclick="viewUserProfile(${u.id})" style="cursor:pointer"><img src="${su(u.avatar||'')}" onerror="this.parentNode.textContent='${esc((u.name||'?')[0]||'?')}'"></div>
+      <div style="flex:1" onclick="viewUserProfile(${u.id})"><b style="font-size:12px">${esc(u.name)}</b><div class="small">${esc(u.bio||'')}</div></div>
+      ${u.id===currentUser?.id?'':u.i_follow?'<button class="btn small-btn outline" onclick="toggleFollowFromList(${u.id})">Seguindo</button>':'<button class="btn small-btn pink" onclick="toggleFollowFromList(${u.id})">Seguir</button>'}
+    </div>`).join(''):`<div class="home-empty"><div style="font-size:34px">&#128100;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Ninguem por aqui</b></div>`}
+  </div>`;
+}
+async function toggleFollowFromList(id){
+  await api('/api/social/follow/'+id,{method:'POST'});
+  const title=screen.querySelector('.header-title')?.textContent||'';
+  if(title.indexOf('Seguidores')>-1){const targ=screen.innerHTML.indexOf('renderFollowers(');let uid=currentUser?.id;const m=screen.innerHTML.match(/renderFollowers\((\d+)/);if(m)uid=+m[1];await renderFollowers(uid||currentUser?.id,'');}
+  else{const m=screen.innerHTML.match(/renderFollowing\((\d+)/);let uid=m?+m[1]:currentUser?.id;await renderFollowing(uid,'');}
+}
+function goBackScreen(){renderPerfil();}
+
+/* ===== Configuracoes (E16) ===== */
+let cfgBlocks=null;
+async function openConfig(){
+  let me=currentUser;try{me=await api('/api/auth/me');}catch(e){}
+  if(me)currentUser=me;
+  let payText='Consulte a pagina de planos.';
+  try{const ps=await api('/api/payments/status');if(ps.lastPayment&&ps.lastPayment.plan&&ps.lastPayment.plan==='product')payText='Seus pagamentos de produtos seguem normais.';else if(ps.plan&&ps.plan!=='free')payText='Assinatura ativa: '+ps.plan.toUpperCase()+(ps.lastPayment&&ps.lastPayment.status==='paid'?' (pagamento confirmado)':' (aguardando confirmacao)');}catch(e){}
+  let blocked='';try{const b=await api('/api/social/blocked');blocked=b.length?b.map(u=>`<div class="f-row"><div class="avatar"><img src="${su(u.avatar||'')}" onerror="this.parentNode.textContent='${esc((u.name||'?')[0]||'?')}'"></div><div style="flex:1"><b style="font-size:12px">${esc(u.name)}</b></div><button class="btn small-btn outline" onclick="unblockUser(${u.id})">Desbloquear</button></div>`).join(''):'<div class="pl-note">Nenhum usuario bloqueado.</div>';}catch(e){blocked='<div class="pl-note">Nenhum usuario bloqueado.</div>';}
+  screen.innerHTML=header('Configuracoes','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
+    <div class="section"><h2>Conta</h2></div>
+    <div class="cfg-card">
+      <div class="field"><label>Nome</label><input id="cfgName" value="${esc(me.name||'')}"></div>
+      <div class="field"><label>Bio</label><textarea id="cfgBio" rows="2" placeholder="Conte sobre voce">${esc(me.bio||'')}</textarea></div>
+      <div class="field"><label>Cidade / Localizacao</label><input id="cfgLoc" value="${esc(me.location||'')}"></div>
+      <div class="field"><label>Foto (URL)</label><input id="cfgAvatar" value="${esc(me.avatar||'')}"></div>
+      <button class="btn" style="width:100%" onclick="saveConfig()">Salvar perfil</button>
+    </div>
+    <div class="section"><h2>Seguranca</h2></div>
+    <div class="cfg-card">
+      <div class="field"><label>Senha atual</label><input id="cfgPassCur" type="password"></div>
+      <div class="field"><label>Nova senha (min. 6)</label><input id="cfgPassNew" type="password"></div>
+      <div class="field"><label>Confirmar nova senha</label><input id="cfgPassNew2" type="password"></div>
+      <button class="btn outline" style="width:100%" onclick="changePassword()">Alterar senha</button>
+    </div>
+    <div class="section"><h2>Privacidade</h2></div>
+    <div class="cfg-card">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Perfil privado</b><button class="btn small-btn ${me.is_private?'pink':'outline'}" onclick="togglePrivate()">${me.is_private?'Privado':'Publico'}</button></div>
+      <div class="pl-note" style="padding:6px 0">Seus posts e pets ficam so para voce quando privado.</div>
+      <div class="pl-note" style="padding:10px 0 4px"><b style="font-size:12px">Bloqueados</b></div>
+      ${blocked}
+    </div>
+    <div class="section"><h2>Assinatura</h2></div>
+    <div class="cfg-card">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Plano atual</b><span class="badge-${me.plan==='pro'?'pro':me.plan==='plus'?'plus':'free'}">${me.plan==='pro'?'PRO':me.plan==='plus'?'TUTOR PLUS':'GRATUITO'}</span></div>
+      <div class="pl-note" style="padding:6px 0">${payText}</div>
+      <button class="btn small-btn" style="width:100%" onclick="openModal('plans')">Ver planos</button>
+      <button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="renderProInfo()">Saiba mais: Seja ZUNNU PRO</button>
+    </div>
+    <div class="section"><h2>Aplicativo</h2></div>
+    <div class="cfg-card">
+      <button class="btn outline" style="width:100%" onclick="toggleDarkMode()">${darkMode?'Modo claro':'Modo escuro'}</button>
+      <button class="btn outline" style="width:100%;margin-top:6px" onclick="renderHelp()">Centro de ajuda</button>
+    </div>
+  </div>`;
+}
+async function saveConfig(){
+  const body={name:val('cfgName'),bio:val('cfgBio'),location:val('cfgLoc'),avatar:val('cfgAvatar')};
+  try{const u=await api('/api/auth/me',{method:'PUT',body:JSON.stringify(body)});currentUser=u;await openConfig();alert('Perfil salvo!');}catch(e){alert(e.message);}
+}
+async function changePassword(){
+  const cur=val('cfgPassCur'),n1=val('cfgPassNew'),n2=val('cfgPassNew2');
+  if(!cur){alert('Informe a senha atual.');return;}
+  if(n1!==n2){alert('As novas senhas nao conferem.');return;}
+  if(n1.length<6){alert('A nova senha deve ter no minimo 6 caracteres.');return;}
+  try{await api('/api/auth/change-password',{method:'POST',body:JSON.stringify({current_password:cur,new_password:n1})});alert('Senha alterada!');await openConfig();}catch(e){alert(e.message);}
+}
+async function unblockUser(id){
+  try{await api('/api/social/block/'+id,{method:'DELETE'});await openConfig();}catch(e){alert(e.message);}
+}
+function renderHelp(){
+  screen.innerHTML=header('Centro de ajuda','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">
+    <div class="cfg-card"><b style="font-size:12px">Como a ZUNNU funciona?</b>
+      <div class="pl-note" style="padding:6px 0">Crie o perfil dos seus pets, compartilhe momentos no feed, encontre lugares e eventos, adote ou anuncie pets para adocao e converse com outros tutores quando houver match.</div>
+    </div>
+    <div class="cfg-card"><b style="font-size:12px">O que e o plano PRO/Plus?</b>
+      <div class="pl-note" style="padding:6px 0">Plus remove anuncios e adiciona selo. PRO ativa loja, servicos e eventos aprovados sem fila. Veja a pagina de planos para valores e como assinar.</div>
+    </div>
+    <div class="cfg-card"><b style="font-size:12px">Precisa de ajuda ou encontrou um problema?</b>
+      <div class="pl-note" style="padding:6px 0">Use o botao abaixo para nos contar. Sua mensagem e registrada como denuncia/sugestao e a equipe revisa.</div>
+      <button class="btn small-btn" style="width:100%" onclick="reportTarget('app',0)">Falar com a equipe</button>
+    </div>
+  </div>`;
+}
+
+/* ===== Painel Admin (E18/E19) ===== */
+let adminView='dashboard';
+async function renderAdmin(){
+  if(!currentUser?.is_admin){alert('Acesso restrito.');return;}
+  let dash={},rep=[],evs=[],us=[];let usQ='';
+  try{dash=await api('/api/admin/dashboard');}catch(e){alert(e.message);return;}
+  const tabs=[['dashboard','Visao geral'],['reports','Denuncias'],['events','Eventos'],['users','Usuarios']];
+  const tabHtml=tabs.map(t=>`<button class="btn small-btn ${adminView===t[0]?'':'outline'}" style="margin:0 4px 4px 0" onclick="adminView='${t[0]}';renderAdmin()">${t[1]}</button>`).join('');
+  let body='';
+  if(adminView==='dashboard'){
+    const st=[['Usuarios',dash.users],['Posts',dash.posts],['Pets',dash.pets],['Locais',dash.places],['Eventos',dash.events],['Adocao',dash.adoptions],['Conexoes',dash.matches],['Produtos',dash.products]];
+    body=`<div class="ad-grid">${st.map(x=>`<div class="ad-stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}<div class="ad-stat warn"><b>${dash.reportsPending}</b><span>Denuncias em aberto</span></div><div class="ad-stat warn"><b>${dash.eventsPending}</b><span>Eventos pendentes</span></div></div>
+    <button class="btn small-btn" style="width:100%" onclick="adminView='reports';renderAdmin()">Abrir fila de denuncias</button>
+    <button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="adminView='events';renderAdmin()">Moderar eventos</button>`;
+  }
+  if(adminView==='reports'){
+    try{rep=await api('/api/admin/reports?status=pending');}catch(e){rep=[];}
+    body=`${rep.length?rep.map(r=>`<div class="f-row">
+      <div class="avatar"><img src="${''}" onerror="this.parentNode.textContent='${esc((r.reporter_name||'?')[0]||'?')}'"></div>
+      <div style="flex:1"><b style="font-size:12px">${esc(r.reporter_name)}</b><div class="small">${esc(r.target_type)} #${r.target_id} &bull; ${esc(r.category||'')}</div>${r.reason?`<div class="small" style="background:var(--bg);border-radius:8px;padding:6px;margin-top:2px">${esc(r.reason)}</div>`:''}</div>
+      <div style="display:flex;flex-direction:column;gap:4px"><button class="btn small-btn" onclick="resolveReport(${r.id},'resolved')">Resolver</button><button class="btn small-btn outline" onclick="resolveReport(${r.id},'dismissed')">Ignorar</button></div>
+    </div>`).join(''):'<div class="home-empty"><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhuma denuncia pendente</b></div>'}`;
+  }
+  if(adminView==='events'){
+    try{evs=await api('/api/admin/events?status=pending');}catch(e){evs=[];}
+    body=`${evs.length?evs.map(e=>`<div class="f-row">
+      <div class="avatar">&#127881;</div>
+      <div style="flex:1"><b style="font-size:12px">${esc(e.name)}</b><div class="small">${e.date} &bull; ${esc(e.location||'')} &bull; por ${esc(e.organizer_name||'')}</div></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><button class="btn small-btn" onclick="modEvent(${e.id},'approved')">Aprovar</button><button class="btn small-btn outline" onclick="modEvent(${e.id},'rejected')">Recusar</button></div>
+    </div>`).join(''):'<div class="home-empty"><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum evento pendente</b></div>'}`;
+  }
+  if(adminView==='users'){
+    body=`<div class="disc-search" style="margin-bottom:10px"><span class="disc-s-icon">&#128269;</span><input placeholder="Buscar usuario por nome ou email" onkeydown="if(event.key==='Enter'){adminUsersQ=this.value.trim();renderAdmin();}"></div><div id="adminUsers"></div>`;
+  }
+  screen.innerHTML=header('Painel Admin','','')+`<div class="content" style="padding-top:0">
+    <div style="margin:12px 0;display:flex;flex-wrap:wrap">${tabHtml}</div>
+    ${body}
+  </div>`;
+  if(adminView==='users'){
+    try{us=await api('/api/admin/users'+(adminUsersQ?'?q='+encodeURIComponent(adminUsersQ):''));}catch(e){us=[];}
+    const el=document.getElementById('adminUsers');if(el)el.innerHTML=us.length?us.map(u=>`<div class="f-row">
+      <div class="avatar">${esc((u.name||'?')[0]||'?')}</div>
+      <div style="flex:1"><b style="font-size:12px">${esc(u.name)}</b><div class="small">${esc(u.email)} &bull; ${u.plan}</div></div>
+      ${u.id===currentUser?.id?'':`<button class="btn small-btn ${u.is_admin?'pink':'outline'}" onclick="setUserAdmin(${u.id},${u.is_admin?0:1})">${u.is_admin?'Remover admin':'Tornar admin'}</button>`}
+    </div>`).join(''):'<div class="pl-note">Nenhum usuario encontrado.</div>';
+  }
+}
+let adminUsersQ='';
+async function resolveReport(id,status){
+  try{await api('/api/admin/reports/'+id,{method:'PUT',body:JSON.stringify({status})});alert('Denuncia '+status+'.');renderAdmin();}catch(e){alert(e.message);}
+}
+async function modEvent(id,status){
+  try{await api('/api/admin/events/'+id,{method:'PUT',body:JSON.stringify({status})});renderAdmin();}catch(e){alert(e.message);}
+}
+async function setUserAdmin(id,is_admin){
+  try{await api('/api/admin/users/'+id,{method:'PUT',body:JSON.stringify({is_admin})});renderAdmin();}catch(e){alert(e.message);}
+}
+
+/* ===== Seja ZUNNU PRO (E11) ===== */
+function renderProInfo(){
+  screen.innerHTML=header('Seja ZUNNU PRO','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">
+    <div class="cfg-card" style="border-color:var(--gold)">
+      <b>Vendedor PRO</b> <span class="badge-pro">R$ 29,90/mes</span>
+      <div class="pl-note" style="padding:6px 0">Loja com produtos e checkout Pix, cadastro de servicos e agendamentos, eventos aprovados sem fila e selo PRO.</div>
+      <button class="btn gold" style="width:100%" onclick="startPayment('pro')">Assinar PRO</button>
+    </div>
+    <div class="cfg-card" style="border-color:var(--blue)">
+      <b>Tutor Plus</b> <span class="badge-plus">R$ 4,99/mes</span>
+      <div class="pl-note" style="padding:6px 0">Sem anuncios e selo azul de tutor.</div>
+      <button class="btn blue" style="width:100%" onclick="startPayment('plus')">Assinar Plus</button>
+    </div>
+    <div class="cfg-card">
+      <b>Pagamento</b>
+      <div class="pl-note" style="padding:6px 0">O checkout usa Pix via Mercado Pago quando configurado. Caso o servidor ainda nao tenha a chave da API, o pagamento entra em modo de simulacao (sandbox) apenas para o fluxo de teste, e nenhum valor real e cobrado.</div>
+    </div>
+    <div class="cfg-card">
+      <b>Selo Humano Verificado</b>
+      <div class="pl-note" style="padding:6px 0">A verificacao de identidade e feita por reconhecimento facial. O selo mostra que a conta foi validada como tutora de verdade.</div>
+      ${currentUser?.is_human_verified?'<span class="badge-verified">Voce ja e verificado</span>':'<button class="btn small-btn" style="width:100%;margin-top:6px" onclick="openModal(\'selfie\')">Fazer verificacao</button>'}
+    </div>
+  </div>`;
+}
+
+/* ===== Meus Eventos / Minha Adocao (dono) ===== */
+async function renderMyEvents(){
+  let evs=[];try{evs=await api('/api/events/mine');}catch(e){evs=[];}
+  screen.innerHTML=header('Meus Eventos','',{icon:'&#8592;',click:'renderPerfil()'})+`<div class="content" style="padding-top:0">
+    <button class="btn" style="width:100%;margin:12px 0" onclick="openNewEvent()">+ Criar evento (PRO)</button>
+    ${evs.length?evs.map(e=>`<div class="ev-card">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:13px">${esc(e.name)}</b><span class="badge-${e.status==='approved'?'free':e.status==='rejected'?'pro':'plus'}">${e.status==='approved'?'Aprovado':e.status==='rejected'?'Recusado':'Em analise'}</span></div>
+      <div class="small" style="margin:4px 0">${e.date} ${e.time?`&bull; ${e.time}`:''} &bull; ${e.location||''} &bull; ${e.category||''}</div>
+      <div class="small">Participantes: ${e.total_participants} &bull; Confirmados: ${e.confirmed_participants}</div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn small-btn outline small-btn-sm" onclick="editMyEvent(${e.id})">Editar</button>
+        <button class="btn small-btn outline small-btn-sm" onclick="deleteMyEvent(${e.id})">Excluir</button>
+        <button class="btn small-btn outline small-btn-sm" onclick="openEventDetail(${e.id})">Abrir</button>
+      </div>
+    </div>`).join(''):'<div class="home-empty"><div style="font-size:34px">&#128197;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Voce ainda nao criou eventos</b><span class="small">Eventos PRO aparecem aqui; eventos do plano gratuito entram em fila de moderacao.</span></div>'}
+  </div>`;
+}
+async function editMyEvent(id){
+  openNewEvent(id);
+}
+async function deleteMyEvent(id){
+  if(!confirm('Excluir este evento?'))return;
+  try{await api('/api/events/'+id,{method:'DELETE'});renderMyEvents();}catch(e){alert(e.message);}
+}
+async function renderMyAdoptions(){
+  let ads=[];try{ads=await api('/api/adoption/mine');}catch(e){ads=[];}
+  screen.innerHTML=header('Minha Adocao','',{icon:'&#8592;',click:'renderPerfil()'})+`<div class="content" style="padding-top:0">
+    <button class="btn" style="width:100%;margin:12px 0" onclick="openNewAdoption()">+ Anunciar pet para adocao</button>
+    ${ads.length?ads.map(a=>`<div class="ad-card" style="display:flex;gap:10px">
+      <img src="${su(a.image||'')}" style="width:64px;height:64px;border-radius:10px;object-fit:cover" onerror="this.src='https://via.placeholder.com/64'">
+      <div style="flex:1"><b style="font-size:13px">${esc(a.name)}</b><div class="small">${esc(a.species||'')} &bull; ${esc(a.breed||'')} &bull; ${esc(a.age||'')}</div>
+        <span class="badge-${a.status==='available'?'free':a.status==='in_process'?'plus':'pro'}">${a.status==='available'?'Disponivel':a.status==='in_process'?'Em processo':'Adotado'}</span>
+        ${a.count_requests?`<span class="small" style="margin-left:6px">${a.count_requests} pedido(s)</span>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <button class="btn small-btn outline small-btn-sm" onclick="openAdoptionDetail(${a.id})">Abrir</button>
+        ${a.count_requests?`<button class="btn small-btn small-btn-sm" onclick="openMyAdoptionRequests(${a.id})">Pedidos</button>`:''}
+        <button class="btn small-btn outline small-btn-sm" onclick="openNewAdoption(${a.id})">Editar</button>
+        <button class="btn small-btn outline small-btn-sm" onclick="deleteMyAdoption(${a.id})">Excluir</button>
+      </div>
+    </div>`).join(''):'<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum animal anunciado</b><span class="small">Anuncie pets para adocao responsavel.</span></div>'}
+  </div>`;
+}
+async function deleteMyAdoption(id){
+  if(!confirm('Excluir este anuncio?'))return;
+  try{await api('/api/adoption/'+id,{method:'DELETE'});renderMyAdoptions();}catch(e){alert(e.message);}
 }
 
 document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
