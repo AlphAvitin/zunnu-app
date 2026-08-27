@@ -349,7 +349,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 CREATE TABLE IF NOT EXISTS business_profiles (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER UNIQUE,
+  user_id INTEGER,
   business_name TEXT,
   business_type TEXT,
   description TEXT,
@@ -357,6 +357,43 @@ CREATE TABLE IF NOT EXISTS business_profiles (
   address TEXT,
   hours TEXT,
   verified INTEGER DEFAULT 0
+);
+ALTER TABLE business_profiles DROP CONSTRAINT IF EXISTS business_profiles_user_id_key;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS category TEXT;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS image TEXT;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS pet_friendly INTEGER DEFAULT 0;
+ALTER TABLE business_profiles ADD COLUMN IF NOT EXISTS links TEXT;
+CREATE TABLE IF NOT EXISTS place_reviews (
+  id SERIAL PRIMARY KEY,
+  place_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  rating INTEGER,
+  comment TEXT,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  UNIQUE (place_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS place_favorites (
+  user_id INTEGER NOT NULL,
+  place_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (user_id, place_id)
+);
+CREATE TABLE IF NOT EXISTS place_suggestions (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  category TEXT,
+  city TEXT,
+  address TEXT,
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  reason TEXT,
+  links TEXT,
+  suggested_by INTEGER,
+  status TEXT DEFAULT 'pending',
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS follow_requests (
   id SERIAL PRIMARY KEY,
@@ -769,7 +806,7 @@ function createTables(db) {
   db.run(`
   CREATE TABLE IF NOT EXISTS business_profiles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER UNIQUE,
+    user_id INTEGER,
     business_name TEXT,
     business_type TEXT,
     description TEXT,
@@ -777,6 +814,45 @@ function createTables(db) {
     address TEXT,
     hours TEXT,
     verified INTEGER DEFAULT 0
+  )`);
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN category TEXT"); } catch(e) {}
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN city TEXT"); } catch(e) {}
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN latitude REAL"); } catch(e) {}
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN longitude REAL"); } catch(e) {}
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN image TEXT"); } catch(e) {}
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN pet_friendly INTEGER DEFAULT 0"); } catch(e) {}
+  try { db.run("ALTER TABLE business_profiles ADD COLUMN links TEXT"); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS place_reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    place_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    rating INTEGER,
+    comment TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (place_id, user_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS place_favorites (
+    user_id INTEGER NOT NULL,
+    place_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, place_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS place_suggestions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    category TEXT,
+    city TEXT,
+    address TEXT,
+    latitude REAL,
+    longitude REAL,
+    reason TEXT,
+    links TEXT,
+    suggested_by INTEGER,
+    status TEXT DEFAULT 'pending',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
   db.run(`
   CREATE TABLE IF NOT EXISTS follow_requests (
@@ -879,4 +955,4 @@ async function all(sql, params = []) {
   return rows;
 }
 
-module.exports = { initDB, getDB, saveDB, run, get, all };
+module.exports = { initDB, getDB, saveDB, run, get, all, USE_PG };

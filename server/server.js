@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const path = require('path');
-const { initDB, get } = require('./db');
+const { initDB, get, run } = require('./db');
 const { setupWebSocket } = require('./ws');
 
 const app = express();
@@ -28,6 +28,7 @@ app.use('/api/posts', require('./routes/posts'));
 app.use('/api/reels', require('./routes/reels'));
 app.use('/api/pets', require('./routes/pets'));
 app.use('/api/search', require('./routes/search'));
+app.use('/api/places', require('./routes/places'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/match', require('./routes/match'));
@@ -111,6 +112,25 @@ async function start() {
   } else {
     console.log(`Database has ${userCount.c} users, skipping seed.`);
   }
+  const places = [
+    ['PetCare VIP Pet Shop', 'Pet Shop', 'Pet Shop', 'Sao Luis', 'Loja oficial de acessorios pet', '(98) 3333-0001', 'Av. dos Holandeses, 1200 - Sao Luis/MA', 'Seg a Sab, 8h-19h', 1, 1, -2.5350, -44.2900, 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=600&q=80', 'https://instagram.com/zunnu', 3],
+    ['Cafe & Pets Centro', 'Lazer', 'Lazer', 'Centro', 'Cafe pet friendly com area cercada para pets', '(98) 3333-0002', 'Rua Grande, 980 - Centro, Sao Luis/MA', 'Seg a Dom, 10h-22h', 0, 1, -2.5290, -44.2780, 'https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?auto=format&fit=crop&w=600&q=80', '', 2],
+    ['Parque Centro', 'Parque', 'Parque', 'Centro', 'Area verde para passeios e brincadeiras com pets', '', 'Av. Beira Mar - Sao Luis/MA', 'Todos os dias, 5h-23h', 0, 1, -2.5307, -44.2829, 'https://images.unsplash.com/photo-1533796582758-4c0fc8780abf?auto=format&fit=crop&w=600&q=80', '', null],
+    ['VetCenter Patinhas', 'Veterinaria', 'Veterinaria', 'Bairro Alto', 'Clinica veterinaria com emergencia 24h', '(98) 3333-0003', 'Av. dos Franceses, 520 - Bairro Alto, Sao Luis/MA', '24 horas', 1, 0, -2.5260, -44.2700, 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=600&q=80', '', null],
+    ['Bairro Alto Praca', 'Praca', 'Praca', 'Bairro Alto', 'Praca com espaco livre para encontros de pets', '', 'Praca do Bairro Alto - Sao Luis/MA', 'Todos os dias', 0, 1, -2.5260, -44.2710, 'https://images.unsplash.com/photo-1517971129774-8a2b38fa128e?auto=format&fit=crop&w=600&q=80', '', null]
+  ];
+  for (const p of places) {
+    await run(`INSERT INTO business_profiles (business_name, business_type, category, city, description, phone, address, hours, verified, pet_friendly, latitude, longitude, image, links, user_id)
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      WHERE NOT EXISTS (SELECT 1 FROM business_profiles WHERE business_name = ?)`, [...p, p[0]]);
+  }
+  await run(`INSERT INTO place_reviews (place_id, user_id, rating, comment)
+    SELECT (SELECT id FROM business_profiles WHERE business_name = 'PetCare VIP Pet Shop'), 1, 5, 'Ambiente pet friendly e atendimento excelente. Meu Bilu adorou!'
+    WHERE NOT EXISTS (SELECT 1 FROM place_reviews WHERE place_id = (SELECT id FROM business_profiles WHERE business_name = 'PetCare VIP Pet Shop') AND user_id = 1)`);
+  await run(`INSERT INTO place_reviews (place_id, user_id, rating, comment)
+    SELECT (SELECT id FROM business_profiles WHERE business_name = 'Parque Centro'), 4, 5, 'O lugar perfeito para passear com a Amora.'
+    WHERE NOT EXISTS (SELECT 1 FROM place_reviews WHERE place_id = (SELECT id FROM business_profiles WHERE business_name = 'Parque Centro') AND user_id = 4)`);
+  console.log('Places seeded:', places.length);
   setupWebSocket(server);
   server.listen(PORT, () => {
     console.log(`ZUNNU server running on port ${PORT}`);

@@ -385,6 +385,51 @@ button,input,textarea,select{font:inherit}
 .disc-loc-btn{border:0;background:var(--greenSoft);color:var(--green);border-radius:12px;padding:10px;font-size:12px;font-weight:800;cursor:pointer;width:100%;margin-top:8px}
 .modal-scroll{max-height:80vh;overflow-y:auto}
 
+/* ===== Lugares Pet (Etapa 6) ===== */
+.pl-chips{display:flex;gap:7px;overflow-x:auto;padding:4px 16px;scrollbar-width:none}
+.pl-chips::-webkit-scrollbar{display:none}
+.pl-chip{flex-shrink:0;background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:20px;padding:7px 12px;font-size:11px;font-weight:700;color:var(--soft);cursor:pointer;transition:all .15s}
+.pl-chip.on{background:var(--gold);border-color:var(--gold);color:#fff}
+.pl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px 16px}
+.pl-card{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06);cursor:pointer;animation:fadeIn .3s ease;transition:transform .15s}
+.pl-card:active{transform:scale(.97)}
+.pl-photo{height:92px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:34px;overflow:hidden;position:relative}
+.pl-photo img{width:100%;height:100%;object-fit:cover}
+.pl-badges{position:absolute;top:6px;left:6px;display:flex;gap:4px;z-index:2}
+.pl-badge{font-size:9px;padding:2px 6px;border-radius:10px;font-weight:800}
+.pl-badge.verified{background:var(--green);color:#fff}
+.pl-badge.petf{background:var(--gold);color:#fff}
+.pl-info{padding:9px 10px}
+.pl-info b{font-size:12.5px;display:block;text-transform:capitalize}
+.pl-info .pl-meta{font-size:10.5px;color:var(--soft);display:block;margin-top:2px}
+.pl-stars{color:var(--gold);font-size:11px;font-weight:800}
+.pl-stars b{font-size:12px;margin-right:2px}
+.pl-fav{position:absolute;top:6px;right:6px;border:0;background:rgba(255,255,255,.92);border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;color:var(--coral);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.15);z-index:2}
+.map-marker.place{width:34px;height:34px;border-radius:50%;background:var(--gold);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.map-marker.place.petf{background:#8bc34a}
+.pl-note{font-size:11px;color:var(--soft);padding:2px 16px 6px}
+.pl-detail-photo{height:150px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:52px;overflow:hidden}
+.pl-detail-photo img{width:100%;height:100%;object-fit:cover}
+.pl-detail{padding:12px 16px}
+.pl-detail h3{font-size:17px;margin:0 0 2px;text-transform:capitalize}
+.pl-detail .pl-cat{font-size:11px;color:var(--green);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.pl-row{display:flex;gap:9px;align-items:flex-start;margin-top:7px;font-size:12px;color:var(--text)}
+.pl-row .ico{color:var(--green);width:17px;text-align:center;flex-shrink:0}
+.rev-star-row{display:flex;gap:4px;justify-content:center;font-size:22px;margin:6px 0}
+.rev-star{border:0;background:none;cursor:pointer;color:#d8d8da;font-size:22px;line-height:1}
+.rev-star.on{color:var(--gold)}
+.rev-item{background:var(--bg);border-radius:12px;padding:8px 10px;margin-top:8px}
+.rev-item .rev-head{display:flex;align-items:center;gap:8px}
+.rev-item .avatar{width:30px;height:30px;border-radius:50%;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--green);flex-shrink:0;overflow:hidden}
+.rev-item .avatar img{width:100%;height:100%;object-fit:cover}
+.rev-item .rev-name{font-size:11.5px;font-weight:800}
+.rev-item .rev-time{font-size:10px;color:var(--soft)}
+.rev-item p{font-size:12px;margin:6px 0 0}
+.pl-field{width:100%;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:9px 11px;font-size:12.5px;background:var(--card);box-sizing:border-box}
+.pl-label{font-size:10.5px;font-weight:800;color:var(--soft);display:block;margin:10px 0 4px;text-transform:uppercase;letter-spacing:.3px}
+.pl-form-actions{display:flex;gap:8px;margin-top:12px}
+.pl-form-actions .btn,.pl-form-actions .btn.outline{flex:1}
+
 /* ===== Perfil do Pet (Etapa 3) ===== */
 .pp-hero{background:linear-gradient(150deg,var(--green) 0%,var(--green2) 100%);border-radius:0 0 26px 26px;padding:14px 16px 18px;color:#fff;text-align:center;position:relative;overflow:hidden}
 .pp-hero::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06);right:-45px;top:-45px}
@@ -1249,6 +1294,280 @@ function openPostDetailId(id){
 }
 async function likeFromModal(id,btn){
   try{const d=await api('/api/posts/'+id+'/like',{method:'POST'});btn.innerHTML='&#9829; '+(d.likes||0);btn.style.color=d.liked?'var(--pink)':'#8c8c8e';}catch(e){alert(e.message);}
+}
+
+/* ===== Mapa Pet / Lugares (Etapa 6) ===== */
+let places=[],placesFilter='all',placeCity='',revStar=0,placeEditId=0;
+const MA_CITIES={'Sao Luis':[-2.5307,-44.2829],'Centro':[-2.5307,-44.2829],'Bairro Alto':[-2.5260,-44.2700],'Calhau':[-2.4930,-44.2620],'Ponta de Areia':[-2.4780,-44.2560],'Renascer':[-2.5600,-44.2600],'TurU':[-2.5900,-44.3000]};
+function placeStars(r){return r!=null?`<span class="pl-stars">&#9733; ${r} <span style="color:var(--soft);font-weight:600;font-size:10px">(${r.reviews_count||0})</span></span>`:'<span style="color:var(--soft)">Sem avaliacoes</span>';}
+function placeCard(p){
+  return`<div class="pl-card" onclick="openPlace(${p.id})">
+    <div class="pl-photo">
+      <div class="pl-badges">${p.verified?`<span class="pl-badge verified">&#10004; Verificado</span>`:''}${p.pet_friendly?`<span class="pl-badge petf">&#128062; Pet friendly</span>`:''}</div>
+      <button class="pl-fav" onclick="event.stopPropagation();togglePlaceFav(${p.id},this)" title="Favoritar">${p.is_favorite?'&#10084;':'&#9825;'}</button>
+      ${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.innerHTML='&#127962;'">`:'&#127962;'}
+    </div>
+    <div class="pl-info">
+      <b>${esc(p.name)}</b>
+      <span class="pl-meta">${p.category?esc(p.category):''}${p.city?` &bull; ${esc(p.city)}`:''}</span>
+      <span class="pl-meta" style="margin-top:3px">${placeStars(p)}${p.distance!=null?` &bull; ${p.distance} km`:''}</span>
+    </div>
+  </div>`;
+}
+async function loadPlaces(){
+  const g=document.getElementById('placesGrid');
+  if(g)g.innerHTML='<div class="explore-empty" style="grid-column:1/-1">Carregando lugares...</div>';
+  try{
+    const lat=window._userLat,lng=window._userLng;
+    let url='/api/places';const qs=[];
+    if(placeCity)qs.push('city='+encodeURIComponent(placeCity));
+    if(lat&&lng)qs.push('lat='+lat+'&lng='+lng+'&radius=25');
+    if(qs.length)url+='?'+qs.join('&');
+    places=(await api(url))||[];
+    renderPlaces();renderPlaceMarkers();
+  }catch(e){
+    if(g)g.innerHTML='<div class="explore-empty" style="grid-column:1/-1">Erro ao carregar lugares.</div>';
+  }
+}
+function renderPlaces(){
+  const g=document.getElementById('placesGrid');if(!g)return;
+  const flt=placesFilter==='all'?places:places.filter(p=>(p.category||'')===placesFilter);
+  if(!places.length){g.innerHTML='<div class="explore-empty" style="grid-column:1/-1">Nenhum lugar cadastrado ainda. Toque em "Adicionar lugar" ou "Sugerir local".</div>';return;}
+  if(!flt.length){g.innerHTML='<div class="explore-empty" style="grid-column:1/-1">Nenhum lugar nesta categoria.</div>';return;}
+  g.innerHTML=flt.map(placeCard).join('');
+  document.querySelectorAll('.pl-chip').forEach(c=>c.classList.toggle('on',(c.dataset.f||'none')===placesFilter));
+  const sel=document.getElementById('plCitySel');if(sel)sel.value=placeCity?placeCity:'__all__';
+}
+function goPlaceCity(){
+  const sel=document.getElementById('plCitySel');
+  placeCity=sel&&sel.value!=='__all__'?sel.value:'';
+  const c=MA_CITIES[placeCity]||(window._userLat&&window._userLng?[window._userLat,window._userLng]:[-2.5307,-44.2829]);
+  if(mapaInst)mapaInst.setView(c,14);
+  loadPlaces();
+  const el=document.getElementById('placesGrid');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function renderPlaceMarkers(){
+  if(!mapaInst)return;
+  mapaInst.eachLayer(l=>{if(l instanceof L.Marker&&l.options&&l.options.place)mapaInst.removeLayer(l);});
+  places.forEach(p=>{
+    if(p.latitude==null||p.longitude==null)return;
+    const icon=L.divIcon({className:'',html:'<div class="map-marker place'+(p.pet_friendly?' petf':'')+'">'+(p.category==='Veterinaria'?'&#129658;':'&#127962;')+'</div>',iconSize:[34,34],iconAnchor:[17,34]});
+    L.marker([p.latitude,p.longitude],{icon,place:true}).addTo(mapaInst).on('click',()=>openPlace(p.id));
+  });
+}
+async function openPlace(id){
+  try{
+    const d=await api('/api/places/'+id);
+    renderPlaceModal(d.place,d.reviews||[]);
+  }catch(e){alert(e.message);}
+}
+function renderPlaceModal(p,reviews){
+  if(document.getElementById('modal-root'))document.getElementById('modal-root').remove();
+  revStar=p.my_rating||0;
+  const root=document.createElement('div');root.id='modal-root';
+  const isOwner=currentUser&&p.owner_id===currentUser.id;
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal modal-scroll" style="padding:0">
+    <div style="position:relative">
+      <button class="modal-close" style="position:absolute;top:10px;right:10px;z-index:3;background:rgba(255,255,255,.92)" onclick="closeModal()">&#10005;</button>
+      <div class="pl-detail-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.innerHTML='&#127962;'">`:'&#127962;'}</div>
+    </div>
+    <div class="pl-detail">
+      <div class="pl-cat">${esc(p.category||p.business_type||'Lugar')}</div>
+      <h3>${esc(p.name)}</h3>
+      <div class="pl-row"><span class="ico">&#9733;</span><span>${p.rating!=null?`<span class="pl-stars">${p.rating}</span> (${p.reviews_count||0} avaliacoes)`:'Sem avaliacoes ainda'}${p.favorites_count?` &bull; ${p.favorites_count} favoritos`:''}</span></div>
+      ${p.distance!=null?`<div class="pl-row"><span class="ico">&#128205;</span><span>${p.distance} km de voce</span></div>`:''}
+      ${p.address?`<div class="pl-row"><span class="ico">&#127968;</span><span>${esc(p.address)}</span></div>`:''}
+      ${p.phone?`<div class="pl-row"><span class="ico">&#128222;</span><span>${esc(p.phone)}</span></div>`:''}
+      ${p.hours?`<div class="pl-row"><span class="ico">&#9201;</span><span>${esc(p.hours)}</span></div>`:''}
+      ${p.description?`<div class="pl-row"><span class="ico">&#128214;</span><span>${esc(p.description)}</span></div>`:''}
+      ${p.links?`<div class="pl-row"><span class="ico">&#128279;</span><a href="${esc(p.links)}" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">${esc(p.links)}</a></div>`:''}
+      <div class="pl-row"><span class="ico">&#128100;</span><span>${p.owner_name?`Adicionado por ${esc(p.owner_name)} `:''}${p.verified?`<span class="pl-badge verified" style="display:inline-block">&#10004; Verificado</span>`:''}${p.pet_friendly?`<span class="pl-badge petf" style="display:inline-block">&#128062; Pet friendly</span>`:''}</span></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn outline" style="flex:1" onclick="togglePlaceFavCenter(${p.id},this)">${p.is_favorite?'&#10084; Remover favorito':'&#9825; Favoritar'}</button>
+        ${isOwner?`<button class="btn outline" style="flex:1" onclick="openEditPlace(${p.id})">&#9998; Editar</button>`:''}
+      </div>
+      ${isOwner?`<button class="btn outline" style="width:100%;margin-top:8px;border-color:rgba(231,111,81,.45);color:var(--coral)" onclick="delPlaceConfirm(${p.id})">&#128465; Remover este lugar</button>`:''}
+      <div class="pl-label">Avaliar</div>
+      <div class="rev-star-row" id="revStars">${[1,2,3,4,5].map(n=>`<button class="rev-star ${n<=(p.my_rating||0)?'on':''}" data-r="${n}" onclick="setRevStar(${n})">&#9733;</button>`).join('')}</div>
+      <textarea id="revComment" class="pl-field" rows="2" placeholder="Conte sua experiencia..."></textarea>
+      <button class="btn" style="width:100%;margin-top:8px" onclick="submitPlaceReview(${p.id})">${p.my_rating?'Atualizar avaliacao':'Enviar avaliacao'}</button>
+      ${p.my_rating?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="delPlaceReview(${p.id})">Excluir minha avaliacao</button>`:''}
+      <div class="pl-label" style="margin-top:16px">Avaliacoes (${reviews.length})</div>
+      ${reviews.length?reviews.map(rv=>`<div class="rev-item"><div class="rev-head"><div class="avatar">${rv.user_avatar?`<img src="${su(rv.user_avatar)}" onerror="this.style.display='none';this.parentNode.textContent='${esc((rv.user_name||'?')[0])}'">`:esc((rv.user_name||'?')[0])}</div><div style="flex:1"><div class="rev-name">${esc(rv.user_name)}</div><div class="rev-time">${'&#9733;'.repeat(Math.max(0,Math.min(5,rv.rating||0)))+'&#9734;'.repeat(Math.max(0,5-Math.min(5,rv.rating||0)))}</div></div></div>${rv.comment?`<p>${esc(rv.comment)}</p>`:''}</div>`).join(''):'<div class="pl-note" style="padding:6px 0">Seja o primeiro a avaliar este lugar.</div>'}
+    </div>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+function setRevStar(n){
+  revStar=n;
+  document.querySelectorAll('#revStars .rev-star').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.r)<=n));
+}
+async function submitPlaceReview(id){
+  if(revStar<1){alert('Escolha de 1 a 5 estrelas');return;}
+  try{
+    const comment=document.getElementById('revComment')?document.getElementById('revComment').value:'';
+    await api('/api/places/'+id+'/review',{method:'POST',body:JSON.stringify({rating:revStar,comment})});
+    openPlace(id);
+  }catch(e){alert(e.message);}
+}
+async function delPlaceReview(id){
+  try{await api('/api/places/'+id+'/review',{method:'DELETE'});openPlace(id);}catch(e){alert(e.message);}
+}
+async function togglePlaceFav(id,btn){
+  try{
+    const d=await api('/api/places/'+id+'/favorite',{method:'POST'});
+    btn.innerHTML=d.favorite?'&#10084;':'&#9825;';
+    const p=places.find(x=>x.id===id);if(p)p.is_favorite=d.favorite?1:0;
+  }catch(e){alert(e.message);}
+}
+async function togglePlaceFavCenter(id,btn){
+  try{
+    const d=await api('/api/places/'+id+'/favorite',{method:'POST'});
+    btn.innerHTML=d.favorite?'&#10084; Remover favorito':'&#9825; Favoritar';
+  }catch(e){alert(e.message);}
+}
+async function delPlaceConfirm(id){
+  if(!confirm('Remover este lugar? Esta acao nao pode ser desfeita.'))return;
+  try{
+    await api('/api/places/'+id,{method:'DELETE'});
+    closeModal();loadPlaces();
+  }catch(e){alert(e.message);}
+}
+function openNewPlace(p){
+  placeEditId=p?p.id:0;
+  const v=(x,d)=>p&&p[x]!=null&&String(p[x])!==''?esc(String(p[x])):d;
+  const cats=['Pet Shop','Veterinaria','Banho e Tosa','Lazer','Parque','Praca','Outro'];
+  if(document.getElementById('modal-root'))document.getElementById('modal-root').remove();
+  const root=document.createElement('div');root.id='modal-root';
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal modal-scroll">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="pl-detail" style="padding-top:34px">
+      <h3 style="margin-bottom:2px">${p?'Editar lugar':'Adicionar lugar'}</h3>
+      <span class="small">Locais pet friendly, servicos e pontos de encontro ficam visiveis no Mapa Pet para toda a comunidade.</span>
+      <label class="pl-label">Nome *</label>
+      <input id="plF-name" class="pl-field" placeholder="Ex.: Pet Shop Amigo" value="${v('name','')}">
+      <label class="pl-label">Categoria</label>
+      <select id="plF-cat" class="pl-field">${cats.map(c=>`<option ${(p&&(p.category||'')===c)||(!p&&c==='Pet Shop')?'selected':''}>${c}</option>`).join('')}</select>
+      <label class="pl-label">Cidade</label>
+      <input id="plF-city" class="pl-field" placeholder="Ex.: Sao Luis" value="${v('city','')}">
+      <label class="pl-label">Endereco</label>
+      <input id="plF-address" class="pl-field" placeholder="Rua, numero, bairro" value="${v('address','')}">
+      <label class="pl-label">Telefone / Horario</label>
+      <div style="display:flex;gap:8px"><input id="plF-phone" class="pl-field" placeholder="(00) 0000-0000" value="${v('phone','')}"><input id="plF-hours" class="pl-field" placeholder="Ex.: 8h-19h" value="${v('hours','')}"></div>
+      <label class="pl-label">Descricao</label>
+      <textarea id="plF-desc" class="pl-field" rows="2" placeholder="O que tem de especial?">${v('description','')}</textarea>
+      <label class="pl-label">Foto (URL)</label>
+      <input id="plF-image" class="pl-field" placeholder="https://..." value="${v('image','')}">
+      <label class="pl-label">Link (Opcional)</label>
+      <input id="plF-links" class="pl-field" placeholder="Instagram, site..." value="${v('links','')}">
+      <label class="pl-label">Localizacao no mapa</label>
+      <div style="display:flex;gap:8px"><input id="plF-lat" class="pl-field" placeholder="Latitude" value="${v('latitude','')}"><input id="plF-lng" class="pl-field" placeholder="Longitude" value="${v('longitude','')}"></div>
+      <button class="disc-loc-btn" onclick="fillPlaceCoords()">&#128373;&#65039; Usar minha localizacao</button>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;font-weight:700;cursor:pointer"><input type="checkbox" id="plF-petf" ${(p&&p.pet_friendly)?'checked':''}> &#128062; Pet friendly</label>
+      <div class="pl-form-actions">
+        <button class="btn outline" onclick="closeModal()">Cancelar</button>
+        <button class="btn" onclick="savePlaceForm()">${p?'Salvar':'Cadastrar lugar'}</button>
+      </div>
+    </div>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+function openEditPlace(id){
+  const p=places.find(x=>x.id===id);
+  if(p){closeModal();openNewPlace(p);}
+}
+function fillPlaceCoords(){
+  if(!navigator.geolocation){alert('Geolocalizacao indisponivel');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    document.getElementById('plF-lat').value=pos.coords.latitude.toFixed(5);
+    document.getElementById('plF-lng').value=pos.coords.longitude.toFixed(5);
+  },()=>alert('Permissao negada'));
+}
+async function savePlaceForm(){
+  const name=(document.getElementById('plF-name').value||'').trim();
+  if(!name){alert('Informe o nome do lugar');return;}
+  const body={
+    name,
+    category:document.getElementById('plF-cat').value,
+    city:document.getElementById('plF-city').value.trim(),
+    address:document.getElementById('plF-address').value.trim(),
+    phone:document.getElementById('plF-phone').value.trim(),
+    hours:document.getElementById('plF-hours').value.trim(),
+    description:document.getElementById('plF-desc').value.trim(),
+    image:document.getElementById('plF-image').value.trim(),
+    links:document.getElementById('plF-links').value.trim(),
+    latitude:parseFloat(document.getElementById('plF-lat').value)||null,
+    longitude:parseFloat(document.getElementById('plF-lng').value)||null,
+    pet_friendly:document.getElementById('plF-petf').checked?1:0
+  };
+  try{
+    if(placeEditId)await api('/api/places/'+placeEditId,{method:'PUT',body:JSON.stringify(body)});
+    else await api('/api/places',{method:'POST',body:JSON.stringify(body)});
+    closeModal();loadPlaces();
+  }catch(e){alert(e.message);}
+}
+function openSuggestPlace(){
+  if(document.getElementById('modal-root'))document.getElementById('modal-root').remove();
+  const root=document.createElement('div');root.id='modal-root';
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal modal-scroll">
+    <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    <div class="pl-detail" style="padding-top:34px">
+      <h3 style="margin-bottom:2px">&#128161; Sugerir local</h3>
+      <span class="small">Conhece um lugar pet friendly, parque ou petshop que deveria aparecer no Mapa Pet?</span>
+      <label class="pl-label">Nome do lugar *</label>
+      <input id="sgF-name" class="pl-field" placeholder="Nome do local">
+      <div style="display:flex;gap:8px">
+        <div style="flex:1"><label class="pl-label">Categoria</label><select id="sgF-cat" class="pl-field"><option>Pet Shop</option><option>Veterinaria</option><option>Lazer</option><option>Parque</option><option>Praca</option><option>Outro</option></select></div>
+        <div style="flex:1"><label class="pl-label">Cidade</label><input id="sgF-city" class="pl-field" placeholder="Sao Luis"></div>
+      </div>
+      <label class="pl-label">Endereco</label>
+      <input id="sgF-address" class="pl-field" placeholder="Rua, numero, bairro">
+      <label class="pl-label">Por que sugerir?</label>
+      <textarea id="sgF-reason" class="pl-field" rows="2" placeholder="Conte o que voce gosta neste lugar"></textarea>
+      <label class="pl-label">Link (Opcional)</label>
+      <input id="sgF-links" class="pl-field" placeholder="Instagram, site...">
+      <div class="pl-form-actions">
+        <button class="btn outline" onclick="closeModal()">Cancelar</button>
+        <button class="btn" onclick="submitSuggest()">Enviar sugestao</button>
+      </div>
+    </div>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+async function submitSuggest(){
+  const name=(document.getElementById('sgF-name').value||'').trim();
+  if(!name){alert('Informe o nome do lugar');return;}
+  const body={
+    name,
+    category:document.getElementById('sgF-cat').value,
+    city:document.getElementById('sgF-city').value.trim(),
+    address:document.getElementById('sgF-address').value.trim(),
+    reason:document.getElementById('sgF-reason').value.trim(),
+    links:document.getElementById('sgF-links').value.trim()
+  };
+  try{
+    const d=await api('/api/places/suggest',{method:'POST',body:JSON.stringify(body)});
+    closeModal();alert(d.message||'Sugestao enviada!');
+  }catch(e){alert(e.message);}
+}
+async function openMyPlaces(){
+  try{
+    const mine=(await api('/api/places/my').catch(()=>[]))||[];
+    const sugs=(await api('/api/places/suggestions').catch(()=>[]))||[];
+    if(document.getElementById('modal-root'))document.getElementById('modal-root').remove();
+    const root=document.createElement('div');root.id='modal-root';
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal modal-scroll">
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+      <div class="pl-detail" style="padding-top:34px">
+        <h3 style="margin-bottom:2px">&#128100; Meus lugares</h3>
+        ${mine.length===0?'<div class="pl-note" style="padding:8px 0">Voce ainda nao cadastrou nenhum lugar.</div>':mine.map(p=>`<div class="rev-item"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><b style="font-size:12.5px;text-transform:capitalize">${esc(p.name)}</b><div class="rev-time">${p.category||''}${p.city?` &bull; ${esc(p.city)}`:''} ${p.rating!=null?` &bull; &#9733; ${p.rating}`:''}</div></div><button class="btn outline" style="padding:6px 10px;font-size:10px" onclick="openEditPlace(${p.id})">Editar</button><button class="btn outline" style="padding:6px 10px;font-size:10px;border-color:rgba(231,111,81,.45);color:var(--coral)" onclick="delPlaceConfirm(${p.id})">Remover</button></div></div>`).join('')}
+        <button class="btn" style="width:100%;margin-top:10px" onclick="openNewPlace()">&#10133; Adicionar novo lugar</button>
+        <div class="pl-label" style="margin-top:16px">Minhas sugestoes (${sugs.length})</div>
+        ${sugs.length===0?'<div class="pl-note" style="padding:8px 0">Nenhuma sugestao enviada ainda.</div>':sugs.map(s=>`<div class="rev-item"><b style="font-size:12.5px">${esc(s.name)}</b><div class="rev-time">${esc(s.category||'')}${s.city?` &bull; ${esc(s.city)}`:''} &bull; ${s.status==='pending'?'Aguardando revisao':s.status}</div></div>`).join('')}
+      </div>
+    </div></div>`;
+    document.body.appendChild(root);
+  }catch(e){alert(e.message);}
 }
 
 
@@ -2304,6 +2623,36 @@ function renderMapa(){
       <button class="explore-more svc-all" onclick="openServices()">Ver todos os servicos &rarr;</button>
     </div>
     <div class="explore-section">
+      <div class="explore-sec-head"><h2>Mapa Pet — Lugares</h2><button class="explore-more" onclick="loadPlaces()">Atualizar</button></div>
+      <div class="pl-chips">
+        <button class="pl-chip on" data-f="all" onclick="placesFilter='all';renderPlaces()">&#128205; Todos</button>
+        <button class="pl-chip" data-f="Pet Shop" onclick="placesFilter='Pet Shop';renderPlaces()">&#128722; Pet Shop</button>
+        <button class="pl-chip" data-f="Veterinaria" onclick="placesFilter='Veterinaria';renderPlaces()">&#129658; Vet</button>
+        <button class="pl-chip" data-f="Banho e Tosa" onclick="placesFilter='Banho e Tosa';renderPlaces()">&#9986; Tosa</button>
+        <button class="pl-chip" data-f="Parque" onclick="placesFilter='Parque';renderPlaces()">&#127965; Parque</button>
+        <button class="pl-chip" data-f="Praca" onclick="placesFilter='Praca';renderPlaces()">&#127963; Praca</button>
+        <button class="pl-chip" data-f="Lazer" onclick="placesFilter='Lazer';renderPlaces()">&#127882; Lazer</button>
+        <button class="pl-chip" onclick="openMyPlaces()">&#128100; Meus lugares</button>
+        <button class="pl-chip" onclick="openSuggestPlace()">&#128161; Sugerir local</button>
+        <button class="pl-chip" onclick="openNewPlace()">&#10133; Adicionar lugar</button>
+      </div>
+      <div class="pl-chips" style="padding-top:2px">
+        <select id="plCitySel" onchange="placeCity=this.value==='__all__'?'':this.value;loadPlaces()" style="flex:1;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:8px 10px;font-size:12px;background:var(--card)">
+          <option value="__all__">&#127968; Todas as cidades</option>
+          <option>Sao Luis</option>
+          <option>Centro</option>
+          <option>Bairro Alto</option>
+          <option>Calhau</option>
+          <option>Ponta de Areia</option>
+          <option>Renascer</option>
+          <option>TurU</option>
+        </select>
+        <button class="btn" style="padding:0 12px;flex-shrink:0" onclick="goPlaceCity()">Ir</button>
+      </div>
+      <div class="pl-note">Pin amarelo = pet friendly. Toque em um pin ou card para ver detalhes, avaliar e favoritar.</div>
+      <div class="pl-grid" id="placesGrid"><div class="explore-empty" style="grid-column:1/-1">Carregando lugares...</div></div>
+    </div>
+    <div class="explore-section">
       <div class="explore-sec-head"><h2>Comunidade local</h2></div>
       <div class="community-teaser" onclick="setTab('inicio')">
         <div class="explore-quick-icon green">&#128293;</div>
@@ -2322,8 +2671,9 @@ function renderMapa(){
       loadNearbyPets();
       updateExplorerLoc();
       renderLostCards();
-    },()=>{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();});
-  }else{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();}
+      loadPlaces();
+    },()=>{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();loadPlaces();});
+  }else{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();loadPlaces();}
 }
 function initMap(lat,lng){
   if(mapaInst){mapaInst.remove();mapaInst=null;}
