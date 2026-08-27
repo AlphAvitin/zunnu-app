@@ -8,12 +8,13 @@ router.get('/', optionalAuth, async (req, res) => {
   try {
     const { search } = req.query;
     let where = 'WHERE s.is_active = 1';
-    const params = [];
+    const params = [req.userId || -1];
 
     if (search) { where += ' AND (s.title LIKE ? OR u.name LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
 
     const services = await all(`
-      SELECT s.*, u.name as provider_name, u.avatar as provider_avatar, u.plan as provider_plan
+      SELECT s.*, u.name as provider_name, u.avatar as provider_avatar, u.plan as provider_plan,
+        (SELECT COUNT(*) FROM service_favorites sf WHERE sf.service_id = s.id AND sf.user_id = ?) as is_favorite
       FROM services s JOIN users u ON s.provider_id = u.id
       ${where}
       ORDER BY s.created_at DESC

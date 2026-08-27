@@ -8,14 +8,15 @@ router.get('/', optionalAuth, async (req, res) => {
   try {
     const { search, minPrice, maxPrice } = req.query;
     let where = 'WHERE p.is_active = 1';
-    const params = [];
+    const params = [req.userId || -1];
 
     if (search) { where += ' AND (p.title LIKE ? OR u.name LIKE ?)'; params.push(`%${search}%`, `%${search}%`); }
     if (minPrice) { where += ' AND p.price >= ?'; params.push(parseFloat(minPrice)); }
     if (maxPrice) { where += ' AND p.price <= ?'; params.push(parseFloat(maxPrice)); }
 
     const products = await all(`
-      SELECT p.*, u.name as seller_name, u.avatar as seller_avatar, u.plan as seller_plan
+      SELECT p.*, u.name as seller_name, u.avatar as seller_avatar, u.plan as seller_plan,
+        (SELECT COUNT(*) FROM product_favorites pf WHERE pf.product_id = p.id AND pf.user_id = ?) as is_favorite
       FROM products p JOIN users u ON p.seller_id = u.id
       ${where}
       ORDER BY p.created_at DESC
@@ -33,9 +34,10 @@ router.get('/', optionalAuth, async (req, res) => {
 router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const product = await get(`
-      SELECT p.*, u.name as seller_name, u.avatar as seller_avatar, u.plan as seller_plan
+      SELECT p.*, u.name as seller_name, u.avatar as seller_avatar, u.plan as seller_plan,
+        (SELECT COUNT(*) FROM product_favorites pf WHERE pf.product_id = p.id AND pf.user_id = ?) as is_favorite
       FROM products p JOIN users u ON p.seller_id = u.id WHERE p.id = ?
-    `, [req.params.id]);
+    `, [req.userId || -1, req.params.id]);
 
     if (!product) return res.status(404).json({ error: 'Produto nao encontrado' });
     res.json(product);

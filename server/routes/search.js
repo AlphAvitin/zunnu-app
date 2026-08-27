@@ -15,7 +15,7 @@ router.get('/', optionalAuth, async (req, res) => {
     const city = req.query.city ? String(req.query.city).trim() : '';
     const limit = Math.min(parseInt(req.query.limit) || 5, 20);
 
-    const out = { q, type, pets: [], users: [], posts: [] };
+    const out = { q, type, pets: [], users: [], posts: [], events: [], products: [], services: [], adoptions: [], places: [] };
 
     if (!q && !species && !sex && !porte && !city) {
       return res.json(out);
@@ -91,6 +91,75 @@ router.get('/', optionalAuth, async (req, res) => {
           user_badge: p.user_plan === 'pro' ? 'pro' : p.user_plan === 'plus' ? 'plus' : 'free',
           time: formatTime(p.created_at)
         }));
+      }
+    }
+
+if (type === 'all' || type === 'events') {
+      if (q) {
+        out.events = await all(`
+          SELECT e.id, e.name, e.description, e.category, e.date, e.time, e.location, e.city, e.image,
+            (SELECT COUNT(*) FROM event_participants ep WHERE ep.event_id = e.id) as participants
+          FROM events e
+          WHERE e.status = 'approved'
+            AND (LOWER(e.name) LIKE ? OR LOWER(e.description) LIKE ? OR LOWER(e.location) LIKE ? OR LOWER(e.city) LIKE ? OR LOWER(e.category) LIKE ?)
+          ORDER BY e.date ASC, e.time ASC
+          LIMIT ?
+        `, [like(q), like(q), like(q), like(q), like(q), limit]);
+      }
+    }
+
+    if (type === 'all' || type === 'products') {
+      if (q) {
+        out.products = await all(`
+          SELECT pr.id, pr.title, pr.price, pr.image, pr.description, u.id as seller_id, u.name as seller_name, u.avatar as seller_avatar
+          FROM products pr JOIN users u ON pr.seller_id = u.id
+          WHERE pr.is_active = 1
+            AND (LOWER(pr.title) LIKE ? OR LOWER(pr.description) LIKE ?)
+          ORDER BY pr.created_at DESC
+          LIMIT ?
+        `, [like(q), like(q), limit]);
+      }
+    }
+
+    if (type === 'all' || type === 'services') {
+      if (q) {
+        out.services = await all(`
+          SELECT s.id, s.title, s.price, s.duration, s.icon, s.description, u.id as provider_id, u.name as provider_name, u.avatar as provider_avatar
+          FROM services s JOIN users u ON s.provider_id = u.id
+          WHERE s.is_active = 1
+            AND (LOWER(s.title) LIKE ? OR LOWER(s.description) LIKE ?)
+          ORDER BY s.created_at DESC
+          LIMIT ?
+        `, [like(q), like(q), limit]);
+      }
+    }
+
+    if (type === 'all' || type === 'adoptions') {
+      if (q) {
+        out.adoptions = await all(`
+          SELECT a.id, a.name, a.species, a.sex, a.age, a.porte, a.city, a.image, a.story,
+            u.id as owner_id, u.name as owner_name
+          FROM adoption_pets a JOIN users u ON a.user_id = u.id
+          WHERE a.status != 'adopted'
+            AND (LOWER(a.name) LIKE ? OR LOWER(a.story) LIKE ? OR LOWER(a.city) LIKE ?)
+          ORDER BY a.created_at DESC
+          LIMIT ?
+        `, [like(q), like(q), like(q), limit]);
+      }
+    }
+
+    if (type === 'all' || type === 'places') {
+      if (q) {
+        out.places = await all(`
+          SELECT bp.id, bp.business_name as name, bp.category, bp.address, bp.city, bp.hours,
+            (SELECT ROUND(AVG(rating), 1) FROM place_reviews rv WHERE rv.place_id = bp.id) as rating,
+            u.id as owner_id, u.name as owner_name
+          FROM business_profiles bp JOIN users u ON bp.user_id = u.id
+          WHERE bp.business_name IS NOT NULL AND bp.business_name != ''
+            AND (LOWER(bp.business_name) LIKE ? OR LOWER(COALESCE(bp.category,'')) LIKE ? OR LOWER(COALESCE(bp.city,'')) LIKE ?)
+          ORDER BY bp.id DESC
+          LIMIT ?
+        `, [like(q), like(q), like(q), limit]);
       }
     }
 

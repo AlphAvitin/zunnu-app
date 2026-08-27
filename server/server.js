@@ -49,6 +49,7 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/business', require('./routes/business'));
 app.use('/api/points', require('./routes/points'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/favorites', require('./routes/favorites'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'www', 'index.html'));

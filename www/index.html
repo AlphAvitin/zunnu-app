@@ -66,6 +66,8 @@ button,input,textarea,select{font:inherit}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .product-card{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);animation:fadeIn .3s ease}
+.fav-btn{position:absolute;top:6px;right:6px;background:#fff;border:1px solid var(--line);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;padding:0;color:var(--soft);z-index:2}
+.fav-btn.on{color:#e5484d;border-color:rgba(229,72,77,.4)}
 .product-card img{width:100%;height:100px;object-fit:cover}
 .product-info{padding:8px;display:flex;flex-direction:column;flex:1}
 .product-price{font-size:13px;font-weight:800;color:var(--green);margin:2px 0}
@@ -1276,7 +1278,7 @@ function discSearchCity(){
 }
 function renderDiscResults(){
   const d=discResults;if(!d)return renderDiscBase();
-  const total=d.pets.length+d.users.length+d.posts.length;
+  const total=(d.pets||[]).length+(d.users||[]).length+(d.posts||[]).length+(d.events||[]).length+(d.products||[]).length+(d.services||[]).length+(d.adoptions||[]).length+(d.places||[]).length;
   if(total===0)return`<div class="home-empty"><div style="font-size:34px">&#128269;</div><b style="display:block;margin:6px 0 2px">Nada encontrado</b><span class="small">Tente outro termo, ajuste os filtros ou limpe a busca.</span><button class="btn" style="margin-top:10px;width:100%" onclick="discQ='';discSpecies='';discCity='';discResults=null;renderDescobrir();">Limpar busca</button></div>`;
   let h='';
   h+=`<div class="home-section-title"><h2>&#128062; Pets</h2><span class="home-more">${d.pets.length}</span></div>`;
@@ -1302,7 +1304,23 @@ function renderDiscResults(){
       </div>
     </div>`;
   }).join('')}</div>`;}
+  if((d.events||[]).length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#127881; Eventos</h2><span class="home-more">${d.events.length}</span></div><div style="padding:2px 16px;display:flex;flex-direction:column;gap:8px">${d.events.map(e=>`<div class="ev-card" onclick="openEventDetail(${e.id})">
+    <div class="ev-thumb">${e.image?`<img src="${su(e.image)}" class="ev-img" onerror="this.style.display='none';this.parentNode.innerHTML='&#127881;'">`:`<div class="ev-img" style="background:var(--bg);display:flex;align-items:center;justify-content:center">&#127881;</div>`}</div>
+    <div class="ev-body"><div class="ev-cat">${esc(e.category||'Evento')}</div><div class="ev-name">${esc(e.name)}</div>
+    <div class="ev-sub">&#128197; ${formatDateBR(e.date)}${e.time?' as '+esc(e.time):''}${e.location?' &bull; '+esc(e.location):''}</div>
+    <div class="ev-foot"><span>${e.participants||0} participantes</span></div></div></div>`).join('')}</div>`;}
+  if((d.adoptions||[]).length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#128062; Adocao</h2><span class="home-more">${d.adoptions.length}</span></div><div style="padding:2px 16px;display:flex;flex-direction:column;gap:8px">${d.adoptions.map(a=>`<div class="ev-card" onclick="openAdoptionDetail(${a.id})">
+    <div class="ev-thumb">${a.image?`<img src="${su(a.image)}" class="ev-img" onerror="this.style.display='none';this.parentNode.innerHTML='&#128062;'">`:`<div class="ev-img" style="background:var(--bg);display:flex;align-items:center;justify-content:center">&#128062;</div>`}</div>
+    <div class="ev-body"><div class="ev-cat">${esc(a.species||'')}</div><div class="ev-name">${esc(a.name||'Pet')}</div>
+    <div class="ev-sub">${[a.age,a.sex,a.porte,a.city].filter(Boolean).map(esc).join(' &bull; ')}</div>
+    <div class="ev-foot"><span>${esc(a.owner_name||'')}</span></div></div></div>`).join('')}</div>`;}
+  if((d.places||[]).length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#128205; Locais</h2><span class="home-more">${d.places.length}</span></div><div style="display:flex;flex-direction:column;gap:8px;padding:2px 16px">${d.places.map(pl=>`<div class="disc-user" onclick="openPlaceFromSearch(${pl.id})"><div class="avatar" style="background:var(--goldSoft)">&#128205;</div><div style="flex:1"><b>${esc(pl.name||'')}</b><span>${[pl.category,pl.city].filter(Boolean).map(esc).join(' &bull; ')}${pl.rating?' &bull; &#9733; '+pl.rating:''}</span></div><span style="font-size:15px;color:var(--green)">&#10148;</span></div>`).join('')}</div>`;}
+  if((d.products||[]).length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#128722; Produtos</h2><span class="home-more">${d.products.length}</span></div><div class="disc-grid" style="padding:2px 16px">${d.products.map(p=>`<div class="disc-card"><div class="disc-photo" style="background:var(--bg);display:flex;align-items:center;justify-content:center">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none'">`:'&#128722;'}</div><div class="disc-card-info"><b>${esc(p.title)}</b><span class="product-price">R$ ${(p.price||0).toFixed(2)}</span><span>&bull; ${esc(p.seller_name||'')}</span></div></div>`).join('')}</div>`;}
+  if((d.services||[]).length){h+=`<hr class="disc-hr"><div class="home-section-title"><h2>&#128100; Servicos</h2><span class="home-more">${d.services.length}</span></div><div style="padding:2px 16px;display:flex;flex-direction:column;gap:8px">${d.services.map(s=>`<div class="service-card"><div class="service-icon">${s.icon||'&#128100;'}</div><div style="flex:1"><div style="font-weight:700;font-size:12px">${esc(s.title)}</div><div class="small">R$ ${(s.price||0).toFixed(2)} &bull; ${esc(s.duration||'')} &bull; ${esc(s.provider_name||'')}</div></div></div>`).join('')}</div>`;}
   return h;
+}
+function openPlaceFromSearch(placeId){
+  openPlace(placeId);
 }
 function openPostDetailId(id){
   const p=(discAllPosts||[]).find(x=>x.id===id);if(!p)return;
@@ -2010,8 +2028,10 @@ async function openModal(type){
       <div class="field"><label>Categoria</label><select id="healthCat">${catOpts}</select></div>
       <div class="field"><label>Informacao *</label><textarea id="healthText" rows="3" placeholder="Ex: Dose anual aplicada em ...">${esc(editingHealthRec?editingHealthRec.text:'')}</textarea></div>
       <button class="btn" style="width:100%" onclick="saveHealth()">Salvar</button></div></div>`;
-  }else if(type==='addProduct'){
-    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Produto</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Titulo</label><input id="prodTitle" placeholder="Nome do produto"></div><div class="field"><label>Preco (R$)</label><input id="prodPrice" type="number" step="0.01" placeholder="49.90"></div><div class="field"><label>URL da Imagem</label><input id="prodImage" placeholder="https://..."></div><button class="btn" style="width:100%" onclick="saveProduct()">Cadastrar Produto</button></div></div>`;
+}else if(type==='addProduct'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Produto</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Titulo</label><input id="prodTitle" placeholder="Nome do produto"></div><div class="field"><label>Preco (R$)</label><input id="prodPrice" type="number" step="0.01" placeholder="49.90"></div><div class="field"><label>URL da Imagem</label><input id="prodImage" placeholder="https://..."></div><div class="field"><label>Descricao</label><textarea id="prodDesc" rows="2" placeholder="Detalhes do produto"></textarea></div><button class="btn" style="width:100%" onclick="saveProduct()">Cadastrar Produto</button></div></div>`;
+  }else if(type==='addService'){
+    root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Servico</div><button class="close" onclick="closeModal()">X</button></div><div class="field"><label>Titulo</label><input id="svcTitle" placeholder="Ex: Banho e tosa"></div><div class="field"><label>Preco (R$)</label><input id="svcPrice" type="number" step="0.01" placeholder="59.90"></div><div class="field"><label>Duracao</label><input id="svcDuration" placeholder="Ex: 1 hora"></div><div class="field"><label>Icone</label><input id="svcIcon" placeholder="Ex: 🛁"></div><div class="field"><label>Descricao</label><textarea id="svcDesc" rows="2" placeholder="Detalhes do servico"></textarea></div><button class="btn" style="width:100%" onclick="saveService()">Cadastrar Servico</button></div></div>`;
   }else if(type==='petDetail'&&viewingPet){
     const p=viewingPet;const isOwner=currentUser&&(p.user_id===currentUser.id);
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">${esc(p.name)}</div><button class="close" onclick="closeModal()">X</button></div>
@@ -2198,9 +2218,21 @@ async function saveProduct(){
   if(!title||!price){alert('Titulo e preco obrigatorios');return;}
   try{
     const p=await api('/api/products',{method:'POST',body:JSON.stringify({
-      title,price,image:document.getElementById('prodImage')?.value||''
+      title,price,image:document.getElementById('prodImage')?.value||'',description:document.getElementById('prodDesc')?.value.trim()||''
     })});
     closeModal();setTab('inicio');
+  }catch(e){alert(e.message);}
+}
+
+async function saveService(){
+  const title=document.getElementById('svcTitle')?.value.trim();
+  const price=parseFloat(document.getElementById('svcPrice')?.value);
+  if(!title||!price){alert('Titulo e preco obrigatorios');return;}
+  try{
+    await api('/api/services',{method:'POST',body:JSON.stringify({
+      title,price,duration:document.getElementById('svcDuration')?.value.trim()||'',icon:document.getElementById('svcIcon')?.value.trim()||'🛁',description:document.getElementById('svcDesc')?.value.trim()||''
+    })});
+    closeModal();shopTab='services';await renderLoja();
   }catch(e){alert(e.message);}
 }
 
@@ -3209,45 +3241,96 @@ async function reportLostPet() {
   } catch(e) { alert(e.message); }
 }
 
+let shopTab='products', shopFavs=false;
 async function renderLoja() {
   try {
     const [productsData, servicesData] = await Promise.all([api('/api/products'), api('/api/services')]);
-    screen.innerHTML = header('Loja ZUNNU','')+`<div class="content">
-      <div style="display:flex;gap:6px;margin-bottom:12px">
-        <button class="btn small-btn" onclick="showLojaSection('products')">Produtos</button>
-        <button class="btn small-btn outline" onclick="showLojaSection('services')">Servicos</button>
-        <button class="btn small-btn outline" onclick="renderMyOrders()">Pedidos</button>
-        <button class="btn small-btn outline" onclick="renderBookings()">Agendamentos</button>
-      </div>
-      <div id="lojaProducts">
-        ${currentUser?.plan==='pro'?`<button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('addProduct')">+ Cadastrar Produto</button>`:''}
-        <div class="grid">${(productsData.products||productsData||[]).map(p=>`<div class="product-card">
-          <img src="${su(p.image||'')}" onerror="this.style.display='none'" alt="${esc(p.title)}">
-          <div class="product-info"><div style="font-size:11px;font-weight:600">${esc(p.title)}</div>
-          <div class="product-price">R$ ${(p.price||0).toFixed(2)}</div>
-          <div class="small">${esc(p.seller_name||'Vendedor')}</div>
-          <button class="btn small-btn" style="width:100%;margin-top:4px" onclick="addToCart(${p.id})">Adicionar ao Carrinho</button>
-          </div>
-        </div>`).join('')}</div>
-      </div>
-      <div id="lojaServices" style="display:none">
-        ${(servicesData.services||servicesData||[]).map(s=>`<div class="service-card">
-          <div class="service-icon">${s.icon||'&#128100;'}</div>
-          <div style="flex:1"><div style="font-weight:700;font-size:12px">${esc(s.title)}</div>
-          <div class="small">R$ ${(s.price||0).toFixed(2)} &bull; ${esc(s.duration||'')}</div>
-          <button class="btn small-btn" style="margin-top:4px" onclick="openBookingModal(${s.id},'${esc(s.title)}',${s.price})">Agendar</button>
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>`;
-  } catch(e) {}
+    shopProducts=(productsData.products||productsData||[]);
+    shopServices=(servicesData.services||servicesData||[]);
+    paintLoja();
+  } catch(e) { console.error(e); }
 }
-
+let shopProducts=[], shopServices=[];
+function paintLoja(){
+  let favPd=null, favSv=null;
+  if(shopFavs){ void favPd; void favSv; }
+  screen.innerHTML = header('Loja ZUNNU','')+`<div class="content">
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="btn small-btn ${shopTab==='products'?'':'outline'}" onclick="shopTab='products';paintLoja()">Produtos</button>
+      <button class="btn small-btn ${shopTab==='services'?'':'outline'}" onclick="shopTab='services';paintLoja()">Servicos</button>
+      ${shopFavs?`<button class="btn small-btn pink" onclick="shopFavs=false;paintLoja()">&#128151; Favoritos</button>`:`<button class="btn small-btn outline" onclick="renderShopFavs()">&#128151; Favoritos</button>`}
+      <button class="btn small-btn outline" onclick="renderMyOrders()">Pedidos</button>
+      <button class="btn small-btn outline" onclick="renderBookings()">Agendamentos</button>
+    </div>
+    ${shopTab==='products'?`<div>
+      ${currentUser?.plan==='pro'?`<button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('addProduct')">+ Cadastrar Produto</button>`:''}
+      ${shopFavs?'':`<div class="disc-search" style="margin-bottom:8px"><span class="disc-s-icon">&#128269;</span><input placeholder="Buscar produto ou vendedor" onkeydown="if(event.key==='Enter'){shopProductQ=this.value.trim();loadShopProducts();}"></div>`}
+      <div class="grid">${shopProducts.length?shopProducts.map(productCardHtml).join(''):`<div class="home-empty"><div style="font-size:34px">&#128722;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum produto aqui</b><span class="small">${shopFavs?'Salve produtos que gostou para ve-los rapidamente.':'Seja PRO para criar sua loja.'}</span></div>`}</div>
+    </div>`:`<div>
+      ${currentUser?.plan==='pro'?`<button class="btn outline" style="width:100%;margin-bottom:12px" onclick="openModal('addService')">+ Cadastrar Servico</button>`:''}
+      <div class="disc-search" style="margin-bottom:8px"><span class="disc-s-icon">&#128269;</span><input placeholder="Buscar servico" onkeydown="if(event.key==='Enter'){shopServiceQ=this.value.trim();loadShopServices();}"></div>
+      ${shopServices.length?shopServices.map(serviceCardHtml).join(''):`<div class="home-empty"><div style="font-size:34px">&#128100;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum servico aqui</b><span class="small">${shopFavs?'Salve servicos que gostou para achar rapido depois.':'Profissionais PRO publicam servicos aqui.'}</span></div>`}
+    </div>`}
+  </div>`;
+}
+let shopProductQ='', shopServiceQ='';
+async function loadShopProducts(){
+  try{
+    if(shopFavs){shopProducts=await api('/api/favorites/products');}
+    else{const d=await api('/api/products'+(shopProductQ?'?search='+encodeURIComponent(shopProductQ):''));shopProducts=d.products||d||[];}
+    paintLoja();
+  }catch(e){alert(e.message);}
+}
+async function loadShopServices(){
+  try{
+    if(shopFavs){shopServices=await api('/api/favorites/services');}
+    else{const d=await api('/api/services'+(shopServiceQ?'?search='+encodeURIComponent(shopServiceQ):''));shopServices=d.services||d||[];}
+    paintLoja();
+  }catch(e){alert(e.message);}
+}
+async function renderShopFavs(){
+  shopFavs=true;
+  await Promise.all([loadShopProducts(),loadShopServices()]);
+}
+function productCardHtml(p){
+  const isFav=p.is_favorite||p.isFavorite;
+  return `<div class="product-card">
+    <div style="position:relative">
+      ${isFav!==undefined?`<button class="fav-btn ${isFav?'on':''}" title="Favoritar" onclick="event.stopPropagation();toggleProductFavorite(${p.id})">${isFav?'&#128151;':'&#9825;'}</button>`:''}
+      <img src="${su(p.image||'')}" onerror="this.style.display='none';this.parentNode.innerHTML+='<div class=&quot;small&quot; style=&quot;text-align:center;padding:20px 0;color:var(--soft)&quot;>&#128722; Sem foto</div>'" alt="${esc(p.title)}">
+    </div>
+    <div class="product-info">
+      <div style="font-size:11px;font-weight:600">${esc(p.title)}</div>
+      <div class="product-price">R$ ${(p.price||0).toFixed(2)}</div>
+      <div class="small">${esc(p.seller_name||'Vendedor')}</div>
+      <div style="display:flex;gap:4px;margin-top:4px">
+        <button class="btn small-btn" style="flex:1" onclick="addToCart(${p.id})">Carrinho</button>
+        <button class="btn small-btn outline" style="flex:0 0 auto" onclick="viewUserProfile(${p.seller_id})">Loja</button>
+      </div>
+    </div>
+  </div>`;
+}
+function serviceCardHtml(s){
+  const isFav=s.is_favorite||s.isFavorite;
+  return `<div class="service-card" style="position:relative">
+    <div class="service-icon">${s.icon||'&#128100;'}</div>
+    <div style="flex:1"><div style="font-weight:700;font-size:12px">${esc(s.title)}</div>
+    <div class="small">R$ ${(s.price||0).toFixed(2)} &bull; ${esc(s.duration||'')}</div>
+    <div style="display:flex;gap:4px;margin-top:6px">
+      <button class="btn small-btn" onclick="openBookingModal(${s.id},'${esc(s.title)}',${s.price})">Agendar</button>
+      <button class="btn small-btn outline" onclick="viewUserProfile(${s.provider_id})">Perfil</button>
+    </div></div>
+    ${isFav!==undefined?`<button class="fav-btn ${isFav?'on':''}" onclick="toggleServiceFavorite(${s.id})" style="position:absolute;top:2px;right:2px">${isFav?'&#128151;':'&#9825;'}</button>`:''}
+  </div>`;
+}
+async function toggleProductFavorite(id){
+  try{const r=await api('/api/favorites/products/'+id,{method:'POST'});const p=shopProducts.find(x=>x.id===id);if(p)p.is_favorite=r.favorite?1:0;paintLoja();}catch(e){alert(e.message);}
+}
+async function toggleServiceFavorite(id){
+  try{const r=await api('/api/favorites/services/'+id,{method:'POST'});const s=shopServices.find(x=>x.id===id);if(s)s.is_favorite=r.favorite?1:0;paintLoja();}catch(e){alert(e.message);}
+}
 function showLojaSection(section) {
-  const prod=document.getElementById('lojaProducts');
-  const svc=document.getElementById('lojaServices');
-  if(prod)prod.style.display=section==='products'?'block':'none';
-  if(svc)svc.style.display=section==='services'?'block':'none';
+  shopTab=section;paintLoja();
 }
 
 function val(id){const el=document.getElementById(id);return el?el.value.trim():'';}
