@@ -149,9 +149,9 @@ router.delete('/posts/:id', async (req, res) => {
   try {
     const row = await get('SELECT user_id FROM posts WHERE id = ?', [req.params.id]);
     if (!row) return res.status(404).json({ error: 'Post nao encontrado' });
-    await run('DELETE FROM comments WHERE post_id = ?', [row.id]);
-    await run('DELETE FROM likes WHERE post_id = ?', [row.id]);
-    await run('DELETE FROM hidden_posts WHERE post_id = ?', [row.id]);
+    await run('DELETE FROM comments WHERE post_id = ?', [req.params.id]);
+    await run('DELETE FROM post_likes WHERE post_id = ?', [req.params.id]);
+    await run('DELETE FROM hidden_posts WHERE post_id = ?', [req.params.id]);
     await run('DELETE FROM posts WHERE id = ?', [req.params.id]);
     res.json({ success: true });
   } catch (err) {
