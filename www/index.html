@@ -1550,6 +1550,9 @@ async function submitSuggest(){
     closeModal();alert(d.message||'Sugestao enviada!');
   }catch(e){alert(e.message);}
 }
+async function delSuggestion(id){
+  try{await api('/api/places/suggestions/'+id,{method:'DELETE'});openMyPlaces();}catch(e){alert(e.message);}
+}
 async function openMyPlaces(){
   try{
     const mine=(await api('/api/places/my').catch(()=>[]))||[];
@@ -1563,7 +1566,7 @@ async function openMyPlaces(){
         ${mine.length===0?'<div class="pl-note" style="padding:8px 0">Voce ainda nao cadastrou nenhum lugar.</div>':mine.map(p=>`<div class="rev-item"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1"><b style="font-size:12.5px;text-transform:capitalize">${esc(p.name)}</b><div class="rev-time">${p.category||''}${p.city?` &bull; ${esc(p.city)}`:''} ${p.rating!=null?` &bull; &#9733; ${p.rating}`:''}</div></div><button class="btn outline" style="padding:6px 10px;font-size:10px" onclick="openEditPlace(${p.id})">Editar</button><button class="btn outline" style="padding:6px 10px;font-size:10px;border-color:rgba(231,111,81,.45);color:var(--coral)" onclick="delPlaceConfirm(${p.id})">Remover</button></div></div>`).join('')}
         <button class="btn" style="width:100%;margin-top:10px" onclick="openNewPlace()">&#10133; Adicionar novo lugar</button>
         <div class="pl-label" style="margin-top:16px">Minhas sugestoes (${sugs.length})</div>
-        ${sugs.length===0?'<div class="pl-note" style="padding:8px 0">Nenhuma sugestao enviada ainda.</div>':sugs.map(s=>`<div class="rev-item"><b style="font-size:12.5px">${esc(s.name)}</b><div class="rev-time">${esc(s.category||'')}${s.city?` &bull; ${esc(s.city)}`:''} &bull; ${s.status==='pending'?'Aguardando revisao':s.status}</div></div>`).join('')}
+        ${sugs.length===0?'<div class="pl-note" style="padding:8px 0">Nenhuma sugestao enviada ainda.</div>':sugs.map(s=>`<div class="rev-item" style="display:flex;align-items:center;gap:10px"><div style="flex:1"><b style="font-size:12.5px">${esc(s.name)}</b><div class="rev-time">${esc(s.category||'')}${s.city?` &bull; ${esc(s.city)}`:''} &bull; ${s.status==='pending'?'Aguardando revisao':s.status}</div></div><button class="btn outline" style="padding:6px 10px;font-size:10px;border-color:rgba(231,111,81,.45);color:var(--coral)" onclick="delSuggestion(${s.id})">Remover</button></div>`).join('')}
       </div>
     </div></div>`;
     document.body.appendChild(root);

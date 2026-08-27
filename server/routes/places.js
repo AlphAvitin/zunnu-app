@@ -101,6 +101,17 @@ router.get('/suggestions', authMiddleware, async (req, res) => {
   }
 });
 
+router.delete('/suggestions/:id', authMiddleware, async (req, res) => {
+  try {
+    const s = await get('SELECT * FROM place_suggestions WHERE id = ? AND suggested_by = ?', [req.params.id, req.userId]);
+    if (!s) return res.status(404).json({ error: 'Sugestao nao encontrada' });
+    await run('DELETE FROM place_suggestions WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Sugestao removida' });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
 router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const uid = req.userId || -1;
