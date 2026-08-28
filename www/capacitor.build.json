@@ -1,7 +1,7 @@
 {
-  "builtAt": "2026-08-28T18:05:08.842Z",
+  "builtAt": "2026-08-28T18:22:47.267Z",
   "builtBy": "scripts/build.web.js",
-  "gitCommit": "9a4c6ac",
+  "gitCommit": "b371f9d",
   "files": [
     "capacitor.build.json",
     "index.html",

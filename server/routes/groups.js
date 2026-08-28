@@ -176,6 +176,42 @@ router.delete('/:id/posts/:postId', authMiddleware, async (req, res) => {
   }
 });
 
+router.put('/:id', authMiddleware, async (req, res) => {
+  try {
+    const gid = parseInt(req.params.id);
+    const grp = await get('SELECT * FROM groups WHERE id = ?', [gid]);
+    if (!grp) return res.status(404).json({ error: 'Grupo nao encontrado' });
+    if (grp.owner_id !== req.userId) return res.status(403).json({ error: 'Somente o criador pode editar o grupo' });
+    const { name, description, category, image } = req.body;
+    if (!name || !String(name).trim()) {
+      return res.status(400).json({ error: 'Nome do grupo e obrigatorio' });
+    }
+    await run('UPDATE groups SET name = ?, description = ?, category = ?, image = ? WHERE id = ?',
+      [String(name).trim(), String(description || '').trim(), cleanCategory(category), String(image || '').trim(), gid]);
+    const group = await get('SELECT * FROM groups WHERE id = ?', [gid]);
+    res.json({ group });
+  } catch (err) {
+    console.error('Group update error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+router.delete('/:id/members/:userId', authMiddleware, async (req, res) => {
+  try {
+    const gid = parseInt(req.params.id);
+    const targetId = parseInt(req.params.userId);
+    const grp = await get('SELECT * FROM groups WHERE id = ?', [gid]);
+    if (!grp) return res.status(404).json({ error: 'Grupo nao encontrado' });
+    if (grp.owner_id !== req.userId) return res.status(403).json({ error: 'Somente o criador pode remover membros' });
+    if (targetId === grp.owner_id) return res.status(400).json({ error: 'O criador nao pode ser removido' });
+    await run('DELETE FROM group_members WHERE group_id = ? AND user_id = ?', [gid, targetId]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Group member remove error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const gid = parseInt(req.params.id);

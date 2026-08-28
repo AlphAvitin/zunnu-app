@@ -1244,9 +1244,15 @@ async function openGroupDetail(id){
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
           ${grp.is_owner?'':(grp.is_member?`<button class="btn small-btn outline" onclick="leaveGroupDetail(${grp.id})">Sair do grupo</button>`:`<button class="btn small-btn" onclick="joinGroupDetail(${grp.id})">&#10003; Participar do grupo</button>`)}
-          ${grp.is_owner?`<button class="btn small-btn outline" style="color:#e5484d" onclick="deleteGroup(${grp.id})">Excluir grupo</button>`:''}
+          ${grp.is_owner?`<button class="btn small-btn outline" onclick="openEditGroup(${grp.id})">Editar</button><button class="btn small-btn outline" style="color:#e5484d" onclick="deleteGroup(${grp.id})">Excluir grupo</button>`:''}
         </div>
       </div>
+      ${grp.is_owner?`<div class="section" style="margin-top:14px"><h2>Membros (${(g.members||[]).length})</h2></div>
+      <div style="display:flex;flex-direction:column;gap:6px">${(g.members||[]).map(m=>`<div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px">
+        <div class="avatar"><img src="${su(m.avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='${esc((m.name||'?')[0]||'?')}'" alt=""></div>
+        <div style="flex:1;font-size:12px;font-weight:600">@${atname(m.name)}${m.role==='owner'?' <span class="g-badge">CRIADOR</span>':''}</div>
+        ${m.id!==grp.owner_id?`<button class="btn small-btn outline" style="color:#e5484d;padding:4px 8px" onclick="removeGroupMember(${grp.id},${m.id})">Remover</button>`:''}
+      </div>`).join('')}</div>`:''}
       <div class="home-section-title"><h2>Publicacoes do grupo</h2></div>
       ${grp.is_member||grp.is_owner?`<div style="display:flex;gap:6px;margin-bottom:10px">
         <input id="gPostInput" placeholder="Escreva algo para o grupo..." onkeydown="if(event.key==='Enter')sendGroupPost(${grp.id})" style="flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:12px;background:var(--card)">
@@ -1279,6 +1285,36 @@ async function deleteGroupPost(id,pid){
 async function deleteGroup(id){
   if(!confirm('Excluir este grupo? Essa acao apaga todas as publicacoes e membros.'))return;
   try{await api('/api/groups/'+id,{method:'DELETE'});backToGroups();}catch(e){alert(e.message);}
+}
+
+function openEditGroup(id){
+  const grp=currentGroupDetail;
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+  const cats=['encontros','passeios','apoio','adocao','outros'];
+  groupCatSel=grp?.category||'encontros';
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-head"><div class="modal-title">Editar grupo</div><button class="close" onclick="closeModal()">X</button></div>
+    <div class="field"><label>Nome do grupo</label><input id="gName" placeholder="Nome do grupo" maxlength="40" value="${esc(grp?.name||'')}"></div>
+    <div class="field"><label>Descricao</label><textarea id="gDesc" rows="2" placeholder="Sobre o que e o grupo?">${esc(grp?.description||'')}</textarea></div>
+    <div class="field"><label>Categoria</label><div style="display:flex;gap:6px;flex-wrap:wrap">${cats.map(c=>`<button type="button" class="feed-chip ${c===groupCatSel?'active':''}" data-c="${c}" onclick="pickGroupCat(this,'${c}')">${groupEmoji(c)} ${esc(c)}</button>`).join('')}</div></div>
+    <div class="field"><label>Foto (URL, opcional)</label><input id="gImg" placeholder="https://..." value="${esc(grp?.image||'')}"></div>
+    <button class="btn" style="width:100%" onclick="saveEditGroup(${id})">Salvar alteracoes</button>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+async function saveEditGroup(id){
+  const name=val('gName'),desc=val('gDesc'),img=val('gImg');
+  if(!name||!name.trim()){alert('Informe o nome do grupo.');return;}
+  try{
+    await api('/api/groups/'+id,{method:'PUT',body:JSON.stringify({name:name.trim(),description:desc,image:img,category:groupCatSel})});
+    closeModal();
+    openGroupDetail(id);
+  }catch(e){alert(e.message);}
+}
+async function removeGroupMember(gid,uid){
+  if(!confirm('Remover este membro do grupo?'))return;
+  try{await api('/api/groups/'+gid+'/members/'+uid,{method:'DELETE'});openGroupDetail(gid);}catch(e){alert(e.message);}
 }
 
 function togglePostMenu(id){document.querySelectorAll('.post-dropdown').forEach(el=>{if(el.id!=='pmenu-'+id)el.style.display='none';});const el=document.getElementById('pmenu-'+id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
@@ -2241,13 +2277,68 @@ async function toggleNotifs(){
   if(!btn)return;
   const div=document.createElement('div');div.className='notif-dropdown';
 div.innerHTML=(notifications.length===0?'<div style="padding:12px;text-align:center;font-size:11px;color:var(--soft)">Sem notificacoes</div>':
-    notifications.slice(0,10).map(n=>`<div class="notif-item ${n.is_read?'':'unread'}" onclick="readNotif(${n.id})">${esc(n.message)}<br><span class="small">${formatDate(n.created_at)}</span></div>`).join(''))
+    notifications.slice(0,10).map(n=>`<div class="notif-item ${n.is_read?'':'unread'}" onclick="notifTap(${n.id})">${esc(n.message)}<br><span class="small">${formatDate(n.created_at)}</span></div>`).join(''))
     +`<div style="padding:8px;border-top:1px solid var(--line);text-align:center"><button class="btn small-btn outline" style="width:100%" onclick="document.querySelectorAll('.notif-dropdown').forEach(e=>(e.remove(),0));renderNotificacoes()">Ver todas</button></div>`;
   btn.appendChild(div);
 }
 
 async function readNotif(id){
   try{await api('/api/notifications/read/'+id,{method:'POST'});unreadCount=Math.max(0,unreadCount-1);toggleNotifs();}catch(e){}
+}
+
+async function notifTap(id){
+  const n=notifications.find(x=>x.id===id);
+  if(n&&!n.is_read){
+    try{await api('/api/notifications/read/'+id,{method:'POST'});}catch(e){}
+    unreadCount=Math.max(0,unreadCount-1);
+  }
+  document.querySelector('.notif-dropdown')?.remove();
+  if(n)notifAction(n);
+}
+
+function notifAction(n){
+  const id=n.reference_id;
+  let fn=null;
+  switch(n.type){
+    case 'group_post':
+    case 'group_join':
+      if(id)fn=()=>openGroupDetail(id);
+      break;
+    case 'message':
+    case 'new_match':
+    case 'partnership_accepted':
+      if(id)fn=()=>openChatByMatch(id);
+      break;
+    case 'partnership_request':
+      fn=()=>renderPartnershipPending();
+      break;
+    case 'partnership_rejected':
+      fn=()=>formarParceria();
+      break;
+    case 'event_participation':
+    case 'event_approved':
+      if(id)fn=()=>openEventDetail(id);
+      break;
+    case 'new_follower':
+      if(id)fn=()=>viewUserProfile(id);
+      break;
+    case 'post_like':
+    case 'new_comment':
+      if(id)fn=()=>openPostDetailId(id);
+      break;
+    case 'new_story':
+    case 'new_reel':
+      if(id)fn=()=>viewUserProfile(id);
+      break;
+  }
+  if(fn)fn();
+}
+
+async function openChatByMatch(matchId){
+  let mm=chatList.find(m=>m.id===matchId);
+  if(!mm){try{const ms=await api('/api/match/matches');chatList=ms||[];mm=chatList.find(m=>m.id===matchId);}catch(e){}}
+  if(mm)openChat(matchId,mm.partner_name,mm.partner_avatar);
+  else showToast('Conversa indisponivel no momento.');
 }
 
 function render(){
@@ -4228,7 +4319,7 @@ function notifIcon(type){
 async function renderNotificacoes(){
   const d=await api('/api/notifications').catch(()=>({notifications:[],unreadCount:0}));
   notifications=d.notifications||[];unreadCount=d.unreadCount||0;
-  const items=notifications.map(n=>`<div class="notif-row ${n.is_read?'':'unread'}" onclick="readNotifId(${n.id})">
+  const items=notifications.map(n=>`<div class="notif-row ${n.is_read?'':'unread'}" onclick="notifTap(${n.id})">
     <div class="notif-ico">${notifIcon(n.type)}</div>
     <div class="notif-txt"><div>${esc(n.message)}</div><div class="small">${formatDate(n.created_at)}</div></div>
     ${n.is_read?'':'<span class="notif-dot"></span>'}
