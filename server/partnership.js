@@ -28,10 +28,6 @@ async function bumpIntimacy(matchId, points, day) {
   await run('UPDATE matches SET intimacy = COALESCE(intimacy, 0) + ?, last_interaction_date = ? WHERE id = ?', [points, d, matchId]);
 }
 
-async function bumpIntimacyByMatchId(matchId, points) {
-  await bumpIntimacy(matchId, points);
-}
-
 function daysBetween(aStr, bStr) {
   const a = new Date(aStr + 'T00:00:00Z').getTime();
   const b = new Date(bStr + 'T00:00:00Z').getTime();
@@ -67,9 +63,4 @@ async function getMatchBetweenUsers(userIdA, userIdB) {
     [userIdA, userIdB, userIdB, userIdA]);
 }
 
-async function getPartnersForUser(userId) {
-  const matches = await all(`SELECT * FROM matches WHERE user1_id = ? OR user2_id = ? ORDER BY id DESC`, [userId, userId]);
-  return matches;
-}
-
-module.exports = { bumpIntimacy, bumpIntimacyByMatchId, getMatchStats, getMatchBetweenUsers, getPartnersForUser, INTIMACY, todayStr };
+module.exports = { bumpIntimacy, getMatchStats, getMatchBetweenUsers, INTIMACY, todayStr, daysBetween, yyyymmdd };

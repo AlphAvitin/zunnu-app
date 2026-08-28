@@ -3,17 +3,9 @@ const { run, get, all } = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 const { sendToUser } = require('../ws');
 const { creditPoints } = require('./points');
-const { bumpIntimacy, getMatchStats, INTIMACY } = require('../partnership');
+const { bumpIntimacy, getMatchStats, INTIMACY, daysBetween, yyyymmdd } = require('../partnership');
 
 const router = express.Router();
-
-function juntosDias(createdAt) {
-  if (!createdAt) return 0;
-  const m = String(createdAt).match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (!m) return 0;
-  const start = new Date(m.slice(1).join('-') + 'T00:00:00Z').getTime();
-  return Math.max(0, Math.round((Date.now() - start) / 86400000));
-}
 
 // Send partnership request
 router.post('/request', authMiddleware, async (req, res) => {
@@ -268,7 +260,7 @@ router.get('/matches', authMiddleware, async (req, res) => {
 
     const out = matches.map(m => ({
       ...m,
-      juntos_dias: juntosDias(m.created_at),
+      juntos_dias: daysBetween(yyyymmdd(m.created_at), todayStr),
       streak: computeStreak(daysByMatch[m.id])
     }));
 
