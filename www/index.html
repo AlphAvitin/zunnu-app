@@ -588,6 +588,11 @@ button,input,textarea,select{font:inherit}
 .disco-badge{background:var(--coral);color:#fff;border-radius:10px;padding:0 6px;font-size:9px;font-weight:800;margin-left:4px}
 .f-row{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
 .cfg-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.cfg-menu{display:flex;flex-direction:column;gap:10px}
+.cfg-menu-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 12px;cursor:pointer}
+.cfg-menu-ic{width:38px;height:38px;border-radius:12px;background:var(--greenSoft);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.cfg-menu-tx{flex:1;display:flex;flex-direction:column;line-height:1.3}
+.cfg-menu-go{color:var(--soft);font-size:16px;flex-shrink:0}
 .ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
 .ad-stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
 .ad-stat b{display:block;font-size:20px;color:var(--ink)}
@@ -621,6 +626,32 @@ let token = localStorage.getItem('zunnu_token');
 let tab = 'inicio';
 let homeSection = 'inicio';
 let homeAccOpen = false;
+const backStack = [];
+function pushBack(expr){
+  if(backStack.length&&backStack[backStack.length-1]===expr)return;
+  backStack.push(expr);
+  if(backStack.length>10)backStack.shift();
+}
+function runBackExpr(expr){try{(0,eval)(expr);}catch(e){console.error('back exp',e);}}
+function goBackScreen(){
+  if(backStack.length){const expr=backStack.pop();runBackExpr(expr);return;}
+  renderPerfil();
+}
+function minimizeApp(){try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App&&window.Capacitor.Plugins.App.minimizeApp){window.Capacitor.Plugins.App.minimizeApp();return;}}catch(e){}if(navigator.app&&navigator.app.exitApp)navigator.app.exitApp();}
+function handleBackButton(){
+  const modal=document.getElementById('modal-root');
+  if(modal&&modal.style.display!=='none'){closeModal();return;}
+  if(document.getElementById('storyViewer')){closeStory();return;}
+  if(backStack.length){const expr=backStack.pop();runBackExpr(expr);return;}
+  minimizeApp();
+}
+function setupBackButton(){
+  try{
+    if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App&&window.Capacitor.Plugins.App.addListener){
+      window.Capacitor.Plugins.App.addListener('backButton',()=>{handleBackButton();});
+    }
+  }catch(e){}
+}
 let groupsData = [];
 let currentGroupDetail = null;
 let currentGroupPosts = [];
@@ -793,10 +824,10 @@ function adHTML(){if(!currentUser||currentUser.plan!=='free')return'';return'<di
 function header(title,subtitle,action=''){
   let planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  let cartBtn=currentUser?`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
-  let chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Chat"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
-  const acts=Array.isArray(action)?action:(action?[action]:[]);
-  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${a.icon}</button>`).join('')}</div></div></div>`;
+  const acts=Array.isArray(action)?action.slice():((action)?[action]:[]);
+  const back=acts.find(a=>a&&a.icon==='&#8592;');
+  if(back&&back.click){pushBack(back.click);const i=acts.indexOf(back);acts[i]={icon:'&#8592;',click:'goBackScreen()',label:back.label||''};}
+  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${a.icon}</button>`).join('')}</div></div></div>`;
 }
 
 async function api(path,opts={}){
@@ -908,7 +939,7 @@ const[postsData,notifData,petsData,storiesDataRaw,nearbyData,communityPetsData]=
 function logout(){token=null;localStorage.removeItem('zunnu_token');currentUser=null;render();}
 
 async function toggleSeller(v){
-  try{const u=await api('/api/auth/me',{method:'PUT',body:JSON.stringify({is_seller:v?1:0})});currentUser=u;await openConfig();alert(v?'Voce agora e vendedor! A Loja ZUNNU foi liberada.':'Modo vendedor desativado.');}catch(e){alert(e.message);}
+  try{const u=await api('/api/auth/me',{method:'PUT',body:JSON.stringify({is_seller:v?1:0})});currentUser=u;await openConfigSection('vendas');alert(v?'Voce agora e vendedor! A Loja ZUNNU foi liberada.':'Modo vendedor desativado.');}catch(e){alert(e.message);}
 }
 function bioPlugin(){try{if(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.NativeBiometric)return Capacitor.Plugins.NativeBiometric;}catch(e){}return null;}
 function bioEnabled(){return !!localStorage.getItem('zunnu_bio_token');}
@@ -930,9 +961,9 @@ async function bioRegister(){
   }catch(e){alert('Falha na verificacao: '+(e.message||'tente novamente'));return;}
   localStorage.setItem('zunnu_bio_token',token||'');
   alert('Login por biometria ativado!');
-  openConfig();
+  openConfigSection('seguranca');
 }
-function bioDisable(){localStorage.removeItem('zunnu_bio_token');alert('Login por biometria desativado.');openConfig();}
+function bioDisable(){localStorage.removeItem('zunnu_bio_token');alert('Login por biometria desativado.');openConfigSection('seguranca');}
 async function bioLogin(){
   const p=bioPlugin();
   if(!p){alert('Entre pelo aplicativo instalado (APK) para usar a biometria.');return;}
@@ -1104,8 +1135,8 @@ function setHomeSection(s){
 }
 
 function toggleHomeAcc(){
-  homeAccOpen=!homeAccOpen;
   const acc=document.getElementById('homeAcc');
+  homeAccOpen=acc?!acc.classList.contains('open'):!homeAccOpen;
   if(acc)acc.classList.toggle('open',homeAccOpen);
 }
 
@@ -1474,7 +1505,7 @@ async function renderDescobrir(){
   if(!discFeatured.length&&!discLoading){
     try{const data=await api('/api/pets/all?limit=12').catch(()=>[]);discFeatured=(Array.isArray(data)?data:(data.pets||[])).filter(p=>!currentUser||p.user_id!==currentUser.id).slice(0,9);}catch(e){discFeatured=[];}
   }
-  screen.innerHTML=header('Descobrir','Encontre pets, pessoas e novidades')+`<div class="content" style="padding-top:0">
+  screen.innerHTML=header('Descobrir','Encontre pets, pessoas e novidades',{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content" style="padding-top:0">
     <div class="disc-search"><span class="disc-s-icon">&#128269;</span><input id="discInput" placeholder="Buscar pet, tutor ou publicacao" value="${discQ?esc(discQ):''}" oninput="discTick()" onkeydown="if(event.key==='Enter'){event.preventDefault();doDiscoverSearch();}">
       ${discQ?`<button style="border:0;background:none;color:var(--soft);font-size:13px;cursor:pointer" onclick="discQ='';discResults=null;renderDescobrir();">&#10005;</button>`:''}
     </div>
@@ -1651,7 +1682,7 @@ async function likeFromModal(id,btn){
 /* ===== Mapa Pet / Lugares (Etapa 6) ===== */
 let places=[],placesFilter='all',placeCity='',revStar=0,placeEditId=0;
 const MA_CITIES={'Sao Luis':[-2.5307,-44.2829],'Centro':[-2.5307,-44.2829],'Bairro Alto':[-2.5260,-44.2700],'Calhau':[-2.4930,-44.2620],'Ponta de Areia':[-2.4780,-44.2560],'Renascer':[-2.5600,-44.2600],'TurU':[-2.5900,-44.3000]};
-function placeStars(r){return r!=null?`<span class="pl-stars">&#9733; ${r} <span style="color:var(--soft);font-weight:600;font-size:10px">(${r.reviews_count||0})</span></span>`:'<span style="color:var(--soft)">Sem avaliacoes</span>';}
+function placeStars(r){return r!=null&&r.rating!=null?`<span class="pl-stars">&#9733; ${r.rating} <span style="color:var(--soft);font-weight:600;font-size:10px">(${r.reviews_count||0})</span></span>`:'<span style="color:var(--soft)">Sem avaliacoes</span>';}
 function placeCard(p){
   return`<div class="pl-card" onclick="openPlace(${p.id})">
     <div class="pl-photo">
@@ -1928,17 +1959,17 @@ async function openMyPlaces(){
 
 function renderConexao(){
   if(matchDeck.length===0&&!matchBuilding){
-    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`<div class="content" style="text-align:center;padding-top:40px"><div class="loading" style="margin:20px auto"></div><div class="small">Carregando pets para conectar...</div></div>`;
+    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType),{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content" style="text-align:center;padding-top:40px"><div class="loading" style="margin:20px auto"></div><div class="small">Carregando pets para conectar...</div></div>`;
     buildMatchDeck();return;
   }
   if(matchDeck.length===0){
-    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128062;</div><h3>Nenhum pet disponivel para conectar</h3><button class="btn pink" style="margin-top:12px" onclick="buildMatchDeck()">Recarregar</button></div>`;return;
+    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType),{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128062;</div><h3>Nenhum pet disponivel para conectar</h3><button class="btn pink" style="margin-top:12px" onclick="buildMatchDeck()">Recarregar</button></div>`;return;
   }
   if(currentMatchIdx>=matchDeck.length){
-    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128153;</div><h3>Voce viu todos os pets!</h3><button class="btn pink" style="margin-top:12px" onclick="currentMatchIdx=0;buildMatchDeck()">Ver Novamente</button></div>`;return;
+    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType),{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128153;</div><h3>Voce viu todos os pets!</h3><button class="btn pink" style="margin-top:12px" onclick="currentMatchIdx=0;buildMatchDeck()">Ver Novamente</button></div>`;return;
   }
   const p=matchDeck[currentMatchIdx];
-  screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`
+  screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType),{icon:'&#8592;',click:"setTab('inicio')"})+`
   <div class="content">
     <div class="match-deck">
       <div class="match-photo-wrap">
@@ -2064,7 +2095,7 @@ async function openPartnershipDetail(matchId){
   }catch(e){alert(e.message);}
 }
 function renderPets(){
-  screen.innerHTML=header('Meus Pets','',{icon:'+',click:"openModal('addPet')"})+`
+  screen.innerHTML=header('Meus Pets','',[{icon:'&#8592;',click:"setTab('perfil')"},{icon:'+',click:"openModal('addPet')"}])+`
   <div class="content">
     <div class="home-section-title"><h2>&#128062; Sua familia</h2><button class="home-more" onclick="setTab('mapa')">Perto de voce</button></div>
     ${pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu pet e crie um perfil completo.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar Pet</button></div>`:''}
@@ -2233,9 +2264,7 @@ function renderPerfil(){
   if(!currentUser)return;
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   const bell=`<button class="icon-btn notif-btn" onclick="renderNotificacoes()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
-  const cartBtn=`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`;
-  const chatBtn=`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Chat"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`;
-  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${cartBtn}${chatBtn}${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes"><span>&#9881;</span></button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
+  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes"><span>&#9881;</span></button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
     <div class="tutor-card" style="padding:18px 14px">
       <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative;line-height:0" title="Clique para alterar foto">
@@ -2355,16 +2384,27 @@ function render(){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
 }
 
-function setTab(t){tab=t;viewingPet=null;render();window.scrollTo(0,0);}
+function setTab(t){tab=t;viewingPet=null;backStack.length=0;render();window.scrollTo(0,0);}
 async function openModal(type){
   const old=document.getElementById('modal-root');if(old)old.remove();
   const root=document.createElement('div');root.id='modal-root';
 
   if(type==='plans'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Planos ZUNNU</div><button class="close" onclick="closeModal()">X</button></div>
-      <div class="plan-card"><div style="display:flex;justify-content:space-between"><b>Plano Gratuito</b><span class="badge-free">${currentUser?.plan==='free'?'ATIVO':''}</span></div><div class="small">R$ 0/mes</div></div>
-      <div class="plan-card" style="border-color:var(--blue);background:var(--blueSoft)"><div style="display:flex;justify-content:space-between"><b>Tutor Plus</b><span class="badge-plus">${currentUser?.plan==='plus'?'ATIVO':''}</span></div><div style="font-weight:800;font-size:16px;margin:4px 0">R$ 4,99 <span class="small">/mes</span></div><div class="small">Zero Anuncios + Selo Azul Tutor</div><button class="btn blue small-btn" style="margin-top:6px;width:100%" onclick="startPayment('plus')">${currentUser?.plan==='plus'?'Plano Ativo':'Assinar por R$ 4,99'}</button></div>
-      <div class="plan-card" style="border-color:var(--gold);background:var(--goldSoft)"><div style="display:flex;justify-content:space-between"><b>Vendedor PRO</b><span class="badge-pro">${currentUser?.plan==='pro'?'ATIVO':''}</span></div><div style="font-weight:800;font-size:16px;margin:4px 0">R$ 29,90 <span class="small">/mes</span></div><div class="small">Zero Ads + Selo PRO + Loja e Servicos (Taxa 7%)</div><button class="btn gold small-btn" style="margin-top:6px;width:100%" onclick="startPayment('pro')">${currentUser?.plan==='pro'?'Plano Ativo':'Assinar PRO por R$ 29,90'}</button></div>
+<div class="plan-card"><div style="display:flex;justify-content:space-between"><b>Plano Gratuito</b><span class="badge-free">${currentUser?.plan==='free'?'ATIVO':''}</span></div><div class="small">R$ 0/mes</div><div class="small" style="margin-top:4px">Acesso basico a comunidade ZUNNU: feed, chat, mapa, eventos e adocao.</div></div>
+      <div class="plan-card" style="border-color:var(--blue);background:var(--blueSoft)"><div style="display:flex;justify-content:space-between"><b>Tutor Plus</b><span class="badge-plus">${currentUser?.plan==='plus'?'ATIVO':''}</span></div><div style="font-weight:800;font-size:16px;margin:4px 0">R$ 4,99 <span class="small">/mes</span></div><div class="small">Zero anuncios + Selo Azul de Tutor verificado.</div>
+      <div style="font-size:11px;margin-top:8px;line-height:1.6"><b style="font-size:11px">Beneficios:</b><br>
+      &bull; Prioridade no "Pets em destaque" e na busca do Mapa<br>
+      &bull; Pets perdidos de assinantes ficam em destaque<br>
+      &bull; Estatisticas avancadas de parceria<br>
+      &bull; Album de fotos do pet ilimitado<br>
+      &bull; Lembretes avancados de vacina e saude com exportacao em PDF<br>
+      &bull; Mais eventos e participantes por mes<br>
+      &bull; Acesso antecipado a novos recursos<br>
+      &bull; Indicador de quem visitou seu perfil<br>
+      &bull; Stickers e badges exclusivos<br>
+      &bull; Molduras exclusivas de perfil</div>
+      <button class="btn blue small-btn" style="margin-top:8px;width:100%" onclick="startPayment('plus')">${currentUser?.plan==='plus'?'Plano Ativo':'Assinar por R$ 4,99'}</button></div>
     </div></div>`;
   }else if(type==='selfie'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" style="text-align:center"><div class="modal-head"><div class="modal-title">Verificacao Facial</div><button class="close" onclick="closeModal()">X</button></div><p class="small">Posicione seu rosto no circulo.</p><div class="selfie-frame"><img class="selfie-preview" src="${su(currentUser?.avatar||'')}" onerror="this.src='https://via.placeholder.com/150'"><div class="scan-line"></div></div><div class="small" style="color:var(--green);font-weight:700;margin-bottom:12px">Rosto Identificado</div><button class="btn" style="width:100%" onclick="validateSelfie()">Validar Identidade</button></div></div>`;
@@ -2875,13 +2915,13 @@ let currentChatMatchId=null;
 async function openChat(matchId,partnerName,partnerAvatar){
   currentChatMatchId=matchId;
   chatMatchId=matchId;
-  let root=document.getElementById('modal-root');
-  if(!root){root=document.createElement('div');root.id='modal-root';document.body.appendChild(root);}
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
   root.innerHTML=`<div class="modal-bg" style="height:100%;align-items:stretch" onclick="if(event.target===this)closeModal()"><div class="modal" style="border-radius:0;max-height:100%;height:100%;display:flex;flex-direction:column">
-    <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><div><b>${esc(partnerName)}</b><div id="chatLastSeen" class="small" style="color:var(--soft);font-weight:400"></div></div></div></div>
+    <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><div><b>${esc(partnerName||'Chat')}</b><div id="chatLastSeen" class="small" style="color:var(--soft);font-weight:400"></div></div></div></div>
     <div class="chat-window"><div class="chat-messages" id="chatMessages"></div>
     <div id="chatTyping" style="display:none;font-size:10px;color:var(--soft);padding:2px 8px">Digitando...</div>
-    <div id="stickerPicker" style="display:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;margin-bottom:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
+    <div id="stickerPicker" style="display:none;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;margin-bottom:4px">
       ${STICKERS.map(s=>`<button style="border:none;background:none;font-size:24px;cursor:pointer;padding:4px;border-radius:4px" onclick="sendSticker('${s.emoji}')">${s.emoji}</button>`).join('')}
     </div>
     <div style="display:flex;gap:4px;padding:4px 0">
@@ -2891,8 +2931,9 @@ async function openChat(matchId,partnerName,partnerAvatar){
     <div class="chat-input"><input id="chatInput" placeholder="Mensagem..." onkeydown="if(event.key==='Enter')sendChatMsg();if(event.key)sendWS({type:'typing',matchId:${matchId}})"><button class="btn small-btn" onclick="sendChatMsg()">Enviar</button></div>
   </div></div>`;
   document.body.appendChild(root);
-  sendWS({type:'read',matchId});
+  try{sendWS({type:'read',matchId});}catch(e){}
   await loadChatMessages();
+  const inputEl=document.getElementById('chatInput');if(inputEl)setTimeout(()=>{try{inputEl.focus();}catch(e){}},80);
 }
 
 async function loadChatMessages(){
@@ -3003,9 +3044,9 @@ async function redeemPoints(reward) {
 
 function renderReels(){
   if(!reelsData||reelsData.length===0){
-    screen.innerHTML=header('Reels','')+`<div class="content" style="text-align:center;padding-top:60px"><div style="font-size:40px">&#127916;</div><h3>Nenhum reel ainda</h3><p class="small">Seja o primeiro a postar!</p><button class="btn pink" style="margin-top:12px" onclick="openModal('addReel')">Criar Reel</button></div>`;return;
+    screen.innerHTML=header('Reels','',{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content" style="text-align:center;padding-top:60px"><div style="font-size:40px">&#127916;</div><h3>Nenhum reel ainda</h3><p class="small">Seja o primeiro a postar!</p><button class="btn pink" style="margin-top:12px" onclick="openModal('addReel')">Criar Reel</button></div>`;return;
   }
-  screen.innerHTML=header('Reels','',{icon:'+',click:"openModal('addReel')"})+`
+  screen.innerHTML=header('Reels','',[{icon:'&#8592;',click:"setTab('inicio')"},{icon:'+',click:"openModal('addReel')"}])+`
   <div class="reels-container">${reelsData.map(r=>`
     <div class="reel-card" id="reel-${r.id}">
       ${r.video_url?`<video class="reel-video" src="${su(r.video_url)}" loop muted playsinline onclick="this.paused?this.play():this.pause();this.muted=false" poster="${su(r.thumbnail||'')}" preload="metadata"></video>`:`<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:48px">&#127916;</div>`}
@@ -3091,7 +3132,7 @@ function fmtDist(km){if(km==null||isNaN(km))return'';if(km<1)return'A '+Math.max
 function exploreDist(a,b,c,d){const R=6371,rad=x=>x*Math.PI/180;const dLa=rad(c-a),dLo=rad(d-b);const x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function updateExplorerLoc(){
   const el=document.getElementById('exploreLoc');if(!el)return;
-  el.innerHTML=window._userLat?(window._userLat.toFixed(3))+'<b class="explore-loc-ok">Localizacao ativa</b>':'(<b>Ativando localizacao...</b>)';
+  el.innerHTML=window._userLat?(window._userLat.toFixed(3))+'<b class="explore-loc-ok">Localizacao ativa</b>':'<b>Ativando localizacao...</b>';
 }
 function centerMap(){const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;if(mapaInst)mapaInst.setView([lat,lng],14);}
 function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -3102,9 +3143,9 @@ function exploreChip(f){
   mapaFilter=f;loadNearbyPets();
 }
 
-function renderChats(){
+async function renderChats(){
   nav.style.display='flex';
-  refreshChatBadge();
+  await refreshChatBadge();
   screen.innerHTML=header('Chats','Suas conversas')+`<div class="content" style="padding-top:0">
     ${chatList.length===0?'<div class="home-empty" style="margin-top:30px"><div style="font-size:40px">&#128172;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhuma conversa ainda</b><span class="small">Quando der match pelo Match ou pedido de parceria, as conversas aparecem aqui.</span></div>':''}
     ${chatList.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openChat(${m.id},'${sj(m.partner_name)}','${sj(m.partner_avatar||'')}')">
@@ -3175,7 +3216,6 @@ function renderMapa(){
   <div class="explore-header">
     <div class="explore-top">
       <div><div class="explore-title">Explorar &#129517;</div><div class="explore-sub">Descubra o mundo pet perto de voce</div></div>
-      <button class="explore-ai" onclick="renderAiSuggestions()">&#129302; Match IA</button>
     </div>
     <div class="explore-loc" id="exploreLoc">&#128205; <b>Ativando localizacao...</b></div>
     <div class="explore-search"><input id="exploreSearchInput" placeholder="Buscar pets, servicos, usuarios, petshops..." onkeydown="if(event.key==='Enter')exploreSearch()"><button onclick="exploreSearch()">Buscar</button></div>
@@ -3189,9 +3229,6 @@ function renderMapa(){
         <button class="pl-chip" onclick="openAdocao()">&#128062; Adocao de pets</button>
         <button class="pl-chip" onclick="openConexao()">&#128153; Criar conexao</button>
       </div>
-      <hr class="disc-hr">
-      <div class="home-section-title"><h2>&#128337; Pesquisas recentes</h2><button class="home-more" onclick="clearDiscHist()">Limpar</button></div>
-      ${(()=>{const h=getDiscHist();return h.length?`<div class="disc-hist">${h.map(x=>`<button class="disc-hist-chip" onclick="exploreDiscoverSearch('${sj(x)}')">&#128269; ${esc(x)}</button>`).join('')}</div>`:'<div class="disc-note">Suas ultimas buscas aparecerao aqui.</div>';})()}
       <hr class="disc-hr">
       <div class="home-section-title"><h2>&#127968; Buscar por cidade</h2></div>
       <div style="padding:2px 16px;display:flex;gap:8px"><input id="mpCityIn" placeholder="Ex.: Sao Luis (MA)" value="${discCity?esc(discCity):''}" onkeydown="if(event.key==='Enter')exploreCitySearch()" class="disc-search" style="flex:1;border:1px solid rgba(0,0,0,.07);box-shadow:none;border-radius:12px"><button class="btn" style="padding:0 14px;flex-shrink:0" onclick="exploreCitySearch()">Buscar</button></div>
@@ -3218,19 +3255,6 @@ function renderMapa(){
     <div class="explore-section" id="exploreLost">
       <div class="explore-sec-head"><h2>Atencao na sua regiao &#128680;</h2></div>
       <div class="lost-cards" id="lostCards"></div>
-    </div>
-    <div class="explore-section" id="exploreServices">
-      <div class="explore-sec-head"><h2>Seu pet precisa de algo?</h2></div>
-      <div class="svc-chips">
-        <button class="svc-chip active" data-k="all" onclick="filterExploreServices('all')">Todos</button>
-        <button class="svc-chip" data-k="vet" onclick="filterExploreServices('vet')">&#129658; Veterinario</button>
-        <button class="svc-chip" data-k="tosa" onclick="filterExploreServices('tosa')">&#9986; Banho e tosa</button>
-        <button class="svc-chip" data-k="hospedagem" onclick="filterExploreServices('hospedagem')">&#127976; Hospedagem</button>
-        <button class="svc-chip" data-k="passeio" onclick="filterExploreServices('passeio')">&#128062; Pet sitter</button>
-        <button class="svc-chip" data-k="shop" onclick="filterExploreServices('shop')">&#128722; Pet shop</button>
-      </div>
-      <div class="svc-grid" id="servicesGrid"><div class="explore-empty">Carregando servicos...</div></div>
-      <button class="explore-more svc-all" onclick="openServices()">Ver todos os servicos &rarr;</button>
     </div>
     <div class="explore-section">
       <div class="explore-sec-head"><h2>Mapa Pet — Lugares</h2><button class="explore-more" onclick="loadPlaces()">Atualizar</button></div>
@@ -3278,7 +3302,6 @@ function renderMapa(){
   </div>`;
   updateExplorerLoc();
   renderLostCards();
-  loadExploreServices();
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
       window._userLat=pos.coords.latitude;window._userLng=pos.coords.longitude;
@@ -3551,7 +3574,7 @@ async function loadCart() {
 }
 
 function renderCart() {
-  screen.innerHTML = header('Meu Carrinho','')+`<div class="content">
+  screen.innerHTML = header('Meu Carrinho','',{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content">
     ${cartItems.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Carrinho vazio<br><br><button class="btn" onclick="setTab(\'inicio\')">Ver Produtos</button></p>':''}
     ${cartItems.map(c=>`<div style="display:flex;gap:10px;background:var(--card);border-radius:12px;padding:10px;margin-bottom:8px">
       <img src="${su(c.image||'')}" style="width:60px;height:60px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">
@@ -3582,7 +3605,7 @@ async function removeCartItem(id) {
 }
 
 function renderCheckout() {
-  screen.innerHTML = header('Finalizar Compra','')+`<div class="content">
+  screen.innerHTML = header('Finalizar Compra','',{icon:'&#8592;',click:'renderCart()'})+`<div class="content">
     <div class="field"><label>Nome Completo</label><input id="shipName" value="${esc(currentUser?.name||'')}"></div>
     <div class="field"><label>Endereco</label><input id="shipAddress" placeholder="Rua, numero, bairro"></div>
     <div class="field"><label>Telefone</label><input id="shipPhone" placeholder="(99) 99999-9999"></div>
@@ -3615,7 +3638,7 @@ async function placeOrder(method) {
 async function renderMyOrders() {
   try {
     const orders = await api('/api/orders');
-    screen.innerHTML = header('Meus Pedidos','')+`<div class="content">
+    screen.innerHTML = header('Meus Pedidos','',{icon:'&#8592;',click:"setTab('loja')"})+`<div class="content">
       ${orders.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Nenhum pedido ainda</p>':''}
       ${orders.map(o=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between"><b style="font-size:13px">Pedido #${o.id}</b><span style="font-size:11px;color:var(--soft)">${formatDate(o.created_at)}</span></div>
@@ -3656,7 +3679,7 @@ async function requestFollow(userId) {
 function toggleStickerPicker() {
   const el = document.getElementById('stickerPicker');
   if(!el) return;
-  el.style.display = el.style.display==='none'?'block':'none';
+  el.style.display = el.style.display==='none'||el.style.display===''?'grid':'none';
 }
 
 function sendSticker(emoji) {
@@ -3708,7 +3731,7 @@ async function confirmBooking(serviceId) {
 async function renderBookings() {
   try {
     const bookings = await api('/api/bookings');
-    screen.innerHTML = header('Meus Agendamentos','')+`<div class="content">
+    screen.innerHTML = header('Meus Agendamentos','',{icon:'&#8592;',click:"setTab('loja')"})+`<div class="content">
       ${bookings.length===0?'<p style="text-align:center;color:var(--soft);padding:40px">Nenhum agendamento</p>':''}
       ${bookings.map(b=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between"><b style="font-size:13px">${esc(b.service_title||'Servico')}</b><span style="font-size:11px;color:var(--soft)">${formatDate(b.created_at)}</span></div>
@@ -3725,7 +3748,7 @@ async function loadLostPets() {
 }
 
 function renderLostPets() {
-  screen.innerHTML = header('Pets Perdidos/Achados','')+`<div class="content">
+  screen.innerHTML = header('Pets Perdidos/Achados','',{icon:'&#8592;',click:"setTab('mapa')"})+`<div class="content">
     <button class="btn" style="width:100%;margin-bottom:12px" onclick="openModal('lostPet')">+ Reportar Pet Perdido/Achado</button>
     <div style="display:flex;gap:6px;margin-bottom:12px">
       <button class="btn small-btn" onclick="filterLost('all')">Todos</button>
@@ -3783,7 +3806,7 @@ let shopProducts=[], shopServices=[];
 function paintLoja(){
   let favPd=null, favSv=null;
   if(shopFavs){ void favPd; void favSv; }
-  screen.innerHTML = header('Loja ZUNNU','')+`<div class="content">
+  screen.innerHTML = header('Loja ZUNNU','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content">
     <div style="display:flex;gap:6px;margin-bottom:12px">
       <button class="btn small-btn ${shopTab==='products'?'':'outline'}" onclick="shopTab='products';paintLoja()">Produtos</button>
       <button class="btn small-btn ${shopTab==='services'?'':'outline'}" onclick="shopTab='services';paintLoja()">Servicos</button>
@@ -3868,7 +3891,7 @@ function val(id){const el=document.getElementById(id);return el?el.value.trim():
 async function openEventos(view){
   if(view)eventsFilter.view=view;
   currentEventId=null;
-  screen.innerHTML=header('Eventos','','')+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
+  screen.innerHTML=header('Eventos','',{icon:'&#8592;',click:"setTab('mapa')"})+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
   await loadEvents();renderEventos();
 }
 async function loadEvents(){
@@ -3899,7 +3922,7 @@ function eventCard(ev){
 function renderEventos(){
   const p=eventsFilter;
   const chips=Object.keys(EV_CATS).map(c=>`<button class="pl-chip ${p.cat===c?'on':''}" onclick="eventsFilter.cat='${p.cat===c?'':c}';loadEvents().then(renderEventos);">${EV_CATS[c]}</button>`).join('');
-  screen.innerHTML=header('Eventos','','')+`<div class="content" style="padding-top:0">
+  screen.innerHTML=header('Eventos','',{icon:'&#8592;',click:"setTab('mapa')"})+`<div class="content" style="padding-top:0">
     <div style="display:flex;gap:6px;margin:12px 0">
       <button class="btn small-btn ${p.view==='upcoming'?'':'outline'}" onclick="openEventos('upcoming')">Proximos</button>
       <button class="btn small-btn ${p.view==='mine'?'':'outline'}" onclick="openEventos('mine')">Meus eventos</button>
@@ -4098,7 +4121,7 @@ async function confirmEventParticipant(eventId,userId){
 /* ===== Adocao (E8) ===== */
 async function openAdocao(view){
   if(view!==undefined)adopMine=view==='mine';
-  screen.innerHTML=header('Adocao','','')+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
+  screen.innerHTML=header('Adocao','',{icon:'&#8592;',click:"setTab('mapa')"})+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
   await loadAdoptions();renderAdocao();
 }
 async function loadAdoptions(){
@@ -4125,7 +4148,7 @@ function adoptionCard(a){
 function renderAdocao(){
   const chips=AD_SPECIES.map(s=>`<button class="pl-chip ${adopFilter.species===s?'on':''}" onclick="adopFilter.species='${adopFilter.species===s?'':s}';openAdocao();">${s}</button>`).join('');
   const stChips=['available','in_process','adopted'].map(s=>`<button class="pl-chip ${adopFilter.status===s?'on':''}" onclick="adopFilter.status='${adopFilter.status===s?'available':s}';openAdocao();">${AD_STATUS[s]}</button>`).join('');
-  screen.innerHTML=header('Adocao','','')+`<div class="content" style="padding-top:0">
+  screen.innerHTML=header('Adocao','',{icon:'&#8592;',click:"setTab('mapa')"})+`<div class="content" style="padding-top:0">
     <div style="display:flex;gap:6px;margin:12px 0">
       <button class="btn small-btn ${adopMine?'':'outline'}" onclick="openAdocao()">Descobrir</button>
       <button class="btn small-btn ${adopMine?'':'outline'}" onclick="openAdocao('mine')">Meus anuncios</button>
@@ -4253,7 +4276,7 @@ async function buildMatchDeck(){
   matchBuilding=false;currentMatchIdx=0;renderConexao();
 }
 function openConexao(){
-  screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
+  screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType),{icon:'&#8592;',click:"setTab('inicio')"})+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
   buildMatchDeck();
 }
 
@@ -4373,19 +4396,31 @@ async function toggleFollowFromList(id){
   if(title.indexOf('Seguidores')>-1){const targ=screen.innerHTML.indexOf('renderFollowers(');let uid=currentUser?.id;const m=screen.innerHTML.match(/renderFollowers\((\d+)/);if(m)uid=+m[1];await renderFollowers(uid||currentUser?.id,'');}
   else{const m=screen.innerHTML.match(/renderFollowing\((\d+)/);let uid=m?+m[1]:currentUser?.id;await renderFollowing(uid,'');}
 }
-function goBackScreen(){renderPerfil();}
 
 /* ===== Configuracoes (E16) ===== */
 let cfgBlocks=null;
 async function openConfig(){
   let me=currentUser;try{me=await api('/api/auth/me');}catch(e){}
   if(me)currentUser=me;
-  let payText='Consulte a pagina de planos.';
-  try{const ps=await api('/api/payments/status');if(ps.lastPayment&&ps.lastPayment.plan&&ps.lastPayment.plan==='product')payText='Seus pagamentos de produtos seguem normais.';else if(ps.plan&&ps.plan!=='free')payText='Assinatura ativa: '+ps.plan.toUpperCase()+(ps.lastPayment&&ps.lastPayment.status==='paid'?' (pagamento confirmado)':' (aguardando confirmacao)');}catch(e){}
-  let blocked='';try{const b=await api('/api/social/blocked');blocked=b.length?b.map(u=>`<div class="f-row"><div class="avatar"><img src="${su(u.avatar||'')}" onerror="this.parentNode.textContent='${esc((u.name||'?')[0]||'?')}'"></div><div style="flex:1"><b style="font-size:12px">${esc(u.name)}</b></div><button class="btn small-btn outline" onclick="unblockUser(${u.id})">Desbloquear</button></div>`).join(''):'<div class="pl-note">Nenhum usuario bloqueado.</div>';}catch(e){blocked='<div class="pl-note">Nenhum usuario bloqueado.</div>';}
   screen.innerHTML=header('Configuracoes','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
-    <div class="section"><h2>Conta</h2></div>
-    <div class="cfg-card">
+    <div class="section"><h2>Menu</h2></div>
+    <div class="cfg-menu">
+      <div class="cfg-menu-item" onclick="openConfigSection('conta')"><div class="cfg-menu-ic">&#128100;</div><div class="cfg-menu-tx"><b>Conta</b><span class="small">Nome, bio, foto e contatos</span></div><span class="cfg-menu-go">&rarr;</span></div>
+      <div class="cfg-menu-item" onclick="openConfigSection('seguranca')"><div class="cfg-menu-ic">&#128274;</div><div class="cfg-menu-tx"><b>Seguranca</b><span class="small">Senha e login biometrico</span></div><span class="cfg-menu-go">&rarr;</span></div>
+      <div class="cfg-menu-item" onclick="openConfigSection('privacidade')"><div class="cfg-menu-ic">&#128373;</div><div class="cfg-menu-tx"><b>Privacidade</b><span class="small">Perfil privado e bloqueados</span></div><span class="cfg-menu-go">&rarr;</span></div>
+      <div class="cfg-menu-item" onclick="openConfigSection('assinatura')"><div class="cfg-menu-ic">&#11088;</div><div class="cfg-menu-tx"><b>Assinatura</b><span class="small">Plano atual e beneficios</span></div><span class="cfg-menu-go">&rarr;</span></div>
+      <div class="cfg-menu-item" onclick="openConfigSection('vendas')"><div class="cfg-menu-ic">&#128722;</div><div class="cfg-menu-tx"><b>Vendas &amp; Marketplace</b><span class="small">Modo vendedor e loja</span></div><span class="cfg-menu-go">&rarr;</span></div>
+      <div class="cfg-menu-item" onclick="openConfigSection('aplicativo')"><div class="cfg-menu-ic">&#128241;</div><div class="cfg-menu-tx"><b>Aplicativo</b><span class="small">Tema, ajuda e sair</span></div><span class="cfg-menu-go">&rarr;</span></div>
+    </div>
+  </div>`;
+}
+async function openConfigSection(sec){
+  let me=currentUser;try{me=await api('/api/auth/me');}catch(e){}
+  if(me)currentUser=me;
+  const T={conta:'Conta',seguranca:'Seguranca',privacidade:'Privacidade',assinatura:'Assinatura',vendas:'Vendas & Marketplace',aplicativo:'Aplicativo'};
+  let body='';
+  if(sec==='conta'){
+    body=`<div class="cfg-card">
       <div class="field"><label>Nome</label><input id="cfgName" value="${esc(me.name||'')}"></div>
       <div class="field"><label>Bio</label><textarea id="cfgBio" rows="2" placeholder="Conte sobre voce">${esc(me.bio||'')}</textarea></div>
       <div class="field"><label>Cidade / Localizacao</label><input id="cfgLoc" value="${esc(me.location||'')}"></div>
@@ -4393,32 +4428,39 @@ async function openConfig(){
       <div class="field"><label>Instagram</label><input id="cfgIg" placeholder="seu.usuario (sem @)" value="${esc(me.instagram||'')}"></div>
       <div class="field"><label>WhatsApp com DDI</label><input id="cfgWa" placeholder="Ex: 5598999999999" value="${esc(me.whatsapp||'')}"></div>
       <button class="btn" style="width:100%" onclick="saveConfig()">Salvar perfil</button>
-    </div>
-    <div class="section"><h2>Seguranca</h2></div>
-    <div class="cfg-card">
+    </div>`;
+  }
+  if(sec==='seguranca'){
+    body=`<div class="cfg-card">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><b style="font-size:12px">Login com biometria</b>${bioEnabled()?`<button class="btn small-btn outline" onclick="bioDisable()">Ativo &#10003;</button>`:`<button class="btn small-btn" onclick="bioRegister()">Ativar</button>`}</div>
       <div class="pl-note" style="padding:4px 0 10px">Entre com digital ou Face ID em vez de email/senha (disponivel no app instalado).</div>
       <div class="field"><label>Senha atual</label><input id="cfgPassCur" type="password"></div>
       <div class="field"><label>Nova senha (min. 6)</label><input id="cfgPassNew" type="password"></div>
       <div class="field"><label>Confirmar nova senha</label><input id="cfgPassNew2" type="password"></div>
       <button class="btn outline" style="width:100%" onclick="changePassword()">Alterar senha</button>
-    </div>
-    <div class="section"><h2>Privacidade</h2></div>
-    <div class="cfg-card">
+    </div>`;
+  }
+  if(sec==='privacidade'){
+    let blocked='';try{const b=await api('/api/social/blocked');blocked=b.length?b.map(u=>`<div class="f-row"><div class="avatar"><img src="${su(u.avatar||'')}" onerror="this.parentNode.textContent='${esc((u.name||'?')[0]||'?')}'"></div><div style="flex:1"><b style="font-size:12px">${esc(u.name)}</b></div><button class="btn small-btn outline" onclick="unblockUser(${u.id})">Desbloquear</button></div>`).join(''):'<div class="pl-note">Nenhum usuario bloqueado.</div>';}catch(e){blocked='<div class="pl-note">Nenhum usuario bloqueado.</div>';}
+    body=`<div class="cfg-card">
       <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Perfil privado</b><button class="btn small-btn ${me.is_private?'pink':'outline'}" onclick="togglePrivate()">${me.is_private?'Privado':'Publico'}</button></div>
       <div class="pl-note" style="padding:6px 0">Seus posts e pets ficam so para voce quando privado.</div>
       <div class="pl-note" style="padding:10px 0 4px"><b style="font-size:12px">Bloqueados</b></div>
       ${blocked}
-    </div>
-    <div class="section"><h2>Assinatura</h2></div>
-    <div class="cfg-card">
+    </div>`;
+  }
+  if(sec==='assinatura'){
+    let payText='Consulte a pagina de planos.';
+    try{const ps=await api('/api/payments/status');if(ps.lastPayment&&ps.lastPayment.plan&&ps.lastPayment.plan==='product')payText='Seus pagamentos de produtos seguem normais.';else if(ps.plan&&ps.plan!=='free')payText='Assinatura ativa: '+ps.plan.toUpperCase()+(ps.lastPayment&&ps.lastPayment.status==='paid'?' (pagamento confirmado)':' (aguardando confirmacao)');}catch(e){}
+    body=`<div class="cfg-card">
       <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Plano atual</b><span class="badge-${me.plan==='pro'?'pro':me.plan==='plus'?'plus':'free'}">${me.plan==='pro'?'PRO':me.plan==='plus'?'TUTOR PLUS':'GRATUITO'}</span></div>
       <div class="pl-note" style="padding:6px 0">${payText}</div>
       <button class="btn small-btn" style="width:100%" onclick="openModal('plans')">Ver planos</button>
       <button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="renderProInfo()">Saiba mais: Seja ZUNNU PRO</button>
-    </div>
-    <div class="section"><h2>Vendas &amp; Marketplace</h2></div>
-    <div class="cfg-card">
+    </div>`;
+  }
+  if(sec==='vendas'){
+    body=`<div class="cfg-card">
       ${me.is_seller?`
         <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Modo vendedor</b><span class="badge-pro">ATIVO</span></div>
         <div class="pl-note" style="padding:6px 0">Voce optou em ser vendedor. Sua Loja ZUNNU esta liberada abaixo.</div>
@@ -4429,28 +4471,30 @@ async function openConfig(){
         <div class="pl-note" style="padding:6px 0">A Loja ainda nao foi lancada. Quem desejar vender produtos ou servicos para a comunidade pet pode se tornar vendedor agora e ser liberado primeiro.</div>
         <button class="btn gold" style="width:100%" onclick="toggleSeller(true)">Tornar-se vendedor</button>
       `}
-    </div>
-    <div class="section"><h2>Aplicativo</h2></div>
-    <div class="cfg-card">
+    </div>`;
+  }
+  if(sec==='aplicativo'){
+    body=`<div class="cfg-card">
       <button class="btn outline" style="width:100%" onclick="toggleDarkMode()">${darkMode?'Modo claro':'Modo escuro'}</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="renderHelp()">Centro de ajuda</button>
       <button class="btn outline danger" style="width:100%;margin-top:6px;color:var(--coral)" onclick="logout()">Sair da conta</button>
-    </div>
-  </div>`;
+    </div>`;
+  }
+  screen.innerHTML=header(T[sec]||'Configuracoes','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">${body}</div>`;
 }
 async function saveConfig(){
   const body={name:val('cfgName'),bio:val('cfgBio'),location:val('cfgLoc'),avatar:val('cfgAvatar'),instagram:val('cfgIg'),whatsapp:val('cfgWa')};
-  try{const u=await api('/api/auth/me',{method:'PUT',body:JSON.stringify(body)});currentUser=u;await openConfig();alert('Perfil salvo!');}catch(e){alert(e.message);}
+  try{const u=await api('/api/auth/me',{method:'PUT',body:JSON.stringify(body)});currentUser=u;await openConfigSection('conta');alert('Perfil salvo!');}catch(e){alert(e.message);}
 }
 async function changePassword(){
   const cur=val('cfgPassCur'),n1=val('cfgPassNew'),n2=val('cfgPassNew2');
   if(!cur){alert('Informe a senha atual.');return;}
   if(n1!==n2){alert('As novas senhas nao conferem.');return;}
   if(n1.length<6){alert('A nova senha deve ter no minimo 6 caracteres.');return;}
-  try{await api('/api/auth/change-password',{method:'POST',body:JSON.stringify({current_password:cur,new_password:n1})});alert('Senha alterada!');await openConfig();}catch(e){alert(e.message);}
+  try{await api('/api/auth/change-password',{method:'POST',body:JSON.stringify({current_password:cur,new_password:n1})});alert('Senha alterada!');await openConfigSection('seguranca');}catch(e){alert(e.message);}
 }
 async function unblockUser(id){
-  try{await api('/api/social/block/'+id,{method:'DELETE'});await openConfig();}catch(e){alert(e.message);}
+  try{await api('/api/social/block/'+id,{method:'DELETE'});await openConfigSection('privacidade');}catch(e){alert(e.message);}
 }
 function renderHelp(){
   screen.innerHTML=header('Centro de ajuda','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">
@@ -4501,7 +4545,7 @@ async function renderAdmin(){
   if(adminView==='users'){
     body=`<div class="disc-search" style="margin-bottom:10px"><span class="disc-s-icon">&#128269;</span><input placeholder="Buscar usuario por nome ou email" onkeydown="if(event.key==='Enter'){adminUsersQ=this.value.trim();renderAdmin();}"></div><div id="adminUsers"></div>`;
   }
-  screen.innerHTML=header('Painel Admin','','')+`<div class="content" style="padding-top:0">
+  screen.innerHTML=header('Painel Admin','',{icon:'&#8592;',click:"setTab('perfil')"})+`<div class="content" style="padding-top:0">
     <div style="margin:12px 0;display:flex;flex-wrap:wrap">${tabHtml}</div>
     ${body}
   </div>`;
@@ -4528,15 +4572,21 @@ async function setUserAdmin(id,is_admin){
 /* ===== Seja ZUNNU PRO (E11) ===== */
 function renderProInfo(){
   screen.innerHTML=header('Seja ZUNNU PRO','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">
-    <div class="cfg-card" style="border-color:var(--gold)">
-      <b>Vendedor PRO</b> <span class="badge-pro">R$ 29,90/mes</span>
-      <div class="pl-note" style="padding:6px 0">Loja com produtos e checkout Pix, cadastro de servicos e agendamentos, eventos aprovados sem fila e selo PRO.</div>
-      <button class="btn gold" style="width:100%" onclick="startPayment('pro')">Assinar PRO</button>
-    </div>
     <div class="cfg-card" style="border-color:var(--blue)">
-      <b>Tutor Plus</b> <span class="badge-plus">R$ 4,99/mes</span>
-      <div class="pl-note" style="padding:6px 0">Sem anuncios e selo azul de tutor.</div>
-      <button class="btn blue" style="width:100%" onclick="startPayment('plus')">Assinar Plus</button>
+      <div style="display:flex;justify-content:space-between;align-items:center"><b>Tutor Plus</b><span class="badge-plus">R$ 4,99/mes</span></div>
+      <div class="pl-note" style="padding:6px 0">Zero anuncios e selo azul de tutor verificado, mais beneficios exclusivos.</div>
+      <div style="font-size:11px;line-height:1.6">
+      &bull; Prioridade no "Pets em destaque" e na busca do Mapa<br>
+      &bull; Pets perdidos de assinantes ficam em destaque<br>
+      &bull; Estatisticas avancadas de parceria<br>
+      &bull; Album de fotos do pet ilimitado<br>
+      &bull; Lembretes avancados de vacina e saude com exportacao em PDF<br>
+      &bull; Mais eventos e participantes por mes<br>
+      &bull; Acesso antecipado a novos recursos<br>
+      &bull; Indicador de quem visitou seu perfil<br>
+      &bull; Stickers e badges exclusivos<br>
+      &bull; Molduras exclusivas de perfil</div>
+      <button class="btn blue" style="width:100%;margin-top:8px" onclick="startPayment('plus')">Assinar Plus</button>
     </div>
     <div class="cfg-card">
       <b>Pagamento</b>
@@ -4609,6 +4659,7 @@ document.addEventListener('click',e=>{
 });
 
 applyTheme();
+setupBackButton();
 
 if(token){
   api('/api/points/daily-login',{method:'POST'}).catch(()=>{});
