@@ -1,6 +1,7 @@
 const express = require('express');
 const { run, get, all } = require('../db');
 const { authMiddleware } = require('../middleware/auth');
+const { sendToUser } = require('../ws');
 
 const router = express.Router();
 
@@ -80,6 +81,12 @@ router.post('/:id/join', authMiddleware, async (req, res) => {
     const grp = await get('SELECT * FROM groups WHERE id = ?', [gid]);
     if (!grp) return res.status(404).json({ error: 'Grupo nao encontrado' });
     await run('INSERT INTO group_members (group_id, user_id, role) VALUES (?, ?, ?) ON CONFLICT DO NOTHING', [gid, req.userId, 'member']);
+    if (grp.owner_id !== req.userId) {
+      const me = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
+      const msg = `${me?.name || 'Alguem'} entrou no grupo "${grp.name}".`;
+      await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)', [grp.owner_id, 'group_join', msg, gid]);
+      sendToUser(grp.owner_id, { type: 'notification', notification: { type: 'group_join', message: msg, referenceId: gid } });
+    }
     res.json({ ok: true });
   } catch (err) {
     console.error('Group join error:', err);
@@ -128,8 +135,16 @@ router.post('/:id/posts', authMiddleware, async (req, res) => {
     }
     const member = await get('SELECT * FROM group_members WHERE group_id = ? AND user_id = ?', [gid, req.userId]);
     if (!member) return res.status(403).json({ error: 'Entre no grupo para publicar' });
+    const me = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
+    const grpName = await get('SELECT name FROM groups WHERE id = ?', [gid]);
     await run('INSERT INTO group_posts (group_id, user_id, text, image) VALUES (?, ?, ?, ?)',
       [gid, req.userId, String(text).trim(), String(image || '').trim()]);
+    const members = await all('SELECT user_id FROM group_members WHERE group_id = ? AND user_id != ?', [gid, req.userId]);
+    const msg = `${me?.name || 'Alguem'} publicou no grupo "${grpName?.name || 'voce'}"`;
+    for (const mm of members) {
+      await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)', [mm.user_id, 'group_post', msg, gid]);
+      sendToUser(mm.user_id, { type: 'notification', notification: { type: 'group_post', message: msg, referenceId: gid } });
+    }
     const post = await all(`
       SELECT gp.id, gp.group_id, gp.text, gp.image, gp.created_at,
         u.id as user_id, u.name as user_name, u.avatar as user_avatar

@@ -2287,6 +2287,7 @@ async function openModal(type){
     feedPostImage='';
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Criar publicacao</div><button class="close" onclick="closeModal()">X</button></div>
     <div class="field"><label>Pet relacionado</label><select id="postPet"><option value="">Nenhum pet</option>${(pets||[]).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+    <div class="field"><label>Com qual parceiro? (opcional)</label><select id="postMatch"><option value="">Nenhum parceiro</option></select></div>
     <div class="field"><label>Mensagem *</label><textarea id="postTxt" placeholder="O que esta acontecendo com seu pet?" rows="3"></textarea></div>
     <div class="field"><label>Foto (URL)</label><input id="postImage" type="url" placeholder="https://exemplo.com/foto.jpg" oninput="previewPostImage()">
       <div id="postImgPreview" style="margin-top:8px;display:none"><img id="postImgPrevImg" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px" alt="Previa da foto"><button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="removePostImage()">Remover foto</button></div></div>
@@ -2295,6 +2296,7 @@ async function openModal(type){
     <div class="field"><label>Visibilidade</label><select id="postVis"><option value="public">&#127757; Publico</option><option value="friends">&#128101; Amigos</option><option value="private">&#128274; Privado</option></select></div>
     <button class="btn" style="width:100%" onclick="savePost()">Publicar</button></div></div>`;
     setTimeout(()=>{const img=document.getElementById('postImgPreview');if(img&&feedPostImage){img.style.display='block';document.getElementById('postImgPrevImg').src=feedPostImage;}},10);
+    loadPostMatches();
 }else if(type==='addPet'){
     editingPetId=null;editingVaccine=null;editingHealthRec=null;
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Cadastrar Pet</div><button class="close" onclick="closeModal()">X</button></div>
@@ -2458,13 +2460,25 @@ async function savePost(){
   if(!t){alert('Escreva algo!');return;}
   try{
     const pet=parseInt(document.getElementById('postPet')?.value)||null;
+    const pm=parseInt(document.getElementById('postMatch')?.value)||null;
     const loc=document.getElementById('postLoc')?.value.trim()||'';
     const vis=document.getElementById('postVis')?.value||'public';
     const img=feedPostImage||document.getElementById('postImage')?.value.trim()||'';
-    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t,image:img,video_url:document.getElementById('postVideo')?.value.trim()||'',pet_id:pet,location:loc,visibility:vis})});
+    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t,image:img,video_url:document.getElementById('postVideo')?.value.trim()||'',pet_id:pet,partner_match_id:pm,location:loc,visibility:vis})});
     feedPostImage='';
     posts.unshift(p);postPage=1;feedError=false;showComments[p.id]=false;closeModal();setTab('inicio');
   }catch(e){alert(e.message);}
+}
+
+let postMatches=[];
+async function loadPostMatches(){
+  try{
+    postMatches=await api('/api/match/matches').catch(()=>[]);
+    const sel=document.getElementById('postMatch');
+    if(sel){
+      sel.innerHTML='<option value="">Nenhum parceiro</option>'+postMatches.map(m=>`<option value="${m.id}">@${atname(m.partner_name)} &bull; ${partnershipTypeLabel(m.partnership_type)} &bull; intimidade ${m.intimacy||0}</option>`).join('');
+    }
+  }catch(e){}
 }
 
 async function savePet(){
@@ -3784,7 +3798,7 @@ function eventCard(ev){
   return `<div class="ev-card" onclick="openEventDetail(${ev.id})">
     <div class="ev-thumb">${img}</div>
     <div class="ev-body">
-      <div class="ev-cat">${EV_CATS[ev.category]||ev.category||'Evento'}${ev.status!=='approved'?' &bull; analise':''}</div>
+      <div class="ev-cat">${EV_CATS[ev.category]||ev.category||'Evento'}${ev.status!=='approved'?' &bull; analise':''}${ev.live_enabled?' <span class="live-badge" style="margin-left:4px;vertical-align:middle"><span class="live-dot"></span>AO VIVO</span>':''}</div>
       <div class="ev-name">${esc(ev.name)}</div>
       <div class="ev-sub">&#128197; ${formatDateBR(ev.date)}${ev.time?' as '+esc(ev.time):''}</div>
       ${ev.location?`<div class="ev-sub">&#128205; ${esc(ev.location)}${ev.city?' &bull; '+esc(ev.city):''}</div>`:''}

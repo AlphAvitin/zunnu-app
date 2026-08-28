@@ -15,6 +15,7 @@ function isAutoApproved(user) {
 async function rowToEvent(row, userId) {
   if (!row) return null;
   const organizer = await get('SELECT id, name, avatar, plan, is_human_verified, is_admin FROM users WHERE id = ?', [row.organizer_id]);
+  const live = row.live_location_enabled === 1 && row.status === 'approved' && String(row.date || '').slice(0, 10) >= todayStr();
   const going = await get('SELECT COUNT(*) as c FROM event_participants WHERE event_id = ? AND status = ?', [row.id, 'going']);
   const interested = await get('SELECT COUNT(*) as c FROM event_participants WHERE event_id = ? AND status = ?', [row.id, 'interested']);
   const confirmed = await get('SELECT COUNT(*) as c FROM event_participants WHERE event_id = ? AND status = ?', [row.id, 'confirmed']);
@@ -37,7 +38,8 @@ async function rowToEvent(row, userId) {
     count_participants: (going?.c || 0) + (interested?.c || 0) + (confirmed?.c || 0),
     my_status: myStatus,
     saved_by_me: savedByMe,
-    is_organizer: userId ? userId === row.organizer_id : false
+    is_organizer: userId ? userId === row.organizer_id : false,
+    live_enabled: live
   };
 }
 
