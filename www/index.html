@@ -1528,9 +1528,6 @@ function renderDiscBase(){
   <div class="home-section-title"><h2>&#128205; Pets perto de voce</h2></div>
   <div style="padding:2px 16px">${renderDiscNearby()}</div>
   <hr class="disc-hr">
-  <div class="home-section-title"><h2>&#128337; Pesquisas recentes</h2><button class="home-more" onclick="clearDiscHist()">Limpar</button></div>
-  ${(()=>{const h=getDiscHist();return h.length?`<div class="disc-hist">${h.map(x=>`<button class="disc-hist-chip" onclick="discQ='${esc(x)}';renderDescobrir();doDiscoverSearch();">&#128269; ${esc(x)}</button>`).join('')}</div>`:`<div class="disc-note">Suas ultimas buscas aparecerao aqui.</div>`;})()}
-  <hr class="disc-hr">
   <div class="home-section-title"><h2>&#127968; Buscar por cidade</h2></div>
   <div style="padding:2px 16px;display:flex;gap:8px"><input id="discCityIn" placeholder="Ex.: Sao Luis (MA)" value="${discCity?esc(discCity):''}" onkeydown="if(event.key==='Enter')discSearchCity()" class="disc-search" style="flex:1;border:1px solid rgba(0,0,0,.07);box-shadow:none;border-radius:12px"><button class="btn" style="padding:0 14px;flex-shrink:0" onclick="discSearchCity()">Buscar</button></div>`;
 }
