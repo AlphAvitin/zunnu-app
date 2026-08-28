@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--bg:#F7F5F0;--card:#fff;--ink:#282722;--soft:#999;--line:#ECEAE5;--green:#245C4F;--green2:#347668;--greenSoft:#EAF5F0;--orange:#EE9C3C;--orangeSoft:#FFF0DB;--coral:#E76F51;--coralSoft:#FCE4DE;--pink:#D94F7A;--pinkSoft:#FCE8EF;--gold:#D4AF37;--goldSoft:#FFF9E6;--blue:#2B7BB9;--blueSoft:#E2F1FC;--pix:#32BCAD;--pixSoft:#E6F8F6}
-[data-theme="dark"]{--bg:#1a1a2e;--card:#16213e;--ink:#e8e8e8;--soft:#a0a0b0;--line:#2a2a4a;--green:#347668;--green2:#245C4F;--greenSoft:#1a3a2e;--orange:#EE9C3C;--orangeSoft:#3a2a10;--coral:#E76F51;--coralSoft:#3a1a10;--pink:#D94F7A;--pinkSoft:#3a1a2a;--gold:#D4AF37;--goldSoft:#3a3010;--blue:#2B7BB9;--blueSoft:#1a2a3a;--pix:#32BCAD;--pixSoft:#1a3a3a}
+:root{--bg:#F7F5F0;--card:#fff;--ink:#282722;--soft:#999;--line:#ECEAE5;--purple:#7C3AED;--purple2:#5B21B6;--purpleSoft:#F1EAFD;--primary:var(--purple);--green:#0FA58C;--green2:#0B8A75;--greenSoft:#E3F5F1;--orange:#F59E0B;--orangeSoft:#FFF0DB;--coral:#E76F51;--coralSoft:#FCE4DE;--pink:#D94F7A;--pinkSoft:#FCE8EF;--gold:#D4AF37;--goldSoft:#FFF9E6;--blue:#2B7BB9;--blueSoft:#E2F1FC;--pix:#32BCAD;--pixSoft:#E6F8F6}
+[data-theme="dark"]{--bg:#1a1a2e;--card:#16213e;--ink:#e8e8e8;--soft:#a0a0b0;--line:#2a2a4a;--purple:#A78BFA;--purple2:#7C3AED;--purpleSoft:#241B45;--primary:var(--purple2);--green:#2DD4BF;--green2:#14B8A6;--greenSoft:#12312B;--orange:#FBBF24;--orangeSoft:#3a2a10;--coral:#FF7A59;--coralSoft:#3a1a12;--pink:#F06292;--pinkSoft:#3a1a2a;--gold:#E9C8B6;--goldSoft:#3a3010;--blue:#5EA8E8;--blueSoft:#1a2a3a;--pix:#4DD0C9;--pixSoft:#1a3a3a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
 button,input,textarea,select{font:inherit}
@@ -18,10 +18,19 @@ button,input,textarea,select{font:inherit}
 .header{padding:12px 16px;background:var(--bg);position:sticky;top:0;z-index:10}
 .header-row{display:flex;justify-content:space-between;align-items:center}
 .brand{display:flex;align-items:center;gap:8px}
-.logo{width:34px;height:34px;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--purple);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800}
 .title{font-size:16px;font-weight:800;color:var(--ink)}
 .header-actions{display:flex;gap:4px;align-items:center}
 .icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ic{width:1em;height:1em;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:-0.14em;flex-shrink:0}
+.icon-btn .ic{width:18px;height:18px}
+.header-actions .icon-btn{color:var(--purple)}
+.nav-icon{font-size:16px}.nav-icon .ic{width:19px;height:19px}
+.home-quick-icon .ic{width:22px;height:22px}
+.explore-quick-icon .ic{width:20px;height:20px}
+.lostpet-ico .ic{width:22px;height:22px}
+.pl-chip .ic,.svc-chip .ic,.disc-chip .ic,.explore-chips .chip .ic{width:14px;height:14px;margin-right:2px}
+.story-ring .add-icon .ic{width:20px;height:20px}
 .plan-btn{border:0;background:linear-gradient(135deg,#FFE259,#FFA751);color:#5A3900;font-size:9px;font-weight:800;padding:5px 8px;border-radius:6px;cursor:pointer;letter-spacing:.3px}
 .notif-btn{position:relative}.notif-badge{position:absolute;top:-1px;right:-1px;background:var(--coral);color:#fff;font-size:7px;font-weight:800;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .chat-badge{background:var(--coral);color:#fff;font-size:10px;font-weight:800;line-height:1;min-width:18px;height:18px;border-radius:10px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -31,8 +40,8 @@ button,input,textarea,select{font:inherit}
 .search-bar{display:flex;gap:6px;margin-bottom:12px}
 .search-bar input{flex:1;border:none;background:var(--card);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--ink);outline:none;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 
-.btn{border:1px solid var(--green);background:var(--green);color:#fff;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;display:inline-block}
-.btn.outline{background:transparent;color:var(--green)}.btn.pink{background:var(--pink);border:none;color:#fff}.btn.gold{background:linear-gradient(135deg,#FFE259,#FFA751);border:none;color:#5A3900;font-weight:800}.btn.blue{background:var(--blue);border:none;color:#fff}.btn.pix{background:var(--pix);border-color:var(--pix);color:#fff}.btn.danger{background:var(--coral);border:none;color:#fff}
+.btn{border:1px solid var(--purple);background:var(--purple);color:#fff;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;display:inline-block}
+.btn.outline{background:transparent;color:var(--purple)}.btn.pink{background:linear-gradient(135deg,var(--purple),var(--purple2));border:none;color:#fff}.btn.gold{background:linear-gradient(135deg,#FFE259,#FFA751);border:none;color:#5A3900;font-weight:800}.btn.blue{background:var(--blue);border:none;color:#fff}.btn.pix{background:var(--pix);border-color:var(--pix);color:#fff}.btn.danger{background:var(--coral);border:none;color:#fff}
 .small{font-size:11px;color:var(--soft)}.small-btn{padding:5px 8px;border-radius:6px;font-size:10px}
 
 .badge-pro{background:var(--goldSoft);color:#916800;border:1px solid #F0C45C;padding:1px 5px;border-radius:4px;font-size:8px;font-weight:800}
@@ -112,7 +121,7 @@ button,input,textarea,select{font:inherit}
 
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:430px;width:100%;height:56px;background:var(--card);border-top:1px solid var(--line);display:flex;z-index:20;box-shadow:0 -2px 8px rgba(0,0,0,.04)}
 .nav-btn{border:0;background:none;flex:1;font-size:9px;color:var(--soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:color .2s}
-.nav-btn.active{color:var(--green);font-weight:700}.nav-icon{font-size:16px}
+.nav-btn.active{color:var(--purple);font-weight:700}.nav-icon{font-size:16px}
 
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:50}
 .modal{width:100%;max-width:430px;max-height:85vh;overflow:auto;background:var(--bg);border-radius:16px 16px 0 0;padding:14px;animation:slideUp .25s ease}
@@ -242,15 +251,15 @@ button,input,textarea,select{font:inherit}
 .home-map-info{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px}
 .home-map-info b{font-size:16px;font-weight:900;color:var(--ink)}
 .home-map-info .small{display:block;color:var(--soft);font-size:10px}
-.home-link{color:var(--blue);font-weight:800;font-size:11px;background:var(--blueSoft);padding:7px 12px;border-radius:20px;flex-shrink:0}
+.home-link{color:var(--purple);font-weight:800;font-size:11px;background:var(--purpleSoft);padding:7px 12px;border-radius:20px;flex-shrink:0}
 .home-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .home-quick-item{background:var(--card);border-radius:16px;padding:13px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s;animation:fadeIn .3s ease}
 .home-quick-item:active{transform:scale(.97)}
-.home-quick-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.home-quick-icon.green{background:var(--greenSoft)}
-.home-quick-icon.coral{background:var(--coralSoft)}
-.home-quick-icon.blue{background:var(--blueSoft)}
-.home-quick-icon.gold{background:var(--goldSoft)}
+.home-quick-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:var(--purple)}
+.home-quick-icon.green{background:var(--greenSoft);color:var(--green)}
+.home-quick-icon.coral{background:var(--coralSoft);color:var(--coral)}
+.home-quick-icon.blue{background:var(--blueSoft);color:var(--blue)}
+.home-quick-icon.gold{background:var(--goldSoft);color:var(--gold)}
 .home-quick-item b{font-size:11px;font-weight:700;line-height:1.3}
 .home-newpost{background:linear-gradient(135deg,var(--coral),#F29E81);border:none;width:100%;margin-bottom:12px;padding:11px;border-radius:12px;font-weight:800;color:#fff;box-shadow:0 4px 14px rgba(231,111,81,.28)}
 
@@ -305,7 +314,7 @@ button,input,textarea,select{font:inherit}
 .svc-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
 .svc-chips::-webkit-scrollbar{display:none}
 .svc-chip{border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:10px;font-weight:800;padding:7px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
-.svc-chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.svc-chip.active{background:var(--purple);border-color:var(--purple);color:#fff}
 .svc-grid{display:flex;flex-direction:column;gap:8px}
 .svc-row{background:var(--card);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);cursor:pointer;animation:fadeIn .3s ease}
 .svc-ico{width:42px;height:42px;border-radius:12px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;font-weight:800;color:var(--green)}
@@ -614,10 +623,10 @@ button,input,textarea,select{font:inherit}
 <div class="app">
   <div id="screen"></div>
   <div class="bottom-nav" id="bottomNav" style="display:none">
-    <button class="nav-btn active" data-tab="inicio" aria-label="Inicio"><span class="nav-icon">&#8962;</span>Inicio</button>
-    <button class="nav-btn" data-tab="chats" aria-label="Chats"><span class="nav-icon">&#128172;</span>Chats</button>
-    <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon">&#128205;</span>Mapa</button>
-    <button class="nav-btn" data-tab="perfil" aria-label="Perfil"><span class="nav-icon">&#128100;</span>Perfil</button>
+    <button class="nav-btn active" data-tab="inicio" aria-label="Inicio"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.6 12 3l9 7.6M5.5 9.6V21h13V9.6M9.5 14.5V21h5v-6.5"/></svg></span>Inicio</button>
+    <button class="nav-btn" data-tab="chats" aria-label="Chats"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.3 8.3 0 0 1-3.9-.9L3.5 20.5l1.6-4.1a8.4 8.4 0 1 1 15.9-4.9Z"/></svg></span>Chats</button>
+    <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0ZM12 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></svg></span>Mapa</button>
+    <button class="nav-btn" data-tab="perfil" aria-label="Perfil"><span class="nav-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM4.5 21c.5-4.2 3.2-6.2 7.5-6.2s7 2 7.5 6.2"/></svg></span>Perfil</button>
   </div>
 </div>
 <script>
@@ -821,13 +830,45 @@ function getBadge(b){if(b==='pro')return'<span class="badge-pro">PRO</span>';if(
 
 function adHTML(){if(!currentUser||currentUser.plan!=='free')return'';return'<div class="ad-banner"><div><span class="ad-badge">ANUNCIO</span><div style="font-weight:800;font-size:11px;margin-top:2px">Racao Premium 20% OFF</div></div><button class="btn small-btn outline" onclick="openModal(\'plans\')">Sem Ads (R$4,99)</button></div>';}
 
+const HEADER_IC_MAP={raw:'', '&#8592;':'arrow','&#128062;':'paw','&#128148;':'alert','&#128247;':'camera','&#128722;':'store','+':'plus','&#10133;':'plus','&#9881;':'gear','&#128269;':'search'};
+const ICONS={
+paw:'<circle cx="5" cy="12.5" r="2"/><circle cx="9" cy="8" r="2"/><circle cx="15" cy="8" r="2"/><circle cx="19" cy="12.5" r="2"/><path d="M12 11.5c-2.8 0-5 1.9-5.9 4a2 2 0 0 0 1.8 2.8h8.2a2 2 0 0 0 1.8-2.8c-.9-2.1-3.1-4-5.9-4Z"/>',
+dog:'M14 3.2l1.4 1.9M10 3.2 8.6 5.1M12 5a7 7 0 0 0-7 7v4.5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V12a7 7 0 0 0-7-7ZM12 10l1.2 1.4-1.2 1.4-1.2-1.4L12 10ZM8.5 14.5h.5M15.5 14.5h.5',
+cat:'M7 2.5l2.6 2.6M17 2.5l-2.6 2.6M12 5a7.5 7.5 0 0 0-7.5 7.5V15a5 5 0 0 0 5 5h5a5 5 0 0 0 5-5v-2.5A7.5 7.5 0 0 0 12 5ZM7.5 13.5h-3M7.5 16h-2M16.5 13.5h3M16.5 16h2M12 13l1.2 1.4L12 15.8l-1.2-1.4L12 13Z',
+bird:'M12 5a9 9 0 0 0-9 9c0 3.5 2 5 4 5 2 0 3.2-1.5 5-1.5S14 19 16 19c2 0 4-1.5 4-5a9 9 0 0 0-9-9ZM12 7.5v3.5m0 0 1.6-1.6M12 11 10.4 9.4M10.5 16.5l-1 2.7M13.5 16.5l1 2.7',
+rabbit:'M12 3.8v3.7M8.6 4.4l.3 4.6M15.4 4.4l-.3 4.6M12 9c-3.6 0-6.4 3.1-6.4 6.6 0 2.5 1.4 4 2.9 4s2-1.6 3.5-1.6 2 1.6 3.5 1.6 2.9-1.5 2.9-4C18.4 12.1 15.6 9 12 9ZM9.5 13.5h.5M14.5 13.5h.5',
+mouse:'M6.5 13a5.5 5.5 0 0 1 11 0V15a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 6.5 15ZM6.5 10.5 4 7.8M17.5 10.5 20 7.8M9.5 13.5h.5M14.5 13.5h.5',
+lizard:'M3.5 17.5c2.5 0 3.5-6 6.5-6s3.5 3.5 6 3.5 3-2 2.5-4.5M4.5 21l.7-2.5M19.5 14.5l.9-2',
+fish:'M12 4.5c-5.5 0-8.5 4.3-8.5 7.5s3 7.5 8.5 7.5 8.5-4.3 8.5-7.5S17.5 4.5 12 4.5ZM12 12l-2.6-3M12 12l-2.6 3M16.3 11l.8.6-.8.6',
+home:'M3 10.6 12 3l9 7.6M5.5 9.6V21h13V9.6M9.5 14.5V21h5v-6.5',
+chat:'M21 11.5a8.4 8.4 0 0 1-8.4 8.4 8.3 8.3 0 0 1-3.9-.9L3.5 20.5l1.6-4.1a8.4 8.4 0 1 1 15.9-4.9Z',
+map:'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0ZM12 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z',
+user:'M12 8a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM4.5 21c.5-4.2 3.2-6.2 7.5-6.2s7 2 7.5 6.2',
+bell:'M18 8a6 6 0 0 0-12 0c0 6.5-2.8 8.5-2.8 8.5h17.6s-2.8-2-2.8-8.5M13.6 20.5a2 2 0 0 1-3.2 0',
+store:'M5 3.5h14l1.8 3.9 1.2 14H2L3.2 7.4 5 3.5ZM9 9.5a3.5 3.5 0 0 0 6.5 0M9 21.4v-6h6v6',
+camera:'M8.5 6.2 9.7 3.8h4.6l1.2 2.4M3.5 7.2h17a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1h-17a1 1 0 0 1-1-1V8.2a1 1 0 0 1 1-1ZM12 16.7a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6Z',
+plus:'M12 5v14M5 12h14',
+arrow:'M19 12H5M11 6l-6 6 6 6',
+search:'M11 4.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm6.5 6.5 4.5 4.5',
+gear:'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z',
+calendar:'M4 5.5h16a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1ZM8 3.2v4.3M16 3.2v4.3M3.5 10h17',
+heart:'M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-3A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11Z',
+alert:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM12 8v5.5M12 16.7v.3',
+spark:'M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4L12 3Z',
+users:'M9 7.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM3.5 20.5c.4-3.5 2.7-5.3 5.5-5.3s5.1 1.8 5.5 5.3M16 4.3a3.5 3.5 0 0 1 0 7M19 15.6c.8.8 1.2 2 1.4 3.4',
+scissors:'M8.5 15.5a3.7 3.7 0 1 0 0 5.6c2-2 3.2-6.4 4-12.7.9-6.8 1.3-11 2.5-11s3.5 4.2 8 8.6M15.5 15.5a3.7 3.7 0 1 1-5.6-5.6c2-2 6.4-3.2 12.7-4-6.8-.9-11-1.3-11-2.5s4.2-3.5 8.6-8',
+tree:'M12 3 7 9.5h2.5L6.5 14h3L7 19h10l-2.5-5h3L14.5 9.5H17L12 3ZM12 19v2.5',
+lightbulb:'M12 3a7 7 0 0 0-4 12.7c.8.6 1 1.3 1 2.3v1a1.5 1.5 0 0 0 1.5 1.5h3A1.5 1.5 0 0 0 15 19v-1c0-1 .2-1.7 1-2.3A7 7 0 0 0 12 3ZM9.5 16.5h5'
+};
+function ic(n,c){const p=ICONS[n];if(!p)return'';return'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" xmlns="http://www.w3.org/2000/svg">'+p+'</svg>';}
+
 function header(title,subtitle,action=''){
   let planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
-  let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
+  let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
   const acts=Array.isArray(action)?action.slice():((action)?[action]:[]);
   const back=acts.find(a=>a&&a.icon==='&#8592;');
   if(back&&back.click){pushBack(back.click);const i=acts.indexOf(back);acts[i]={icon:'&#8592;',click:'goBackScreen()',label:back.label||''};}
-  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${a.icon}</button>`).join('')}</div></div></div>`;
+  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>{const nm=HEADER_IC_MAP[a.icon];return`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${nm&&ICONS[nm]?ic(nm):a.icon}</button>`;}).join('')}</div></div></div>`;
 }
 
 async function api(path,opts={}){
@@ -1077,19 +1118,19 @@ function renderSeusPets(){
 function renderInicio(){
   const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
-  const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  const quick=[['&#128062;','Adicionar pet',"openModal('addPet')",'green'],['&#128248;','Nova postagem',"openModal('post')",'coral'],['&#128197;','Criar evento',"openEventos()",'blue'],['&#128054;','Adocao de pets',"openAdocao()",'gold'],['&#128722;','Visitar loja',"openMarketplace()",'blue'],['&#128153;','Criar conexao',"openConexao()",'coral']];
-  const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item" onclick="${q[2]}"><div class="home-quick-icon ${q[3]}">${q[0]}</div><b>${q[1]}</b></div>`).join('')}</div>`;
+  const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
+  const quick=[['paw','Adicionar pet',"openModal('addPet')",'green'],['camera','Nova postagem',"openModal('post')",'coral'],['calendar','Criar evento',"openEventos()",'blue'],['heart','Adocao de pets',"openAdocao()",'gold'],['store','Visitar loja',"openMarketplace()",'blue'],['users','Criar conexao',"openConexao()",'coral']];
+  const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item" onclick="${q[2]}"><div class="home-quick-icon ${q[3]}">${ic(q[0])}</div><b>${q[1]}</b></div>`).join('')}</div>`;
   const lostFound=(lostPets||[]).find(x=>x.status==='lost');
   const lostBanner=`<div class="lostpet-banner" onclick="openHomeLostPets()">
-    <div class="lostpet-ico">${lostFound?'&#128680;':'&#128062;'}</div>
+    <div class="lostpet-ico" style="color:var(--coral)">${ic(lostFound?'alert':'paw')}</div>
     <div style="flex:1">${lostFound?`<b>Pet perdido perto de voce</b><span class="small">${esc(lostFound.pet_name)} ${esc(lostFound.species||'')} ${esc(lostFound.breed||'')} esta desaparecido. Veja como ajudar.</span>`:`<b>Pet perdido perto de voce</b><span class="small">Confira os pets perdidos na sua regiao e ajude a encontrar.</span>`}</div>
     <span class="home-link">&rarr;</span>
   </div>`;
   const subTabs=`<div class="home-sub-feeds">
-    <button class="hsf-chip ${homeSection==='inicio'?'active':''}" onclick="setHomeSection('inicio')">&#8962; Inicio</button>
-    <button class="hsf-chip ${homeSection==='comunidade'?'active':''}" onclick="setHomeSection('comunidade')">&#128293; Comunidade</button>
-    <button class="hsf-chip ${homeSection==='grupos'?'active':''}" onclick="setHomeSection('grupos')">&#128101; Grupos</button>
+    <button class="hsf-chip ${homeSection==='inicio'?'active':''}" onclick="setHomeSection('inicio')">${ic('home')} Inicio</button>
+    <button class="hsf-chip ${homeSection==='comunidade'?'active':''}" onclick="setHomeSection('comunidade')">${ic('spark')} Comunidade</button>
+    <button class="hsf-chip ${homeSection==='grupos'?'active':''}" onclick="setHomeSection('grupos')">${ic('users')} Grupos</button>
   </div>`;
   screen.innerHTML=`<div class="home-hero">
   <div class="home-hero-row">
@@ -1495,7 +1536,7 @@ async function reportPost(id){
 
 /* ===== Descobrir / Busca (Etapa 5) ===== */
 const DISC_HIST_KEY='zunnu_disc_hist';
-const DISC_SPECIES=[['','Todos','&#128062;'],['Cachorro','Cachorro','&#128054;'],['Gato','Gato','&#128049;'],['Ave','Ave','&#128036;'],['Coelho','Coelho','&#128048;'],['Roedor','Roedor','&#128057;'],['Reptil','Reptil','&#129422;'],['Peixe','Peixe','&#128031;'],['Outro','Outro','&#128062;']];
+const DISC_SPECIES=[['','Todos','paw'],['Cachorro','Cachorro','dog'],['Gato','Gato','cat'],['Ave','Ave','bird'],['Coelho','Coelho','rabbit'],['Roedor','Roedor','mouse'],['Reptil','Reptil','lizard'],['Peixe','Peixe','fish'],['Outro','Outro','paw']];
 let discQ='',discSpecies='',discResults=null,discLoading=false,discTimer=null,discFeatured=[],discNearby=[],discAllPosts=[],discCity='';
 function getDiscHist(){try{return JSON.parse(localStorage.getItem(DISC_HIST_KEY)||'[]');}catch(e){return [];}}
 function saveDiscHist(q){let h=getDiscHist().filter(x=>x.toLowerCase()!==q.toLowerCase());h.unshift(q);h=h.slice(0,8);localStorage.setItem(DISC_HIST_KEY,JSON.stringify(h));}
@@ -1506,10 +1547,10 @@ async function renderDescobrir(){
     try{const data=await api('/api/pets/all?limit=12').catch(()=>[]);discFeatured=(Array.isArray(data)?data:(data.pets||[])).filter(p=>!currentUser||p.user_id!==currentUser.id).slice(0,9);}catch(e){discFeatured=[];}
   }
   screen.innerHTML=header('Descobrir','Encontre pets, pessoas e novidades',{icon:'&#8592;',click:"setTab('inicio')"})+`<div class="content" style="padding-top:0">
-    <div class="disc-search"><span class="disc-s-icon">&#128269;</span><input id="discInput" placeholder="Buscar pet, tutor ou publicacao" value="${discQ?esc(discQ):''}" oninput="discTick()" onkeydown="if(event.key==='Enter'){event.preventDefault();doDiscoverSearch();}">
+    <div class="disc-search"><span class="disc-s-icon">${ic('search')}</span><input id="discInput" placeholder="Buscar pet, tutor ou publicacao" value="${discQ?esc(discQ):''}" oninput="discTick()" onkeydown="if(event.key==='Enter'){event.preventDefault();doDiscoverSearch();}">
       ${discQ?`<button style="border:0;background:none;color:var(--soft);font-size:13px;cursor:pointer" onclick="discQ='';discResults=null;renderDescobrir();">&#10005;</button>`:''}
     </div>
-    <div class="disc-chips">${DISC_SPECIES.map(s=>`<button class="disc-chip ${discSpecies===s[0]?'on':''}" onclick="discSpecies='${s[0]}';renderDescobrir();doDiscoverSearch();">${s[1]} ${s[2]}</button>`).join('')}</div>
+    <div class="disc-chips">${DISC_SPECIES.map(s=>`<button class="disc-chip ${discSpecies===s[0]?'on':''}" onclick="discSpecies='${s[0]}';renderDescobrir();doDiscoverSearch();">${ic(s[2])} ${s[1]}</button>`).join('')}</div>
     <div id="discResults"></div>
   </div>`;
   const el=document.getElementById('discResults');
@@ -1520,15 +1561,15 @@ function discTick(){clearTimeout(discTimer);discTimer=setTimeout(doDiscoverSearc
 function renderDiscBase(){
   return`${renderDiscFeatured()}
   <div class="disc-tools">
-    <button class="pl-chip" onclick="openEventos()">&#127881; Eventos proximos</button>
-    <button class="pl-chip" onclick="openAdocao()">&#128062; Adocao de pets</button>
-    <button class="pl-chip" onclick="openConexao()">&#128153; Criar conexao</button>
+    <button class="pl-chip" onclick="openEventos()">${ic('calendar','var(--purple)')} Eventos proximos</button>
+    <button class="pl-chip" onclick="openAdocao()">${ic('heart','var(--coral)')} Adocao de pets</button>
+    <button class="pl-chip" onclick="openConexao()">${ic('users','var(--green)')} Criar conexao</button>
   </div>
   <hr class="disc-hr">
-  <div class="home-section-title"><h2>&#128205; Pets perto de voce</h2></div>
+  <div class="home-section-title"><h2>${ic('map','var(--green)')} Pets perto de voce</h2></div>
   <div style="padding:2px 16px">${renderDiscNearby()}</div>
   <hr class="disc-hr">
-  <div class="home-section-title"><h2>&#127968; Buscar por cidade</h2></div>
+  <div class="home-section-title"><h2>${ic('map','var(--purple)')} Buscar por cidade</h2></div>
   <div style="padding:2px 16px;display:flex;gap:8px"><input id="discCityIn" placeholder="Ex.: Sao Luis (MA)" value="${discCity?esc(discCity):''}" onkeydown="if(event.key==='Enter')discSearchCity()" class="disc-search" style="flex:1;border:1px solid rgba(0,0,0,.07);box-shadow:none;border-radius:12px"><button class="btn" style="padding:0 14px;flex-shrink:0" onclick="discSearchCity()">Buscar</button></div>`;
 }
 function renderDiscNearby(){
@@ -1541,8 +1582,8 @@ function renderDiscNearby(){
   }).join('')}</div><div class="disc-note">${discNearby.length} pets encontrados no raio de 20 km.</div>`;
   const hasLoc=window._userLat&&window._userLng;
   return hasLoc
-    ?`<div class="disc-note">Localizacao ativa. Buscando pets ao redor...</div><button class="disc-loc-btn" onclick="discLocate()">&#128373;&#65039; Atualizar localizacao</button>`
-    :`<div class="disc-note">Use sua localizacao para ver pets (publicos) proximos a voce. Ou busque por cidade acima.</div><button class="disc-loc-btn" onclick="discLocate()">&#128373;&#65039; Usar minha localizacao</button>`;
+    ?`<div class="disc-note">Localizacao ativa. Buscando pets ao redor...</div><button class="disc-loc-btn" onclick="discLocate()">${ic('map','var(--green)')} Atualizar localizacao</button>`
+    :`<div class="disc-note">Use sua localizacao para ver pets (publicos) proximos a voce. Ou busque por cidade acima.</div><button class="disc-loc-btn" onclick="discLocate()">${ic('map','var(--green)')} Usar minha localizacao</button>`;
 }
 function discLocate(){
   if(!navigator.geolocation){alert('Geolocalizacao indisponivel neste dispositivo.');return;}
@@ -1558,7 +1599,7 @@ function discLocate(){
 }
 function renderDiscFeatured(){
   const f=discFeatured||[];
-  return`<div class="home-section-title"><h2>&#11088; Pets em destaque</h2><button class="home-more" onclick="setTab('mapa')">Explorar</button></div>
+  return`<div class="home-section-title"><h2>${ic('spark','var(--gold)')} Pets em destaque</h2><button class="home-more" onclick="setTab('mapa')">Explorar</button></div>
   ${f.length?`<div class="discover-scroll">${f.map(p=>`<div class="discover-pet" onclick="petProfileBack='setTab(&#39;mapa&#39;)';openPetProfile(${p.id})"><div class="discover-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.innerHTML='${petEmoji(p.species)}'">`:petEmoji(p.species)}</div><div class="discover-info"><b>${esc(p.name)}</b><span>${esc(p.breed||p.species||'')}</span></div></div>`).join('')}</div>`:`<div class="disc-note">Ainda nao ha pets publicos para destacar.</div>`}`;
 }
 async function loadDiscFeatured(){
@@ -2260,13 +2301,13 @@ function renderPetProfilePage(){
 function renderPerfil(){
   if(!currentUser)return;
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
-  const bell=`<button class="icon-btn notif-btn" onclick="renderNotificacoes()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
-  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes"><span>&#9881;</span></button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
+  const bell=`<button class="icon-btn notif-btn" onclick="renderNotificacoes()" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
+  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes">${ic('gear')}</button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
     <div class="tutor-card" style="padding:18px 14px">
       <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative;line-height:0" title="Clique para alterar foto">
         <img src="${su(currentUser.selfie_url||currentUser.avatar||'')}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
-        <div class="avatar-cam" style="position:absolute;bottom:2px;right:2px;width:25px;height:25px">&#128247;</div>
+        <div class="avatar-cam" style="position:absolute;bottom:2px;right:2px;width:25px;height:25px">${ic('camera','#fff')}</div>
       </div>
       <div style="font-weight:800;font-size:17px;margin:10px 0 0">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
       <div class="profile-handle">@${atname(handleFor(currentUser.name))}</div>
@@ -3212,9 +3253,9 @@ function renderMapa(){
   screen.innerHTML=`
   <div class="explore-header">
     <div class="explore-top">
-      <div><div class="explore-title">Explorar &#129517;</div><div class="explore-sub">Descubra o mundo pet perto de voce</div></div>
+      <div><div class="explore-title">Explorar ${ic('paw','currentColor')}</div><div class="explore-sub">Descubra o mundo pet perto de voce</div></div>
     </div>
-    <div class="explore-loc" id="exploreLoc">&#128205; <b>Ativando localizacao...</b></div>
+    <div class="explore-loc" id="exploreLoc">${ic('map','currentColor')} <b>Ativando localizacao...</b></div>
     <div class="explore-search"><input id="exploreSearchInput" placeholder="Buscar pets, servicos, usuarios, petshops..." onkeydown="if(event.key==='Enter')exploreSearch()"><button onclick="exploreSearch()">Buscar</button></div>
   </div>
   <div class="content">
@@ -3222,12 +3263,12 @@ function renderMapa(){
     <div class="explore-section" id="exploreDiscover">
       <div id="discFeaturedWrap">${renderDiscFeatured()}</div>
       <div class="disc-tools">
-        <button class="pl-chip" onclick="openEventos()">&#127881; Eventos proximos</button>
-        <button class="pl-chip" onclick="openAdocao()">&#128062; Adocao de pets</button>
-        <button class="pl-chip" onclick="openConexao()">&#128153; Criar conexao</button>
+        <button class="pl-chip" onclick="openEventos()">${ic('calendar','var(--purple)')} Eventos proximos</button>
+        <button class="pl-chip" onclick="openAdocao()">${ic('heart','var(--coral)')} Adocao de pets</button>
+        <button class="pl-chip" onclick="openConexao()">${ic('users','var(--green)')} Criar conexao</button>
       </div>
       <hr class="disc-hr">
-      <div class="home-section-title"><h2>&#127968; Buscar por cidade</h2></div>
+      <div class="home-section-title"><h2>${ic('map','var(--purple)')} Buscar por cidade</h2></div>
       <div style="padding:2px 16px;display:flex;gap:8px"><input id="mpCityIn" placeholder="Ex.: Sao Luis (MA)" value="${discCity?esc(discCity):''}" onkeydown="if(event.key==='Enter')exploreCitySearch()" class="disc-search" style="flex:1;border:1px solid rgba(0,0,0,.07);box-shadow:none;border-radius:12px"><button class="btn" style="padding:0 14px;flex-shrink:0" onclick="exploreCitySearch()">Buscar</button></div>
       ${commPetsSectionHtml()}
     </div>
@@ -3235,14 +3276,14 @@ function renderMapa(){
       <div class="map-wrap">
         <div id="mapaView"></div>
         <div class="map-loading" id="mapLoading"><div class="spinner"></div></div>
-        <button class="map-locate" onclick="centerMap()" aria-label="Centralizar localizacao">&#128205;</button>
+        <button class="map-locate" onclick="centerMap()" aria-label="Centralizar localizacao">${ic('map','var(--purple)')}</button>
       </div>
       <div class="explore-chips">
-        <button class="chip ${mapaFilter==='all'?'active':''}" data-f="all" onclick="exploreChip('all')">&#128062; Todos</button>
-        <button class="chip ${mapaFilter==='Cachorro'?'active':''}" data-f="Cachorro" onclick="exploreChip('Cachorro')">&#128054; Caes</button>
-        <button class="chip ${mapaFilter==='Gato'?'active':''}" data-f="Gato" onclick="exploreChip('Gato')">&#128049; Gatos</button>
-        <button class="chip" data-f="lost" onclick="exploreChip('lost')">&#128680; Perdidos</button>
-        <button class="chip" data-f="services" onclick="exploreChip('services')">&#127978; Servicos</button>
+        <button class="chip ${mapaFilter==='all'?'active':''}" data-f="all" onclick="exploreChip('all')">${ic('paw','var(--green)')} Todos</button>
+        <button class="chip ${mapaFilter==='Cachorro'?'active':''}" data-f="Cachorro" onclick="exploreChip('Cachorro')">${ic('dog','var(--purple)')} Caes</button>
+        <button class="chip ${mapaFilter==='Gato'?'active':''}" data-f="Gato" onclick="exploreChip('Gato')">${ic('cat','var(--purple)')} Gatos</button>
+        <button class="chip" data-f="lost" onclick="exploreChip('lost')">${ic('alert','var(--coral)')} Perdidos</button>
+        <button class="chip" data-f="services" onclick="exploreChip('services')">${ic('store','var(--orange)')} Servicos</button>
       </div>
     </div>
     <div class="explore-section" id="exploreNearby">
@@ -3250,26 +3291,26 @@ function renderMapa(){
       <div class="nearby-cards" id="nearbyCards"><div class="explore-empty">Carregando pets por perto...</div></div>
     </div>
     <div class="explore-section" id="exploreLost">
-      <div class="explore-sec-head"><h2>Atencao na sua regiao &#128680;</h2></div>
+      <div class="explore-sec-head"><h2>Atencao na sua regiao ${ic('alert','var(--coral)')}</h2></div>
       <div class="lost-cards" id="lostCards"></div>
     </div>
     <div class="explore-section">
       <div class="explore-sec-head"><h2>Mapa Pet — Lugares</h2><button class="explore-more" onclick="loadPlaces()">Atualizar</button></div>
       <div class="pl-chips">
-        <button class="pl-chip on" data-f="all" onclick="placesFilter='all';renderPlaces()">&#128205; Todos</button>
-        <button class="pl-chip" data-f="Pet Shop" onclick="placesFilter='Pet Shop';renderPlaces()">&#128722; Pet Shop</button>
-        <button class="pl-chip" data-f="Veterinaria" onclick="placesFilter='Veterinaria';renderPlaces()">&#129658; Vet</button>
-        <button class="pl-chip" data-f="Banho e Tosa" onclick="placesFilter='Banho e Tosa';renderPlaces()">&#9986; Tosa</button>
-        <button class="pl-chip" data-f="Parque" onclick="placesFilter='Parque';renderPlaces()">&#127965; Parque</button>
-        <button class="pl-chip" data-f="Praca" onclick="placesFilter='Praca';renderPlaces()">&#127963; Praca</button>
-        <button class="pl-chip" data-f="Lazer" onclick="placesFilter='Lazer';renderPlaces()">&#127882; Lazer</button>
-        <button class="pl-chip" onclick="openMyPlaces()">&#128100; Meus lugares</button>
-        <button class="pl-chip" onclick="openSuggestPlace()">&#128161; Sugerir local</button>
-        <button class="pl-chip" onclick="openNewPlace()">&#10133; Adicionar lugar</button>
+        <button class="pl-chip on" data-f="all" onclick="placesFilter='all';renderPlaces()">${ic('map','var(--green)')} Todos</button>
+        <button class="pl-chip" data-f="Pet Shop" onclick="placesFilter='Pet Shop';renderPlaces()">${ic('store','var(--purple)')} Pet Shop</button>
+        <button class="pl-chip" data-f="Veterinaria" onclick="placesFilter='Veterinaria';renderPlaces()">${ic('paw','var(--green)')} Vet</button>
+        <button class="pl-chip" data-f="Banho e Tosa" onclick="placesFilter='Banho e Tosa';renderPlaces()">${ic('scissors','var(--orange)')} Tosa</button>
+        <button class="pl-chip" data-f="Parque" onclick="placesFilter='Parque';renderPlaces()">${ic('tree','var(--green)')} Parque</button>
+        <button class="pl-chip" data-f="Praca" onclick="placesFilter='Praca';renderPlaces()">${ic('tree','var(--gold)')} Praca</button>
+        <button class="pl-chip" data-f="Lazer" onclick="placesFilter='Lazer';renderPlaces()">${ic('spark','var(--orange)')} Lazer</button>
+        <button class="pl-chip" onclick="openMyPlaces()">${ic('user','var(--purple)')} Meus lugares</button>
+        <button class="pl-chip" onclick="openSuggestPlace()">${ic('lightbulb','var(--orange)')} Sugerir local</button>
+        <button class="pl-chip" onclick="openNewPlace()">${ic('plus','var(--green)')} Adicionar lugar</button>
       </div>
       <div class="pl-chips" style="padding-top:2px">
         <select id="plCitySel" onchange="placeCity=this.value==='__all__'?'':this.value;loadPlaces()" style="flex:1;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:8px 10px;font-size:12px;background:var(--card)">
-          <option value="__all__">&#127968; Todas as cidades</option>
+          <option value="__all__">Todas as cidades</option>
           <option>Sao Luis</option>
           <option>Centro</option>
           <option>Bairro Alto</option>
