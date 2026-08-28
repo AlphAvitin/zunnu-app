@@ -21,7 +21,7 @@ router.get('/', optionalAuth, async (req, res) => {
       return res.json(out);
     }
 
-    const like = (v) => `%${v || ''}%`;
+    const like = (v) => `%${String(v || '').toLowerCase()}%`;
     const pt = (v) => String(v || '').toLowerCase();
 
     if (type === 'all' || type === 'pets') {
@@ -154,7 +154,7 @@ if (type === 'all' || type === 'events') {
           SELECT bp.id, bp.business_name as name, bp.category, bp.address, bp.city, bp.hours,
             (SELECT ROUND(AVG(rating), 1) FROM place_reviews rv WHERE rv.place_id = bp.id) as rating,
             u.id as owner_id, u.name as owner_name
-          FROM business_profiles bp JOIN users u ON bp.user_id = u.id
+          FROM business_profiles bp LEFT JOIN users u ON bp.user_id = u.id
           WHERE bp.business_name IS NOT NULL AND bp.business_name != ''
             AND (LOWER(bp.business_name) LIKE ? OR LOWER(COALESCE(bp.category,'')) LIKE ? OR LOWER(COALESCE(bp.city,'')) LIKE ?)
           ORDER BY bp.id DESC

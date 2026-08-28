@@ -42,8 +42,8 @@ router.get('/', optionalAuth, async (req, res) => {
     let params = [];
     const p = (v) => { params.push(v); return '?'; };
     if (category) { where.push('LOWER(b.category) = ?'); params.push(String(category).toLowerCase()); }
-    if (q) { params.push(`%${q}%`, `%${q}%`, `%${q}%`); where.push('(LOWER(b.business_name) LIKE ? OR LOWER(b.city) LIKE ? OR LOWER(b.address) LIKE ?)'); }
-    if (city) { params.push(`%${city}%`); where.push('LOWER(b.city) LIKE ?'); }
+    if (q) { params.push(`%${String(q).toLowerCase()}%`, `%${String(q).toLowerCase()}%`, `%${String(q).toLowerCase()}%`); where.push('(LOWER(b.business_name) LIKE ? OR LOWER(b.city) LIKE ? OR LOWER(b.address) LIKE ?)'); }
+    if (city) { params.push(`%${String(city).toLowerCase()}%`); where.push('LOWER(b.city) LIKE ?'); }
     const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : '';
     const rows = await all(`
       SELECT ${BASE_COLS},

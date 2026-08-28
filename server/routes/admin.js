@@ -117,7 +117,7 @@ router.put('/events/:id', async (req, res) => {
 router.get('/users', async (req, res) => {
   try {
     const { q } = req.query;
-    const like = `%${q || ''}%`;
+    const like = `%${String(q || '').toLowerCase()}%`;
     const rows = await all(`
       SELECT id, name, email, plan, is_admin, is_human_verified, is_private, points_balance, created_at
       FROM users
