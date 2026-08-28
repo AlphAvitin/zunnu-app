@@ -170,6 +170,7 @@ CREATE TABLE IF NOT EXISTS matches (
   id SERIAL PRIMARY KEY,
   user1_id INTEGER NOT NULL,
   user2_id INTEGER NOT NULL,
+  partnership_type TEXT DEFAULT 'amigos',
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS messages (
@@ -483,6 +484,7 @@ CREATE TABLE IF NOT EXISTS partnership_requests (
   requester_pet_id INTEGER,
   target_id INTEGER,
   target_pet_id INTEGER,
+  partnership_type TEXT DEFAULT 'amigos',
   status TEXT DEFAULT 'pending',
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
@@ -505,7 +507,9 @@ async function migrate() {
       'ALTER TABLE users ADD COLUMN IF NOT EXISTS business_type TEXT',
       'ALTER TABLE users ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION',
       'ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION',
-      'ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0'
+      'ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0',
+      "ALTER TABLE matches ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'",
+      "ALTER TABLE partnership_requests ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'"
     ];
     for (const a of alterations) { try { await _pool.query(a); } catch (e) {} }
     await _pool.query("UPDATE users SET is_admin = 1 WHERE email = 'mariana@patai.com'");
@@ -529,6 +533,8 @@ async function migrate() {
     addCol('users', 'longitude', 'longitude REAL');
     addCol('users', 'birth_date', 'birth_date TEXT');
     addCol('messages', 'is_read', 'is_read INTEGER DEFAULT 0');
+    addCol('matches', 'partnership_type', "partnership_type TEXT DEFAULT 'amigos'");
+    addCol('partnership_requests', 'partnership_type', "partnership_type TEXT DEFAULT 'amigos'");
     _db.run("UPDATE users SET is_admin = 1 WHERE email = 'mariana@patai.com'");
   }
 }
@@ -721,8 +727,10 @@ function createTables(db) {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user1_id INTEGER NOT NULL,
     user2_id INTEGER NOT NULL,
+    partnership_type TEXT DEFAULT 'amigos',
     created_at TEXT DEFAULT (datetime('now'))
   )`);
+  try { db.run(`ALTER TABLE matches ADD COLUMN partnership_type TEXT DEFAULT 'amigos'`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1071,9 +1079,11 @@ function createTables(db) {
     requester_pet_id INTEGER,
     target_id INTEGER,
     target_pet_id INTEGER,
+    partnership_type TEXT DEFAULT 'amigos',
     status TEXT DEFAULT 'pending',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  try { db.run(`ALTER TABLE partnership_requests ADD COLUMN partnership_type TEXT DEFAULT 'amigos'`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS points_transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

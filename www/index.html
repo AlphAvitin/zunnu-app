@@ -320,6 +320,9 @@ button,input,textarea,select{font:inherit}
 .community-teaser .explore-link{margin-left:auto}
 .explore-quick-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .explore-quick-icon.green{background:var(--greenSoft)}
+.par-opt{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s ease}
+.par-opt:active{transform:scale(.98)}
+.par-opt b{font-size:13px;display:block}
 .map-marker.pet{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
 .map-marker.pet img{width:100%;height:100%;object-fit:cover}
 .map-marker.lost{width:36px;height:36px;border-radius:50%;background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
@@ -577,6 +580,7 @@ let posts = [];
 let pets = [];
 let matchDeck = [];
 let currentMatchIdx = 0;
+let partnershipType = 'amigos';
 let activeProductCheckout = null;
 let showComments = {};
 let notifications = [];
@@ -737,7 +741,8 @@ function header(title,subtitle,action=''){
   let bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
   let cartBtn=currentUser?`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
   let chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Chat"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
-  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${action?`<button class="icon-btn" onclick="${action.click}">${action.icon}</button>`:''}</div></div></div>`;
+  const acts=Array.isArray(action)?action:(action?[action]:[]);
+  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${a.icon}</button>`).join('')}</div></div></div>`;
 }
 
 async function api(path,opts={}){
@@ -936,7 +941,8 @@ function renderSeusPets(){
       <div class="home-pet-breed">novo pet</div>
     </div></div>`;
     return`<div class="home-section-title"><h2>&#128062; Seus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>`
-      +(pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`:grid);
+      +(pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`:grid)
+      +`<button class="btn outline" style="width:100%;margin-top:10px" onclick="renderMyAdoptions()">&#128062; Minha Adocao</button>`;
   }
 
 function renderInicio(){
@@ -1639,17 +1645,17 @@ async function openMyPlaces(){
 
 function renderConexao(){
   if(matchDeck.length===0&&!matchBuilding){
-    screen.innerHTML=header('Criar Conexao','')+`<div class="content" style="text-align:center;padding-top:40px"><div class="loading" style="margin:20px auto"></div><div class="small">Carregando pets para conectar...</div></div>`;
+    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`<div class="content" style="text-align:center;padding-top:40px"><div class="loading" style="margin:20px auto"></div><div class="small">Carregando pets para conectar...</div></div>`;
     buildMatchDeck();return;
   }
   if(matchDeck.length===0){
-    screen.innerHTML=header('Criar Conexao','')+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128062;</div><h3>Nenhum pet disponivel para conectar</h3><button class="btn pink" style="margin-top:12px" onclick="buildMatchDeck()">Recarregar</button></div>`;return;
+    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128062;</div><h3>Nenhum pet disponivel para conectar</h3><button class="btn pink" style="margin-top:12px" onclick="buildMatchDeck()">Recarregar</button></div>`;return;
   }
   if(currentMatchIdx>=matchDeck.length){
-    screen.innerHTML=header('Criar Conexao','')+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128153;</div><h3>Voce viu todos os pets!</h3><button class="btn pink" style="margin-top:12px" onclick="currentMatchIdx=0;buildMatchDeck()">Ver Novamente</button></div>`;return;
+    screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`<div class="content" style="text-align:center;padding-top:40px"><div style="font-size:40px">&#128153;</div><h3>Voce viu todos os pets!</h3><button class="btn pink" style="margin-top:12px" onclick="currentMatchIdx=0;buildMatchDeck()">Ver Novamente</button></div>`;return;
   }
   const p=matchDeck[currentMatchIdx];
-  screen.innerHTML=header('Criar Conexao','')+`
+  screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+`
   <div class="content">
     <div class="match-deck">
       <div class="match-photo-wrap">
@@ -1672,7 +1678,7 @@ async function nextConexao(isLike){
   const p=matchDeck[currentMatchIdx];
   if(p&&p.user_id){
     try{
-      const d=await api('/api/match/swipe/'+p.user_id,{method:'POST',body:JSON.stringify({isLike})});
+      const d=await api('/api/match/swipe/'+p.user_id,{method:'POST',body:JSON.stringify({isLike,type:partnershipType})});
       if(d.match){alert('Conexao criada! Voces curtiram um ao outro! Chat liberado.');}
     }catch(e){}
   }
@@ -1682,7 +1688,7 @@ async function requestPartnership(targetUserId, targetPetId) {
   const myPet = pets.find(p=>p.user_id===currentUser?.id) || pets[0];
   if(!myPet){ alert('Cadastre um pet primeiro!'); return; }
   try {
-    await api('/api/match/request',{method:'POST',body:JSON.stringify({targetUserId, targetPetId, requesterPetId: myPet.id})});
+    await api('/api/match/request',{method:'POST',body:JSON.stringify({targetUserId, targetPetId, requesterPetId: myPet.id, type: partnershipType})});
     alert('Solicitacao de parceria enviada!');
   } catch(e) { alert(e.message); }
 }
@@ -1693,7 +1699,7 @@ async function renderPartnershipPending() {
       api('/api/match/requests').catch(()=>[]),
       api('/api/match/requests/sent').catch(()=>[])
     ]);
-    screen.innerHTML = header('Parcerias','')+`<div class="content">
+    screen.innerHTML = header('Parcerias','',{icon:'&#8592;',click:'renderPerfil()'})+`<div class="content">
       <div class="section"><h2>Solicitacoes Recebidas</h2></div>
       ${received.length===0?'<p style="text-align:center;color:var(--soft);padding:20px">Nenhuma solicitacao recebida</p>':''}
       ${received.map(r=>`<div style="background:var(--card);border-radius:12px;padding:12px;margin-bottom:8px">
@@ -1892,7 +1898,11 @@ function renderPetProfilePage(){
 
 function renderPerfil(){
   if(!currentUser)return;
-  screen.innerHTML=header('Perfil','',{icon:'&#128274;',click:"logout()"})+`
+  const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
+  const bell=`<button class="icon-btn notif-btn" onclick="renderNotificacoes()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
+  const cartBtn=`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`;
+  const chatBtn=`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Chat"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`;
+  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes"><span>&#9881;</span></button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
     <div class="tutor-card">
       <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative" title="Clique para alterar foto">
@@ -1910,16 +1920,8 @@ function renderPerfil(){
       </div>
       <div style="margin-top:14px">${renderSeusPets()}</div>
       <button class="btn gold outline" style="width:100%;margin-top:12px" onclick="setTab('pontos')">&#11088; Meus pontos</button>
-      <button class="btn pink" style="width:100%;margin-top:6px" onclick="renderPartnershipPending()">&#128153; Solicitacoes de Parceria</button>
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="renderNotificacoes()">&#128276; Notificacoes${unreadCount?` <span class="disco-badge">${unreadCount>9?'9+':unreadCount}</span>`:''}</button>
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openConfig()">&#9881; Configuracoes</button>
-      ${currentUser.plan==='pro'?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderMyEvents()">&#128197; Meus Eventos</button>`:''}
-      ${currentUser.plan==='pro'?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderMyAdoptions()">&#128062; Minha Adocao</button>`:''}
+      <button class="btn pink" style="width:100%;margin-top:6px" onclick="formarParceria()">&#128153; Formar Parceria</button>
       ${currentUser.is_admin?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderAdmin()">&#128737; Painel Admin</button>`:''}
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('plans')">Gerenciar Plano${currentUser.plan==='free'?' &bull; Seja PRO':''}</button>
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="openModal('business')">Perfil Comercial</button>
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="togglePrivate()">${currentUser.is_private?'Perfil Publico':'Perfil Privado'}</button>
-      <button class="btn outline" style="width:100%;margin-top:6px" onclick="toggleDarkMode()">${darkMode?'Modo Claro':'Modo Escuro'}</button>
     </div>
   </div>`;
 }
@@ -2772,9 +2774,14 @@ function renderMapa(){
     </div>
     <div class="explore-section">
       <div class="explore-sec-head"><h2>Comunidade local</h2></div>
-      <div class="community-teaser" onclick="setTab('inicio')">
+      <div class="community-teaser" style="margin-bottom:8px" onclick="setTab('inicio')">
         <div class="explore-quick-icon green">&#128293;</div>
         <div><b>Veja o que esta acontecendo agora</b><span class="small">Posts, stories e novidades da comunidade pet</span></div>
+        <span class="explore-link">&rarr;</span>
+      </div>
+      <div class="community-teaser" onclick="renderMyEvents()">
+        <div class="explore-quick-icon" style="background:var(--goldSoft)">&#128197;</div>
+        <div><b>Meus Eventos</b><span class="small">Gerencie os eventos que voce criou</span></div>
         <span class="explore-link">&rarr;</span>
       </div>
     </div>
@@ -3695,8 +3702,35 @@ async function buildMatchDeck(){
   matchBuilding=false;currentMatchIdx=0;renderConexao();
 }
 function openConexao(){
-  screen.innerHTML=header('Criar Conexao','')+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
+  screen.innerHTML=header('Criar Conexao',partnershipTypeLabel(partnershipType))+'<div class="content"><div class="loading" style="margin:36px auto"></div></div>';
   buildMatchDeck();
+}
+
+function partnershipTypeLabel(t){return t==='relacionamento'?'Firmar relacionamento':'Melhores amigos ou amigas';}
+
+function formarParceria(){
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-head"><div class="modal-title">Formar Parceria</div><button class="close" onclick="closeModal()">X</button></div>
+    <div class="small" style="margin:8px 2px 12px;color:var(--soft)">Escolha o tipo de parceria e depois conecte-se com outros tutores pelo app:</div>
+    <div class="par-opt" onclick="choosePartnershipType('relacionamento')">
+      <div style="font-size:30px">&#128152;</div>
+      <div><b>Firmar relacionamento</b><span class="small">Parceria romantica entre tutores e seus pets.</span></div>
+    </div>
+    <div class="par-opt" onclick="choosePartnershipType('amigos')">
+      <div style="font-size:30px">&#128106;</div>
+      <div><b>Melhores amigos ou amigas</b><span class="small">Amizade pet — playdates, passeios, apoio e companhia.</span></div>
+    </div>
+    <button class="btn outline" style="width:100%" onclick="closeModal();renderPartnershipPending()">Solicitacoes de parceria recebidas/enviadas</button>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+
+function choosePartnershipType(t){
+  partnershipType=t;
+  closeModal();
+  openConexao();
 }
 
 /* ===== Denuncias (E18) ===== */
@@ -3950,7 +3984,7 @@ function renderProInfo(){
 /* ===== Meus Eventos / Minha Adocao (dono) ===== */
 async function renderMyEvents(){
   let evs=[];try{evs=await api('/api/events/mine');}catch(e){evs=[];}
-  screen.innerHTML=header('Meus Eventos','',{icon:'&#8592;',click:'renderPerfil()'})+`<div class="content" style="padding-top:0">
+  screen.innerHTML=header('Meus Eventos','',{icon:'&#8592;',click:"setTab('mapa')"})+`<div class="content" style="padding-top:0">
     <button class="btn" style="width:100%;margin:12px 0" onclick="openNewEvent()">+ Criar evento (PRO)</button>
     ${evs.length?evs.map(e=>`<div class="ev-card">
       <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:13px">${esc(e.name)}</b><span class="badge-${e.status==='approved'?'free':e.status==='rejected'?'pro':'plus'}">${e.status==='approved'?'Aprovado':e.status==='rejected'?'Recusado':'Em analise'}</span></div>

@@ -9,7 +9,7 @@ const router = express.Router();
 // Send partnership request
 router.post('/request', authMiddleware, async (req, res) => {
   try {
-    const { targetUserId, targetPetId, requesterPetId } = req.body;
+    const { targetUserId, targetPetId, requesterPetId, type } = req.body;
     if (!targetUserId) return res.status(400).json({ error: 'Destinatario obrigatorio' });
     if (targetUserId === req.userId) return res.status(400).json({ error: 'Nao pode pedir parceria para si mesmo' });
     
@@ -23,8 +23,9 @@ router.post('/request', authMiddleware, async (req, res) => {
       [req.userId, targetUserId, 'pending']);
     if (existing) return res.status(400).json({ error: 'Solicitacao ja enviada' });
     
-    const result = await run('INSERT INTO partnership_requests (requester_id, requester_pet_id, target_id, target_pet_id) VALUES (?, ?, ?, ?)',
-      [req.userId, requesterPetId || null, targetUserId, targetPetId || null]);
+    const pType = type === 'relacionamento' ? 'relacionamento' : 'amigos';
+    const result = await run('INSERT INTO partnership_requests (requester_id, requester_pet_id, target_id, target_pet_id, partnership_type) VALUES (?, ?, ?, ?, ?)',
+      [req.userId, requesterPetId || null, targetUserId, targetPetId || null, pType]);
     
     // Get requester name for notification
     const user = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
@@ -64,7 +65,8 @@ router.post('/respond/:requestId', authMiddleware, async (req, res) => {
     
     if (accept) {
       // Create match
-      await run('INSERT INTO matches (user1_id, user2_id) VALUES (?, ?)', [request.requester_id, request.target_id]);
+      const pType = request.partnership_type === 'relacionamento' ? 'relacionamento' : 'amigos';
+      await run('INSERT INTO matches (user1_id, user2_id, partnership_type) VALUES (?, ?, ?)', [request.requester_id, request.target_id, pType]);
       const match = await get('SELECT * FROM matches ORDER BY id DESC LIMIT 1', []);
       
       await run('UPDATE partnership_requests SET status = ? WHERE id = ?', ['accepted', requestId]);
@@ -190,7 +192,8 @@ router.post('/swipe/:userId', authMiddleware, async (req, res) => {
 
     if (existingMatch) return res.json({ liked: true, match: true, matchId: existingMatch.id });
 
-    const result = await run('INSERT INTO matches (user1_id, user2_id) VALUES (?, ?)', [req.userId, targetId]);
+    const pType = req.body.type === 'relacionamento' ? 'relacionamento' : 'amigos';
+    const result = await run('INSERT INTO matches (user1_id, user2_id, partnership_type) VALUES (?, ?, ?)', [req.userId, targetId, pType]);
     const matchId = result.lastInsertRowid;
 
     const me = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
