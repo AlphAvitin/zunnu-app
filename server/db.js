@@ -47,6 +47,9 @@ CREATE TABLE IF NOT EXISTS users (
   is_private INTEGER DEFAULT 0,
   business_type TEXT,
   points_balance INTEGER DEFAULT 0,
+  is_seller INTEGER DEFAULT 0,
+  instagram TEXT DEFAULT '',
+  whatsapp TEXT DEFAULT '',
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS posts (
@@ -87,6 +90,12 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS post_likes (
+  user_id INTEGER NOT NULL,
+  post_id INTEGER NOT NULL,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (user_id, post_id)
+);
+CREATE TABLE IF NOT EXISTS likes (
   user_id INTEGER NOT NULL,
   post_id INTEGER NOT NULL,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
@@ -507,6 +516,9 @@ async function migrate() {
       'ALTER TABLE users ADD COLUMN IF NOT EXISTS business_type TEXT',
       'ALTER TABLE users ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION',
       'ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION',
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_seller INTEGER DEFAULT 0",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS instagram TEXT DEFAULT ''",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS whatsapp TEXT DEFAULT ''",
       'ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0',
       "ALTER TABLE matches ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'",
       "ALTER TABLE partnership_requests ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'"
@@ -601,6 +613,9 @@ function createTables(db) {
   try { db.run(`ALTER TABLE users ADD COLUMN business_type TEXT`); } catch(e) {}
   try { db.run(`ALTER TABLE users ADD COLUMN points_balance INTEGER DEFAULT 0`); } catch(e) {}
   try { db.run(`ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN is_seller INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN instagram TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN whatsapp TEXT DEFAULT ''`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -640,6 +655,13 @@ function createTables(db) {
   )`);
   db.run(`
   CREATE TABLE IF NOT EXISTS post_likes (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY (user_id, post_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS likes (
     user_id INTEGER NOT NULL,
     post_id INTEGER NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
@@ -773,6 +795,9 @@ function createTables(db) {
   )`);
   try { db.run(`ALTER TABLE users ADD COLUMN latitude REAL`); } catch(e) {}
   try { db.run(`ALTER TABLE users ADD COLUMN longitude REAL`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN is_seller INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN instagram TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN whatsapp TEXT DEFAULT ''`); } catch(e) {}
   try { db.run(`ALTER TABLE pets ADD COLUMN latitude REAL`); } catch(e) {}
   try { db.run(`ALTER TABLE pets ADD COLUMN longitude REAL`); } catch(e) {}
   db.run(`CREATE TABLE IF NOT EXISTS follows (
@@ -1072,6 +1097,9 @@ function createTables(db) {
   try { db.run(`ALTER TABLE products ADD COLUMN stock INTEGER DEFAULT 99`); } catch(e) {}
   try { db.run(`ALTER TABLE posts ADD COLUMN video_url TEXT`); } catch(e) {}
   try { db.run(`ALTER TABLE users ADD COLUMN points_balance INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN is_seller INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN instagram TEXT DEFAULT ''`); } catch(e) {}
+  try { db.run(`ALTER TABLE users ADD COLUMN whatsapp TEXT DEFAULT ''`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS partnership_requests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -9,7 +9,7 @@ router.get('/user/:id', authMiddleware, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     const user = await get(`
-      SELECT id, name, avatar, bio, location, plan, created_at, is_human_verified,
+      SELECT id, name, avatar, bio, location, plan, created_at, is_human_verified, instagram, whatsapp,
         (SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = ?) as i_follow,
         (SELECT COUNT(*) FROM follows WHERE follower_id = ? AND following_id = ?) as they_follow,
         (SELECT COUNT(*) FROM follows WHERE following_id = ?) as followers,

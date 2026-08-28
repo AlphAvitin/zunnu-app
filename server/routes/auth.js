@@ -99,7 +99,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await get(
-      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, is_admin, plan, is_private, points_balance, created_at FROM users WHERE id = ?',
+      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, is_admin, plan, is_private, points_balance, is_seller, instagram, whatsapp, created_at FROM users WHERE id = ?',
       [req.userId]
     );
 
@@ -123,7 +123,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 
 router.put('/me', authMiddleware, async (req, res) => {
   try {
-    const { name, bio, location, avatar, selfieUrl, is_private } = req.body;
+    const { name, bio, location, avatar, selfieUrl, is_private, is_seller, instagram, whatsapp } = req.body;
     const updates = [];
     const params = [];
 
@@ -133,6 +133,9 @@ router.put('/me', authMiddleware, async (req, res) => {
     if (avatar !== undefined) { updates.push('avatar = ?'); params.push(avatar); }
     if (selfieUrl !== undefined) { updates.push('selfie_url = ?'); params.push(selfieUrl); }
     if (is_private !== undefined) { updates.push('is_private = ?'); params.push(is_private ? 1 : 0); }
+    if (is_seller !== undefined) { updates.push('is_seller = ?'); params.push(is_seller ? 1 : 0); }
+    if (instagram !== undefined) { updates.push('instagram = ?'); params.push(instagram); }
+    if (whatsapp !== undefined) { updates.push('whatsapp = ?'); params.push(whatsapp); }
 
     if (updates.length === 0) return res.status(400).json({ error: 'Nada para atualizar' });
 
@@ -140,7 +143,7 @@ router.put('/me', authMiddleware, async (req, res) => {
     await run(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
 
     const user = await get(
-      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, is_admin, plan, is_private, points_balance FROM users WHERE id = ?',
+      'SELECT id, name, email, birth_date, bio, location, avatar, selfie_url, is_human_verified, is_admin, plan, is_private, points_balance, is_seller, instagram, whatsapp FROM users WHERE id = ?',
       [req.userId]
     );
 
