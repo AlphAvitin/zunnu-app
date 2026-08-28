@@ -3,6 +3,7 @@ const { run, get, all } = require('../db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');
 const { broadcast, sendToUser } = require('../ws');
 const { creditPoints } = require('./points');
+const { bumpIntimacy, INTIMACY } = require('../partnership');
 
 const router = express.Router();
 
@@ -21,10 +22,11 @@ function containsOffensiveText(text) {
 }
 
 const POST_COLS = `p.id, p.text, p.image, p.video_url, p.likes, p.comments_count, p.shares,
-  p.location as post_location, p.visibility as post_visibility, p.created_at,
+  p.location as post_location, p.visibility as post_visibility, p.partner_match_id, p.created_at,
   u.id as user_id, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan,
   pt.id as pet_id, pt.name as pet_name, pt.species as pet_species, pt.image as pet_image,
-  pt.visibility as pet_visibility`;
+  pt.visibility as pet_visibility,
+  pn.id as partner_user_id, pn.name as partner_name, pn.avatar as partner_avatar`;
 
 router.get('/', optionalAuth, async (req, res) => {
   try {
@@ -82,6 +84,8 @@ router.get('/', optionalAuth, async (req, res) => {
       FROM posts p
       JOIN users u ON p.user_id = u.id
       LEFT JOIN pets pt ON pt.id = p.pet_id
+      LEFT JOIN matches pm ON pm.id = p.partner_match_id
+      LEFT JOIN users pn ON pn.id = CASE WHEN pm.user1_id = p.user_id THEN pm.user2_id ELSE pm.user1_id END
       ${whereClause}
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
@@ -91,6 +95,8 @@ router.get('/', optionalAuth, async (req, res) => {
       SELECT COUNT(*) as count FROM posts p
       JOIN users u ON p.user_id = u.id
       LEFT JOIN pets pt ON pt.id = p.pet_id
+      LEFT JOIN matches pm ON pm.id = p.partner_match_id
+      LEFT JOIN users pn ON pn.id = CASE WHEN pm.user1_id = p.user_id THEN pm.user2_id ELSE pm.user1_id END
       ${whereClause}
     `, [...params]);
 
@@ -115,7 +121,7 @@ const result = posts.map(p => ({
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { text, image, video_url, pet_id, location, visibility } = req.body;
+    const { text, image, video_url, pet_id, location, visibility, partner_match_id } = req.body;
 
     if (!text || !text.trim()) {
       return res.status(400).json({ error: 'Texto e obrigatorio' });
@@ -132,13 +138,25 @@ router.post('/', authMiddleware, async (req, res) => {
       if (pet.user_id !== req.userId) return res.status(403).json({ error: 'Este pet nao e seu' });
     }
 
-    const result = await run('INSERT INTO posts (user_id, text, image, video_url, pet_id, location, visibility, shares) VALUES (?, ?, ?, ?, ?, ?, ?, 0)',
-      [req.userId, text.trim(), image || null, video_url || null, pid, String(location || '').trim(), visibility === 'friends' ? 'friends' : visibility === 'private' ? 'private' : 'public']);
+    let partnerMatchId = parseInt(partner_match_id) || null;
+    if (partnerMatchId) {
+      const pm = await get('SELECT * FROM matches WHERE id = ? AND (user1_id = ? OR user2_id = ?)', [partnerMatchId, req.userId, req.userId]);
+      if (!pm) return res.status(403).json({ error: 'Parceria invalida' });
+    }
+
+    const result = await run('INSERT INTO posts (user_id, text, image, video_url, pet_id, location, visibility, shares, partner_match_id) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)',
+      [req.userId, text.trim(), image || null, video_url || null, pid, String(location || '').trim(), visibility === 'friends' ? 'friends' : visibility === 'private' ? 'private' : 'public', partnerMatchId]);
+
+    if (partnerMatchId) {
+      await bumpIntimacy(partnerMatchId, INTIMACY.post_tag);
+    }
 
     const post = await get(`
       SELECT ${POST_COLS}
       FROM posts p JOIN users u ON p.user_id = u.id
       LEFT JOIN pets pt ON pt.id = p.pet_id
+      LEFT JOIN matches pm ON pm.id = p.partner_match_id
+      LEFT JOIN users pn ON pn.id = CASE WHEN pm.user1_id = p.user_id THEN pm.user2_id ELSE pm.user1_id END
       WHERE p.id = ?
     `, [result.lastInsertRowid]);
 

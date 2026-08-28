@@ -64,12 +64,14 @@ CREATE TABLE IF NOT EXISTS posts (
   location TEXT DEFAULT '',
   visibility TEXT DEFAULT 'public',
   shares INTEGER DEFAULT 0,
+  partner_match_id INTEGER,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 ALTER TABLE posts ADD COLUMN IF NOT EXISTS pet_id INTEGER;
 ALTER TABLE posts ADD COLUMN IF NOT EXISTS location TEXT DEFAULT '';
 ALTER TABLE posts ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'public';
 ALTER TABLE posts ADD COLUMN IF NOT EXISTS shares INTEGER DEFAULT 0;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS partner_match_id INTEGER;
 CREATE TABLE IF NOT EXISTS blocks (
   blocker_id INTEGER NOT NULL,
   blocked_id INTEGER NOT NULL,
@@ -180,7 +182,16 @@ CREATE TABLE IF NOT EXISTS matches (
   user1_id INTEGER NOT NULL,
   user2_id INTEGER NOT NULL,
   partnership_type TEXT DEFAULT 'amigos',
+  intimacy INTEGER DEFAULT 0,
+  last_interaction_date TEXT,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE TABLE IF NOT EXISTS match_interaction_days (
+  match_id INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  event_together INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (match_id, day)
 );
 CREATE TABLE IF NOT EXISTS messages (
   id SERIAL PRIMARY KEY,
@@ -188,6 +199,30 @@ CREATE TABLE IF NOT EXISTS messages (
   sender_id INTEGER NOT NULL,
   text TEXT NOT NULL,
   is_read INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE TABLE IF NOT EXISTS groups (
+  id SERIAL PRIMARY KEY,
+  owner_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  category TEXT DEFAULT 'outros',
+  image TEXT DEFAULT '',
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
+CREATE TABLE IF NOT EXISTS group_members (
+  group_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  role TEXT DEFAULT 'member',
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS'),
+  PRIMARY KEY (group_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS group_posts (
+  id SERIAL PRIMARY KEY,
+  group_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  text TEXT NOT NULL,
+  image TEXT DEFAULT '',
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS reports (
@@ -361,6 +396,10 @@ CREATE TABLE IF NOT EXISTS events (
   status TEXT DEFAULT 'pending',
   participant_limit INTEGER,
   shares INTEGER DEFAULT 0,
+  live_location_enabled INTEGER DEFAULT 0,
+  live_lat DOUBLE PRECISION,
+  live_lng DOUBLE PRECISION,
+  live_updated_at TEXT,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
 CREATE TABLE IF NOT EXISTS event_participants (
@@ -521,7 +560,15 @@ async function migrate() {
       "ALTER TABLE users ADD COLUMN IF NOT EXISTS whatsapp TEXT DEFAULT ''",
       'ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0',
       "ALTER TABLE matches ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'",
-      "ALTER TABLE partnership_requests ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'"
+      "ALTER TABLE partnership_requests ADD COLUMN IF NOT EXISTS partnership_type TEXT DEFAULT 'amigos'",
+      "ALTER TABLE matches ADD COLUMN IF NOT EXISTS intimacy INTEGER DEFAULT 0",
+      "ALTER TABLE matches ADD COLUMN IF NOT EXISTS last_interaction_date TEXT",
+      "ALTER TABLE posts ADD COLUMN IF NOT EXISTS partner_match_id INTEGER",
+      "ALTER TABLE events ADD COLUMN IF NOT EXISTS live_location_enabled INTEGER DEFAULT 0",
+      "ALTER TABLE events ADD COLUMN IF NOT EXISTS live_lat DOUBLE PRECISION",
+      "ALTER TABLE events ADD COLUMN IF NOT EXISTS live_lng DOUBLE PRECISION",
+      "ALTER TABLE events ADD COLUMN IF NOT EXISTS live_updated_at TEXT",
+      "ALTER TABLE match_interaction_days ADD COLUMN IF NOT EXISTS event_together INTEGER DEFAULT 0"
     ];
     for (const a of alterations) { try { await _pool.query(a); } catch (e) {} }
     await _pool.query("UPDATE users SET is_admin = 1 WHERE email = 'mariana@patai.com'");
@@ -631,6 +678,7 @@ function createTables(db) {
   try { db.run(`ALTER TABLE posts ADD COLUMN location TEXT DEFAULT ''`); } catch(e) {}
   try { db.run(`ALTER TABLE posts ADD COLUMN visibility TEXT DEFAULT 'public'`); } catch(e) {}
   try { db.run(`ALTER TABLE posts ADD COLUMN shares INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE posts ADD COLUMN partner_match_id INTEGER`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS blocks (
     blocker_id INTEGER NOT NULL,
@@ -750,9 +798,49 @@ function createTables(db) {
     user1_id INTEGER NOT NULL,
     user2_id INTEGER NOT NULL,
     partnership_type TEXT DEFAULT 'amigos',
+    intimacy INTEGER DEFAULT 0,
+    last_interaction_date TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   )`);
   try { db.run(`ALTER TABLE matches ADD COLUMN partnership_type TEXT DEFAULT 'amigos'`); } catch(e) {}
+  try { db.run(`ALTER TABLE matches ADD COLUMN intimacy INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE matches ADD COLUMN last_interaction_date TEXT`); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS match_interaction_days (
+    match_id INTEGER NOT NULL,
+    day TEXT NOT NULL,
+    event_together INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY (match_id, day)
+  )`);
+  try { db.run(`ALTER TABLE match_interaction_days ADD COLUMN event_together INTEGER DEFAULT 0`); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    category TEXT DEFAULT 'outros',
+    image TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS group_members (
+    group_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    role TEXT DEFAULT 'member',
+    created_at TEXT DEFAULT (datetime('now')),
+    PRIMARY KEY (group_id, user_id)
+  )`);
+  db.run(`
+  CREATE TABLE IF NOT EXISTS group_posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    image TEXT DEFAULT '',
+    created_at TEXT DEFAULT (datetime('now'))
+  )`);
   db.run(`
   CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -954,8 +1042,16 @@ function createTables(db) {
     status TEXT DEFAULT 'pending',
     participant_limit INTEGER,
     shares INTEGER DEFAULT 0,
+    live_location_enabled INTEGER DEFAULT 0,
+    live_lat REAL,
+    live_lng REAL,
+    live_updated_at TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  try { db.run(`ALTER TABLE events ADD COLUMN live_location_enabled INTEGER DEFAULT 0`); } catch(e) {}
+  try { db.run(`ALTER TABLE events ADD COLUMN live_lat REAL`); } catch(e) {}
+  try { db.run(`ALTER TABLE events ADD COLUMN live_lng REAL`); } catch(e) {}
+  try { db.run(`ALTER TABLE events ADD COLUMN live_updated_at TEXT`); } catch(e) {}
   db.run(`
   CREATE TABLE IF NOT EXISTS event_participants (
     event_id INTEGER NOT NULL,

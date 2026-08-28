@@ -1,10 +1,11 @@
 {
-  "builtAt": "2026-08-28T14:12:47.492Z",
+  "builtAt": "2026-08-28T17:38:03.753Z",
   "builtBy": "scripts/build.web.js",
-  "gitCommit": "29c434b",
+  "gitCommit": "30f3de2",
   "files": [
     "capacitor.build.json",
     "index.html",
+    "index.html.bak_round5",
     "package.json"
   ]
 }

@@ -347,6 +347,48 @@ button,input,textarea,select{font:inherit}
 .feed-chips::-webkit-scrollbar{display:none}
 .feed-chip{flex-shrink:0;border:1px solid var(--line);background:var(--card);color:var(--soft);font-size:11px;font-weight:700;padding:7px 14px;border-radius:20px;cursor:pointer;transition:all .2s}
 .feed-chip.active{background:var(--green);border-color:var(--green);color:#fff}
+
+/* ===== Home: sub-abas, accordion, grupos, parceria, ao vivo ===== */
+.home-sub-feeds{display:flex;gap:8px;margin:12px 0 2px}
+.hsf-chip{flex:1;border:1px solid var(--line);background:var(--card);color:var(--soft);font-size:11px;font-weight:800;padding:9px 10px;border-radius:20px;cursor:pointer;transition:all .2s;text-align:center}
+.hsf-chip.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 8px rgba(36,92,79,.25)}
+.home-acc{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:14px 0 4px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.home-acc-head{display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;background:none;border:none;cursor:pointer;text-align:left;color:var(--ink)}
+.home-acc-head .home-quick-icon{width:38px;height:38px;border-radius:12px}
+.home-acc-head b{font-size:13px;font-weight:800;flex:1}
+.home-acc-chev{transition:transform .2s;color:var(--soft);font-size:14px}
+.home-acc.open .home-acc-chev{transform:rotate(180deg)}
+.home-acc-body{display:none;padding:0 14px 14px}
+.home-acc.open .home-acc-body{display:block;animation:fadeIn .2s ease}
+.comm-title{font-size:16px;font-weight:900;margin:14px 0 8px;color:var(--ink);display:flex;align-items:center;gap:6px}
+.hb-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.hb-btn{width:100%;padding:12px;border:none;border-radius:14px;font-size:12px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.12);transition:transform .15s}
+.hb-btn:active{transform:scale(.98)}
+.hb-green{background:linear-gradient(135deg,var(--green),var(--green2))}
+.hb-gold{background:linear-gradient(135deg,#EE9C3C,#E5822D)}
+.hb-pink{background:linear-gradient(135deg,var(--pink),#E05AA5);box-shadow:0 4px 12px rgba(224,90,165,.3)}
+.hb-blue{background:linear-gradient(135deg,var(--blue),#3E8FD9)}
+.avatar-cam{background:var(--green);color:#fff;border-radius:50%;border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.profile-handle{font-size:11px;color:var(--green);font-weight:700;margin-top:2px}
+.par-stats{display:flex;justify-content:space-between;gap:6px;margin-top:12px;background:var(--bg);border-radius:12px;padding:10px}
+.par-stats>div{flex:1;text-align:center}
+.par-stats b{display:block;font-size:16px;color:var(--green)}
+.par-stats span{font-size:9px;color:var(--soft)}
+.g-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.g-head{display:flex;gap:10px;align-items:center}
+.g-avatar{width:46px;height:46px;border-radius:14px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+.g-avatar img{width:100%;height:100%;object-fit:cover}
+.g-info{flex:1;min-width:0}
+.g-info b{font-size:13px;display:block}
+.g-info .small{color:var(--soft);font-size:10px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-meta{font-size:9px;color:var(--soft);margin-top:3px}
+.g-badge{display:inline-block;font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--greenSoft);color:var(--green);margin-left:4px}
+.g-post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.g-post-head{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.g-post-head .avatar{width:30px;height:30px;font-size:11px}
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(231,76,60,.12);color:#E74C3C;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#E74C3C;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,.5)}70%{box-shadow:0 0 0 7px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
 .discover-scroll{display:flex;gap:10px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
 .discover-scroll::-webkit-scrollbar{display:none}
 .discover-pet{min-width:112px;max-width:132px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;text-align:center;cursor:pointer;transition:transform .15s}
@@ -577,6 +619,13 @@ button,input,textarea,select{font:inherit}
 const API = '';
 let token = localStorage.getItem('zunnu_token');
 let tab = 'inicio';
+let homeSection = 'inicio';
+let homeAccOpen = false;
+let groupsData = [];
+let currentGroupDetail = null;
+let currentGroupPosts = [];
+let evLiveTimer = null;
+let evLiveOn = false;
 let authMode = 'login';
 let currentUser = null;
 let posts = [];
@@ -734,6 +783,8 @@ const nav = document.getElementById('bottomNav');
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function su(s){s=String(s||'').trim();if(!/^https?:\/\//i.test(s))return'';return s.replace(/[\u0000-\u001f\u2028\u2029\s"<>'`\\]/g,encodeURIComponent)}
 function sj(s){return String(s||'').replace(/[\\'"&<>\r\n\u2028\u2029]/g,function(c){if(c==='\\')return'\\\\';if(c==="'")return"\\'";if(c==='"')return'&quot;';if(c==='&')return'&amp;';if(c==='<')return'&lt;';if(c==='>')return'&gt;';if(c==='\n')return'\\n';if(c==='\r')return'\\r';if(c==='\u2028')return'\\u2028';return'\\u2029';})}
+function atname(s){return String(s||'').trim().replace(/^@+/, '');}
+function handleFor(name){const h=String(name||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');return h||'usuario';}
 
 function getBadge(b){if(b==='pro')return'<span class="badge-pro">PRO</span>';if(b==='plus'||b==='tutor')return'<span class="badge-plus">TUTOR</span>';return'<span class="badge-free">FREE</span>';}
 
@@ -996,84 +1047,238 @@ function renderInicio(){
   const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Mensagens"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
-  const cartBtn=currentUser?`<button class="icon-btn" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
   const quick=[['&#128062;','Adicionar pet',"openModal('addPet')",'green'],['&#128248;','Nova postagem',"openModal('post')",'coral'],['&#128197;','Criar evento',"openEventos()",'blue'],['&#128054;','Adocao de pets',"openAdocao()",'gold'],['&#128722;','Visitar loja',"openMarketplace()",'blue'],['&#128153;','Criar conexao',"openConexao()",'coral']];
   const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item" onclick="${q[2]}"><div class="home-quick-icon ${q[3]}">${q[0]}</div><b>${q[1]}</b></div>`).join('')}</div>`;
-  const feedFilters=[['for_you','Para voce'],['following','Seguindo'],['nearby','Perto de voce'],['new','Novos']];
-  const feedTabs=`<div class="feed-chips">${feedFilters.map(f=>`<button class="feed-chip ${feedFilter===f[0]?'active':''}" onclick="setFeedFilter('${f[0]}')">${f[1]}</button>`).join('')}</div>`;
   const lostFound=(lostPets||[]).find(x=>x.status==='lost');
   const lostBanner=`<div class="lostpet-banner" onclick="openHomeLostPets()">
     <div class="lostpet-ico">${lostFound?'&#128680;':'&#128062;'}</div>
     <div style="flex:1">${lostFound?`<b>Pet perdido perto de voce</b><span class="small">${esc(lostFound.pet_name)} ${esc(lostFound.species||'')} ${esc(lostFound.breed||'')} esta desaparecido. Veja como ajudar.</span>`:`<b>Pet perdido perto de voce</b><span class="small">Confira os pets perdidos na sua regiao e ajude a encontrar.</span>`}</div>
     <span class="home-link">&rarr;</span>
   </div>`;
-  let moreBtn=feedLoadingMore?'<div class="loading" style="margin:14px 0"><div class="spinner"></div></div>':
-    (postPage<postPages?'<button class="btn outline" style="width:100%;margin-top:12px" onclick="loadMoreFeed()">Carregar mais</button>':'');
-  const emptyFeed=feedError?`<div class="home-empty"><div style="font-size:34px">&#128544;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nao conseguimos carregar o feed</b><span class="small">Verifique sua conexao e tente novamente.</span><button class="btn" style="margin-top:10px;width:100%" onclick="loadAll()">Tentar novamente</button></div>`
-    :`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Ainda nao ha publicacoes por aqui.</b><span class="small">Seja o primeiro a compartilhar um momento do seu pet!</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('post')">Criar publicacao</button></div>`;
-  const feedArea=!feedLoadingMore&&posts.length===0?emptyFeed:``;
+  const subTabs=`<div class="home-sub-feeds">
+    <button class="hsf-chip ${homeSection==='inicio'?'active':''}" onclick="setHomeSection('inicio')">&#8962; Inicio</button>
+    <button class="hsf-chip ${homeSection==='comunidade'?'active':''}" onclick="setHomeSection('comunidade')">&#128293; Comunidade</button>
+    <button class="hsf-chip ${homeSection==='grupos'?'active':''}" onclick="setHomeSection('grupos')">&#128101; Grupos</button>
+  </div>`;
   screen.innerHTML=`<div class="home-hero">
   <div class="home-hero-row">
     <div><div class="home-welcome">ZUNNU</div><div class="home-hello">Ola, ${fn} &#128075;</div></div>
-    <div class="home-hero-icons">${cartBtn}${chatBtn}${bell}</div>
+    <div class="home-hero-icons">${bell}</div>
   </div>
   <div class="home-sub">Como estao seus pets hoje?</div>
   <button class="home-plan-chip" onclick="openModal('plans')">${planTxt} &#11088; Ver planos</button>
   </div>
+  ${subTabs}
   <div class="content">
-    <div class="home-section-title"><h2>Momentos &#9889;</h2></div>
-    <div class="stories-row">
-      <div class="story-circle" onclick="openModal('addStory')">
-        <div class="story-ring add-story"><div class="add-icon">+</div></div>
-        <div class="story-name">Seu momento</div>
-      </div>
-      ${storiesData.filter(s=>s.user_id!==currentUser?.id).map(s=>`
-        <div class="story-circle" onclick="viewStory(${s.user_id})">
-          <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${su(s.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div>
-          <div class="story-name">${esc(s.user_name)}</div>
+    ${homeSection==='comunidade'?renderComunidade():
+      homeSection==='grupos'?renderGruposTab():`
+      <div class="home-section-title"><h2>Momentos &#9889;</h2></div>
+      <div class="stories-row">
+        <div class="story-circle" onclick="openModal('addStory')">
+          <div class="story-ring add-story"><div class="add-icon">+</div></div>
+          <div class="story-name">Seu momento</div>
         </div>
-      `).join('')}
+        ${storiesData.filter(s=>s.user_id!==currentUser?.id).map(s=>`
+          <div class="story-circle" onclick="viewStory(${s.user_id})">
+            <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${su(s.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div>
+            <div class="story-name">${esc(s.user_name)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="home-acc ${homeAccOpen?'open':''}" id="homeAcc">
+        <button class="home-acc-head" onclick="toggleHomeAcc()">
+          <div class="home-quick-icon green">&#128270;</div>
+          <b>O que voce quer fazer?</b>
+          <span class="home-acc-chev">&#9662;</span>
+        </button>
+        <div class="home-acc-body">${quickArea}</div>
+      </div>
+      ${lostBanner}`}
+  </div>`;
+}
+
+function setHomeSection(s){
+  homeSection=s;
+  if(s==='grupos')loadGroups(thisRe=>renderGruposTab());
+  render();
+}
+
+function toggleHomeAcc(){
+  homeAccOpen=!homeAccOpen;
+  const acc=document.getElementById('homeAcc');
+  if(acc)acc.classList.toggle('open',homeAccOpen);
+}
+
+function postCardHtml(p){
+  const isOwner=currentUser&&(p.user_id===currentUser.id);
+  const petChip=p.pet_id?`<div class="post-pet" onclick="event.stopPropagation();openPostPet(${p.pet_id})">${p.pet_image?`<img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.style.paddingLeft='0'" alt="">`:`<span class="post-pet-emoji">${petEmoji(p.pet_species)}</span>`}<span>com ${esc(p.pet_name||'')}</span></div>`:'';
+  const partnerChip=p.partner_match_id&&p.partner_name?`<div class="post-pet" style="color:var(--pink)">&#128153;<span>parceria com ${esc(p.partner_name)}</span></div>`:'';
+  const menu=`<div class="post-menu"><button class="post-menu-btn" onclick="togglePostMenu(${p.id})">&#8943;</button><div id="pmenu-${p.id}" class="post-dropdown" style="display:none">
+    ${isOwner?`<button onclick="editPost(${p.id})">&#9998; Editar</button><button class="danger" onclick="deletePost(${p.id})">&#128465; Excluir</button>`
+    :`<button onclick="reportPost(${p.id})">&#128680; Denunciar</button><button onclick="hidePost(${p.id})">&#128065; Ocultar publicacao</button><button onclick="blockUser(${p.user_id})">&#128683; Bloquear ${esc((p.user_name||'').split(' ')[0])}</button>`}
+  </div></div>`;
+  return`<div class="post">
+    <div class="post-head">
+      <div class="avatar" onclick="viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
+      <div style="flex:1">
+        <div class="post-user">@${atname(p.user_name)} ${getBadge(p.user_badge)}</div>
+        <div class="post-meta">${esc(p.time||formatDate(p.created_at))}${p.post_location?` &bull; <span class="post-loc">&#128205; ${esc(p.post_location)}</span>`:''}</div>
+      </div>
+      ${menu}
     </div>
-    <div class="home-section-title"><h2>O que voce quer fazer?</h2></div>
-    ${quickArea}
-    ${lostBanner}
+    ${petChip}
+    ${partnerChip}
+    <div class="post-text">${esc(p.text)}</div>
+    ${p.video_url?`<video class="media-video" src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
+    <div class="post-actions">
+      <button class="action" onclick="toggleLike(${p.id})" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button>
+      <button class="action" onclick="toggleComments(${p.id})">&#128172; ${p.comments_count||0}</button>
+      <button class="action" onclick="sharePost(${p.id})">&#128228; ${p.shares||0} Compartilhar</button>
+    </div>
+    <div id="comments-${p.id}" style="display:${showComments[p.id]?'block':'none'}" class="comments-section">
+      <div id="commentsList-${p.id}"><div class="loading"><div class="spinner"></div></div></div>
+      <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
+    </div>
+  </div>`;
+}
+
+function renderComunidade(){
+  const feedFilters=[['for_you','Para voce'],['following','Seguindo'],['nearby','Perto de voce'],['new','Novos']];
+  const feedTabs=`<div class="feed-chips">${feedFilters.map(f=>`<button class="feed-chip ${feedFilter===f[0]?'active':''}" onclick="setFeedFilter('${f[0]}')">${f[1]}</button>`).join('')}</div>`;
+  let moreBtn=feedLoadingMore?'<div class="loading" style="margin:14px 0"><div class="spinner"></div></div>':
+    (postPage<postPages?'<button class="btn outline" style="width:100%;margin-top:12px" onclick="loadMoreFeed()">Carregar mais</button>':'');
+  const emptyFeed=feedError?`<div class="home-empty"><div style="font-size:34px">&#128544;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nao conseguimos carregar o feed</b><span class="small">Verifique sua conexao e tente novamente.</span><button class="btn" style="margin-top:10px;width:100%" onclick="loadAll()">Tentar novamente</button></div>`
+    :`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Ainda nao ha publicacoes por aqui.</b><span class="small">Seja o primeiro a compartilhar um momento do seu pet!</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('post')">Criar publicacao</button></div>`;
+  return `<div class="comm-title">&#128293; O que esta acontecendo agora?</div>
     ${feedTabs}
     ${adHTML()}
     <div class="search-bar"><input id="feedSearch" placeholder="Buscar no feed..." onkeyup="searchFeed()"><button class="btn small-btn" onclick="searchFeed()">Buscar</button></div>
     <button class="btn home-newpost" onclick="openModal('post')">&#128248; Criar publicacao</button>
-    ${posts.length===0?feedArea:posts.map(p=>{
-      const isOwner=currentUser&&(p.user_id===currentUser.id);
-      const petChip=p.pet_id?`<div class="post-pet" onclick="event.stopPropagation();openPostPet(${p.pet_id})">${p.pet_image?`<img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.style.paddingLeft='0'" alt="">`:`<span class="post-pet-emoji">${petEmoji(p.pet_species)}</span>`}<span>com ${esc(p.pet_name||'')}</span></div>`:'';
-      const menu=`<div class="post-menu"><button class="post-menu-btn" onclick="togglePostMenu(${p.id})">&#8943;</button><div id="pmenu-${p.id}" class="post-dropdown" style="display:none">
-        ${isOwner?`<button onclick="editPost(${p.id})">&#9998; Editar</button><button class="danger" onclick="deletePost(${p.id})">&#128465; Excluir</button>`
-        :`<button onclick="reportPost(${p.id})">&#128680; Denunciar</button><button onclick="hidePost(${p.id})">&#128065; Ocultar publicacao</button><button onclick="blockUser(${p.user_id})">&#128683; Bloquear ${esc((p.user_name||'').split(' ')[0])}</button>`}
-      </div></div>`;
-      return`<div class="post">
-        <div class="post-head">
-          <div class="avatar" onclick="viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
-          <div style="flex:1">
-            <div class="post-user">${esc(p.user_name)} ${getBadge(p.user_badge)}</div>
-            <div class="post-meta">${esc(p.time||formatDate(p.created_at))}${p.post_location?` &bull; <span class="post-loc">&#128205; ${esc(p.post_location)}</span>`:''}</div>
-          </div>
-          ${menu}
-        </div>
-        ${petChip}
-        <div class="post-text">${esc(p.text)}</div>
-        ${p.video_url?`<video class="media-video" src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
-        <div class="post-actions">
-          <button class="action" onclick="toggleLike(${p.id})" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button>
-          <button class="action" onclick="toggleComments(${p.id})">&#128172; ${p.comments_count||0}</button>
-          <button class="action" onclick="sharePost(${p.id})">&#128228; ${p.shares||0} Compartilhar</button>
-        </div>
-        <div id="comments-${p.id}" style="display:${showComments[p.id]?'block':'none'}" class="comments-section">
-          <div id="commentsList-${p.id}"><div class="loading"><div class="spinner"></div></div></div>
-          <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
-        </div>
-      </div>`;
-    }).join('')}
-    ${moreBtn}
+    ${posts.length===0&&!feedLoadingMore?emptyFeed:posts.map(p=>postCardHtml(p)).join('')}
+    ${moreBtn}`;
+}
+
+function groupEmoji(cat){return ({encontros:'&#127881;',passeios:'&#128062;',apoio:'&#129309;',adocao:'&#128062;'}[cat]||'&#128172;');}
+
+async function loadGroups(cb){
+  try{
+    const d=await api('/api/groups');
+    groupsData=d.groups||[];
+    if(cb)cb(groupsData);
+  }catch(e){groupsData=[];if(cb)cb([]);}
+}
+
+function renderGruposTab(){
+  const mine=groupsData.filter(g=>g.is_member||g.is_owner);
+  const discover=groupsData.filter(g=>!(g.is_member||g.is_owner));
+  const card=(g)=>`<div class="g-card">
+    <div class="g-head">
+      <div class="g-avatar">${g.image?`<img src="${su(g.image)}" onerror="this.style.display='none';this.parentNode.textContent='${groupEmoji(g.category)}'">`:groupEmoji(g.category)}</div>
+      <div class="g-info"><b>${esc(g.name)}${g.is_owner?'<span class="g-badge">CRIADOR</span>':''}</b>
+        <span class="small">${esc(g.description||'')}</span>
+        <span class="g-meta">${g.member_count} membro(s) &bull; ${g.post_count} publicacao(oes) &bull; ${esc(g.category)}</span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      ${g.is_owner?`<button class="btn small-btn" style="flex:1" onclick="openGroupDetail(${g.id})">Abrir grupo</button><button class="btn small-btn outline" style="color:#e5484d" onclick="deleteGroup(${g.id})">Excluir</button>`
+        :g.is_member?`<button class="btn small-btn" style="flex:1" onclick="openGroupDetail(${g.id})">Abrir grupo</button><button class="btn small-btn outline" onclick="leaveGroupDetail(${g.id})">Sair</button>`
+        :`<button class="btn small-btn" style="flex:1" onclick="joinGroupCard(${g.id})">Participar</button><button class="btn small-btn outline" style="flex:1" onclick="openGroupDetail(${g.id})">Ver</button>`}
+    </div>
   </div>`;
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 4px">
+      <div class="comm-title" style="margin:0">&#128101; Grupos</div>
+      <button class="btn small-btn" onclick="openCreateGroup()">+ Criar grupo</button>
+    </div>
+    <div class="pl-note" style="margin-bottom:10px">Crie ou participe de grupos da comunidade pet: encontros, passeios, apoio e adocao.</div>
+    ${groupsData.length===0?'<div class="home-empty"><div style="font-size:34px">&#128101;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum grupo ainda</b><span class="small">Crie o primeiro grupo da sua regiao!</span><button class="btn" style="margin-top:10px;width:100%" onclick="openCreateGroup()">Criar grupo</button></div>'
+      :`<div class="home-section-title"><h2>Seus grupos</h2></div>${mine.length?mine.map(card).join(''):'<div class="pl-note">Voce ainda nao participa de nenhum grupo.</div>'}
+       <div class="home-section-title"><h2>Descobrir grupos</h2></div>${discover.length?discover.map(card).join(''):'<div class="pl-note">Nenhum grupo para descobrir agora.</div>'}`}`;
+}
+
+function openCreateGroup(){
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+  const cats=['encontros','passeios','apoio','adocao','outros'];
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-head"><div class="modal-title">Criar grupo</div><button class="close" onclick="closeModal()">X</button></div>
+    <div class="field"><label>Nome do grupo</label><input id="gName" placeholder="Ex.: Passeio no parque" maxlength="40"></div>
+    <div class="field"><label>Descricao</label><textarea id="gDesc" rows="2" placeholder="Sobre o que e o grupo?"></textarea></div>
+    <div class="field"><label>Categoria</label><div style="display:flex;gap:6px;flex-wrap:wrap">${cats.map(c=>`<button type="button" class="feed-chip" data-c="${c}" onclick="pickGroupCat(this,'${c}')">${groupEmoji(c)} ${esc(c)}</button>`).join('')}</div></div>
+    <div class="field"><label>Foto (URL, opcional)</label><input id="gImg" placeholder="https://..." value=""></div>
+    <button class="btn" style="width:100%" onclick="createGroup()">Criar grupo</button>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+let groupCatSel='encontros';
+function pickGroupCat(el,c){
+  groupCatSel=c;
+  document.querySelectorAll('#modal-root [data-c]').forEach(x=>{x.classList.toggle('active',x.dataset.c===c);});
+}
+async function createGroup(){
+  const name=val('gName'),desc=val('gDesc'),img=val('gImg');
+  if(!name||!name.trim()){alert('Informe o nome do grupo.');return;}
+  try{
+    await api('/api/groups',{method:'POST',body:JSON.stringify({name:name.trim(),description:desc,image:img,category:groupCatSel})});
+    closeModal();
+    homeSection='grupos';
+    loadGroups(()=>render());
+  }catch(e){alert(e.message);}
+}
+
+async function openGroupDetail(id){
+  try{
+    const [g,posts]=await Promise.all([api('/api/groups/'+id),api('/api/groups/'+id+'/posts')]);
+    currentGroupDetail=g.group;currentGroupPosts=posts.posts||[];
+    const grp=g.group;
+    const memberAvatars=(g.members||[]).slice(0,8).map(m=>`<img src="${su(m.avatar||'')}" onerror="this.style.display='none'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--card);margin-right:-8px" alt="${esc(m.name)}" title="${esc(m.name)}">`).join('');
+    screen.innerHTML=header('Grupo','',{icon:'&#8592;',click:'backToGroups()'})+`<div class="content" style="padding-top:0;padding-bottom:70px">
+      <div class="g-card" style="margin-top:12px">
+        <div class="g-head">
+          <div class="g-avatar" style="width:56px;height:56px">${grp.image?`<img src="${su(grp.image)}" onerror="this.style.display='none';this.parentNode.textContent='${groupEmoji(grp.category)}'">`:groupEmoji(grp.category)}</div>
+          <div class="g-info"><b style="font-size:15px">${esc(grp.name)}${grp.is_owner?'<span class="g-badge">CRIADOR</span>':''}</b>
+            <span class="small">${esc(grp.description||'')}</span>
+            <span class="g-meta">${esc(grp.category)} &bull; ${grp.member_count} membro(s)</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap">
+          ${memberAvatars?`<div style="display:flex;align-items:center">${memberAvatars}</div>`:''}
+          ${grp.my_role==='owner'?'<span class="g-badge">&#128081; Criador</span>':(grp.my_role==='member'?'<span class="g-badge">MEMBRO</span>':'')}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+          ${grp.is_owner?'':(grp.is_member?`<button class="btn small-btn outline" onclick="leaveGroupDetail(${grp.id})">Sair do grupo</button>`:`<button class="btn small-btn" onclick="joinGroupDetail(${grp.id})">&#10003; Participar do grupo</button>`)}
+          ${grp.is_owner?`<button class="btn small-btn outline" style="color:#e5484d" onclick="deleteGroup(${grp.id})">Excluir grupo</button>`:''}
+        </div>
+      </div>
+      <div class="home-section-title"><h2>Publicacoes do grupo</h2></div>
+      ${grp.is_member||grp.is_owner?`<div style="display:flex;gap:6px;margin-bottom:10px">
+        <input id="gPostInput" placeholder="Escreva algo para o grupo..." onkeydown="if(event.key==='Enter')sendGroupPost(${grp.id})" style="flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:12px;background:var(--card)">
+        <button class="btn small-btn" onclick="sendGroupPost(${grp.id})">Publicar</button>
+      </div>`:''}
+      ${currentGroupPosts.length?currentGroupPosts.map(p=>`<div class="g-post">
+        <div class="g-post-head">
+          <div class="avatar"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div>
+          <div style="flex:1"><b style="font-size:12px">@${atname(p.user_name)}</b><div class="small">${formatDate(p.created_at)}</div></div>
+          ${grp.is_owner||p.user_id===currentUser?.id?`<button class="btn small-btn outline" style="color:#e5484d;padding:4px 8px" onclick="deleteGroupPost(${grp.id},${p.id})">X</button>`:''}
+        </div>
+        <div style="font-size:12px;line-height:1.5">${esc(p.text)}</div>
+        ${p.image?`<img src="${su(p.image)}" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:8px" onerror="this.style.display='none'">`:''}
+      </div>`).join(''):'<div class="home-empty"><div style="font-size:30px">&#128172;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhuma publicacao no grupo</b><span class="small">'+((grp.is_member||grp.is_owner)?'Seja o primeiro a postar.':'Entre no grupo para participar da conversa.')+'</span></div>'}`;
+  }catch(e){alert(e.message);}
+}
+function backToGroups(){homeSection='grupos';loadGroups(()=>render());render();}
+async function joinGroupCard(id){try{await api('/api/groups/'+id+'/join',{method:'POST'});loadGroups(()=>render());}catch(e){alert(e.message);}}
+async function joinGroupDetail(id){try{await api('/api/groups/'+id+'/join',{method:'POST'});openGroupDetail(id);}catch(e){alert(e.message);}}
+async function leaveGroupDetail(id){try{await api('/api/groups/'+id+'/leave',{method:'POST'});backToGroups();}catch(e){alert(e.message);}}
+async function sendGroupPost(id){
+  const inp=document.getElementById('gPostInput');
+  const txt=inp?.value.trim();if(!txt)return;
+  try{await api('/api/groups/'+id+'/posts',{method:'POST',body:JSON.stringify({text:txt})});openGroupDetail(id);}catch(e){alert(e.message);}
+}
+async function deleteGroupPost(id,pid){
+  if(!confirm('Excluir esta publicacao?'))return;
+  try{await api('/api/groups/'+id+'/posts/'+pid,{method:'DELETE'});openGroupDetail(id);}catch(e){alert(e.message);}
+}
+async function deleteGroup(id){
+  if(!confirm('Excluir este grupo? Essa acao apaga todas as publicacoes e membros.'))return;
+  try{await api('/api/groups/'+id,{method:'DELETE'});backToGroups();}catch(e){alert(e.message);}
 }
 
 function togglePostMenu(id){document.querySelectorAll('.post-dropdown').forEach(el=>{if(el.id!=='pmenu-'+id)el.style.display='none';});const el=document.getElementById('pmenu-'+id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
@@ -1737,9 +1942,10 @@ async function requestPartnership(targetUserId, targetPetId) {
 
 async function renderPartnershipPending() {
   try {
-    const [received, sent] = await Promise.all([
+    const [received, sent, matches] = await Promise.all([
       api('/api/match/requests').catch(()=>[]),
-      api('/api/match/requests/sent').catch(()=>[])
+      api('/api/match/requests/sent').catch(()=>[]),
+      api('/api/match/matches').catch(()=>[])
     ]);
     screen.innerHTML = header('Parcerias','',{icon:'&#8592;',click:'renderPerfil()'})+`<div class="content">
       <div class="section"><h2>Solicitacoes Recebidas</h2></div>
@@ -1760,6 +1966,26 @@ async function renderPartnershipPending() {
         <div style="font-weight:700;font-size:12px">Para: ${esc(r.target_name)}</div>
         <div class="small">Pet: ${esc(r.target_pet_name||'')} &bull; <span style="color:var(--orange)">Aguardando resposta</span></div>
       </div>`).join('')}
+      <div class="section"><h2>Minhas parcerias</h2></div>
+      ${!matches||!matches.length?'<div class="pl-note">Quando voce formar uma parceria, ela aparece aqui com estatisticas de intimidade.</div>':matches.map((m,idx)=>`
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="avatar"><img src="${su(m.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
+            <div style="flex:1"><b style="font-size:13px">@${atname(m.partner_name)}</b>
+              <div class="small">${partnershipTypeLabel(m.partnership_type)} &bull; parceiro(a) #${idx+1}</div>
+            </div>
+            <span class="g-badge" style="margin:0">&#128153;</span>
+          </div>
+          <div class="par-stats">
+            <div><b>${m.juntos_dias||0}</b><span>Juntos ha (dias)</span></div>
+            <div><b>${m.intimacy||0}</b><span>Intimidade</span></div>
+            <div><b>${m.streak||0}</b><span>Streak (dias)</span></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <button class="btn small-btn" style="flex:1" onclick="openPartnershipDetail(${m.id})">&#128153; Ver parceria</button>
+            <button class="btn small-btn outline" style="flex:1" onclick="openChat(${m.id},'${sj(atname(m.partner_name))}','${sj(m.partner_avatar||'')}')">&#128172; Abrir chat</button>
+          </div>
+        </div>`).join('')}
     </div>`;
   } catch(e) { console.error(e); }
 }
@@ -1771,6 +1997,35 @@ async function respondPartnership(requestId, accept) {
     else { alert(accept?'Parceria criada!':'Parceria recusada.'); }
     renderPartnershipPending();
   } catch(e) { alert(e.message); }
+}
+
+async function openPartnershipDetail(matchId){
+  try{
+    const st=await api('/api/match/matches/'+matchId+'/stats');
+    screen.innerHTML=header('Minha Parceria','',{icon:'&#8592;',click:'renderPartnershipPending()'})+`<div class="content" style="padding-top:0">
+      <div class="g-card" style="margin-top:12px;text-align:center">
+        <div style="font-size:46px">&#128153;</div>
+        <div style="font-weight:800;font-size:16px;margin-top:6px">Parceria com<br>@${atname(st.partner_name)}</div>
+        <div class="small" style="margin-top:6px;color:var(--soft)">${partnershipTypeLabel('amigos')}</div>
+        <div class="par-stats">
+          <div><b>${st.juntos_dias||0}</b><span>Juntos ha<br>(dias)</span></div>
+          <div><b>${st.intimidade||0}</b><span>Intimidade<br>(pontos)</span></div>
+          <div><b>${st.streak||0}</b><span>Streak<br>(dias seguidos)</span></div>
+        </div>
+        <div class="small" style="margin-top:10px;color:var(--soft);line-height:1.5">${st.last_interaction_date?'Ultima interacao em '+st.last_interaction_date+'':'Nenhuma interacao ainda (comece a conversar para somar intimidade!).'}</div>
+      </div>
+      <div class="g-card">
+        <div class="home-section-title" style="margin:0 0 8px"><h2>Como a intimidade cresce</h2></div>
+        <div style="font-size:12px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:10px;padding:9px 12px"><span>&#128172; Mensagens trocadas</span><b style="color:var(--green)">+3</b></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:10px;padding:9px 12px"><span>&#128248; Publicacao marcando o parceiro</span><b style="color:var(--green)">+5</b></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:10px;padding:9px 12px"><span>&#128197; Encontro em que ambos confirma&ccedil;&atilde;o presen&ccedil;a</span><b style="color:var(--green)">+10</b></div>
+        </div>
+        <div class="pl-note" style="padding-top:8px">O Streak conta dias consecutivos com interacao (post, mensagem ou encontro). Interaja todos os dias para manter a sequencia!</div>
+        <button class="btn" style="width:100%;margin-top:10px" onclick="openChat(${matchId},'${sj(atname(st.partner_name))}','${sj(st.partner_avatar||'')}')">&#128172; Abrir conversa com o parceiro</button>
+      </div>
+    </div>`;
+  }catch(e){alert(e.message);}
 }
 function renderPets(){
   screen.innerHTML=header('Meus Pets','',{icon:'+',click:"openModal('addPet')"})+`
@@ -1944,27 +2199,31 @@ function renderPerfil(){
   const bell=`<button class="icon-btn notif-btn" onclick="renderNotificacoes()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
   const cartBtn=`<button class="icon-btn cart-icon" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`;
   const chatBtn=`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Chat"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`;
-  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions">${cartBtn}${chatBtn}${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes"><span>&#9881;</span></button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
+  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${cartBtn}${chatBtn}${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes"><span>&#9881;</span></button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
-    <div class="tutor-card">
-      <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative" title="Clique para alterar foto">
+    <div class="tutor-card" style="padding:18px 14px">
+      <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative;line-height:0" title="Clique para alterar foto">
         <img src="${su(currentUser.selfie_url||currentUser.avatar||'')}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
-        <div style="position:absolute;bottom:0;right:0;background:var(--green);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid #fff">&#128247;</div>
+        <div class="avatar-cam" style="position:absolute;bottom:2px;right:2px;width:25px;height:25px">&#128247;</div>
       </div>
-      <div style="font-weight:800;font-size:16px;margin:6px 0 2px">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
-      <div class="small">${esc(currentUser.location||'')}</div>
-      ${currentUser.is_human_verified?'<div style="margin-top:6px"><span class="badge-verified">Humano Verificado</span></div>':`<div style="margin-top:8px"><button class="btn small-btn" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button></div>`}
-      <div class="small" style="margin-top:8px">${esc(currentUser.bio||'')}</div>
-      ${(currentUser.instagram||currentUser.whatsapp)?`<div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">${currentUser.instagram?`<a class="social-chip" href="https://instagram.com/${sj(String(currentUser.instagram).replace(/^@/,''))}" target="_blank" rel="noopener">&#128247; @${esc(currentUser.instagram)}</a>`:''}${currentUser.whatsapp?`<a class="social-chip" href="https://wa.me/${sj(String(currentUser.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">&#128241; ${esc(currentUser.whatsapp)}</a>`:''}</div>`:''}
-      <div style="display:flex;justify-content:space-around;background:var(--bg);border-radius:12px;padding:8px;margin-top:12px">
+      <div style="font-weight:800;font-size:17px;margin:10px 0 0">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
+      <div class="profile-handle">@${atname(handleFor(currentUser.name))}</div>
+      <div class="small" style="margin-top:4px">${esc(currentUser.location||'')}</div>
+      ${currentUser.is_human_verified?'<div style="margin-top:8px"><span class="badge-verified">Humano Verificado</span></div>':`<div style="margin-top:8px"><button class="btn small-btn" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button></div>`}
+      <div class="small" style="margin-top:8px;line-height:1.5">${esc(currentUser.bio||'')}</div>
+      ${(currentUser.instagram||currentUser.whatsapp)?`<div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">${currentUser.instagram?`<a class="social-chip" href="https://instagram.com/${sj(atname(currentUser.instagram))}" target="_blank" rel="noopener">&#128247; @${atname(currentUser.instagram)}</a>`:''}${currentUser.whatsapp?`<a class="social-chip" href="https://wa.me/${sj(String(currentUser.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">&#128241; ${esc(currentUser.whatsapp)}</a>`:''}</div>`:''}
+      <div style="display:flex;justify-content:space-around;background:var(--bg);border-radius:12px;padding:10px;margin-top:14px">
         <div class="small"><b>${currentUser.stats?.pets||0}</b> Pets</div>
         <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
       <div style="margin-top:14px">${renderSeusPets()}</div>
-      <button class="btn gold outline" style="width:100%;margin-top:12px" onclick="setTab('pontos')">&#11088; Meus pontos</button>
-      <button class="btn pink" style="width:100%;margin-top:6px" onclick="formarParceria()">&#128153; Formar Parceria</button>
-      ${currentUser.is_admin?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderAdmin()">&#128737; Painel Admin</button>`:''}
+      <div class="hb-actions">
+        <button class="hb-btn hb-green" onclick="renderMyAdoptions()">&#128062; Minha Adocao</button>
+        <button class="hb-btn hb-gold" onclick="setTab('pontos')">&#11088; Meus pontos</button>
+        <button class="hb-btn hb-pink" onclick="formarParceria()">&#128153; Formar Parceria</button>
+        ${currentUser.is_admin?`<button class="hb-btn hb-blue" onclick="renderAdmin()">&#128737; Painel Admin</button>`:''}
+      </div>
     </div>
   </div>`;
 }
@@ -2511,8 +2770,8 @@ let currentChatMatchId=null;
 async function openChat(matchId,partnerName,partnerAvatar){
   currentChatMatchId=matchId;
   chatMatchId=matchId;
-  const root=document.getElementById('modal-root');
-  if(!root)return;
+  let root=document.getElementById('modal-root');
+  if(!root){root=document.createElement('div');root.id='modal-root';document.body.appendChild(root);}
   root.innerHTML=`<div class="modal-bg" style="height:100%;align-items:stretch" onclick="if(event.target===this)closeModal()"><div class="modal" style="border-radius:0;max-height:100%;height:100%;display:flex;flex-direction:column">
     <div class="modal-head"><div style="display:flex;align-items:center;gap:8px"><button class="close" onclick="closeModal()">&#8592;</button><div><b>${esc(partnerName)}</b><div id="chatLastSeen" class="small" style="color:var(--soft);font-weight:400"></div></div></div></div>
     <div class="chat-window"><div class="chat-messages" id="chatMessages"></div>
@@ -2646,7 +2905,7 @@ function renderReels(){
     <div class="reel-card" id="reel-${r.id}">
       ${r.video_url?`<video class="reel-video" src="${su(r.video_url)}" loop muted playsinline onclick="this.paused?this.play():this.pause();this.muted=false" poster="${su(r.thumbnail||'')}" preload="metadata"></video>`:`<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:48px">&#127916;</div>`}
       <div class="reel-overlay">
-        <b>@${esc(r.user_name)} ${getBadge(r.user_plan)}</b>
+        <b>@${atname(r.user_name)} ${getBadge(r.user_plan)}</b>
         <p>${esc(r.caption)}</p>
         ${r.music?`<div class="reel-music">&#9835; ${esc(r.music)}</div>`:''}
       </div>
@@ -3078,7 +3337,7 @@ async function viewUserProfile(userId){
         <div style="font-weight:800">${esc(u.name)} ${getBadge(u.plan)}</div>
         <div class="small">${esc(u.location||'')} ${u.is_human_verified?'&#128275; Verificado':''}</div>
         <div class="small" style="margin-top:4px">${esc(u.bio||'')}</div>
-        ${(u.instagram||u.whatsapp)?`<div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">${u.instagram?`<a class="social-chip" href="https://instagram.com/${sj(String(u.instagram).replace(/^@/,''))}" target="_blank" rel="noopener">&#128247; @${esc(u.instagram)}</a>`:''}${u.whatsapp?`<a class="social-chip" href="https://wa.me/${sj(String(u.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">&#128241; ${esc(u.whatsapp)}</a>`:''}</div>`:''}
+        ${(u.instagram||u.whatsapp)?`<div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">${u.instagram?`<a class="social-chip" href="https://instagram.com/${sj(atname(u.instagram))}" target="_blank" rel="noopener">&#128247; @${atname(u.instagram)}</a>`:''}${u.whatsapp?`<a class="social-chip" href="https://wa.me/${sj(String(u.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">&#128241; ${esc(u.whatsapp)}</a>`:''}</div>`:''}
         <div class="social-stats">
           <div style="cursor:pointer" onclick="renderFollowers(${userId},'Seguidores')"><b>${u.followers}</b><span class="small">Seguidores</span></div>
           <div style="cursor:pointer" onclick="renderFollowing(${userId},'Seguindo')"><b>${u.following}</b><span class="small">Seguindo</span></div>
@@ -3554,6 +3813,8 @@ async function openEventDetail(id){
   const dateTxt=d.length===3?`${d[2]}/${d[1]}${ev.time?' as '+esc(ev.time):''}`:(ev.date||'');
   const full=ev.latitude&&ev.longitude?`<button class="btn small-btn outline" onclick="viewEventMap(${id})">&#128205; Ver no mapa</button>`:'';
   const pendingNote=ev.status!=='approved'?'<div class="rem-band">&#9200; Este evento esta em analise pela moderacao e sera publicado apos aprovacao.</div>':'';
+  const todayLocal=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+  const evActive=ev.status==='approved'&&String(ev.date||'').slice(0,10)>=todayLocal;
   let btnHtml;
   if(ev.is_organizer){
     btnHtml=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
@@ -3562,6 +3823,7 @@ async function openEventDetail(id){
       <button class="btn small-btn outline" onclick="shareEvent(${ev.id})">&#128257; Compartilhar (${ev.shares||0})</button>
       <button class="btn small-btn outline" onclick="openNewEvent(${ev.id})">Editar</button>
       <button class="btn small-btn outline" style="color:#e5484d" onclick="deleteEvent(${ev.id})">Excluir</button>
+      ${evActive?`<button class="btn small-btn outline" id="btnEvLive" style="margin-top:6px" onclick="toggleEventLiveLoc(${ev.id})">${evLiveOn?'&#128683; Parar de compartilhar':'&#128225; Compartilhar localizacao ao vivo'}</button>`:''}
     </div>`;
   }else{
     btnHtml=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
@@ -3581,10 +3843,66 @@ async function openEventDetail(id){
     ${ev.description?`<p class="small" style="margin:10px 0;line-height:1.6">${esc(ev.description)}</p>`:''}
     ${pendingNote}
     ${btnHtml}
+    <div id="evLiveArea"></div>
     <div class="ev-foot" style="margin-top:12px;font-size:11px"><span>Organizado por <b>${ev.organizer?esc(ev.organizer.name):''}</b> ${ev.organizer?getBadge(ev.organizer.plan):''}</span><span>&#128100; ${ev.count_participants||0} &bull; &#128151; ${ev.count_saved||0}</span></div>
   </div>`;
+  loadEventLiveInfo(ev.id);
 }
-function goEventos(){currentEventId=null;renderEventos();}
+async function toggleEventLiveLoc(id){
+  if(evLiveOn){await stopEventLiveLoc(id);return;}
+  if(!navigator.geolocation){alert('Seu dispositivo nao suporta geolocalizacao.');return;}
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=pos.coords.latitude,lng=pos.coords.longitude;
+    try{await api('/api/events/'+id+'/liveloc',{method:'POST',body:JSON.stringify({enabled:true,lat,lng})});}
+    catch(e){alert(e.message);return;}
+    evLiveOn=true;
+    evLiveTimer=setInterval(()=>{
+      navigator.geolocation.getCurrentPosition(async p=>{
+        try{await api('/api/events/'+id+'/liveloc',{method:'POST',body:JSON.stringify({enabled:true,lat:p.coords.latitude,lng:p.coords.longitude})});}catch(e){}
+      },null,{enableHighAccuracy:true});
+    },15000);
+    loadEventLiveInfo(id);
+    showToast('Localizacao ao vivo ativada. Os participantes veem o local do encontro.');
+  },()=>{alert('Nao foi possivel obter sua localizacao.');},{enableHighAccuracy:true});
+}
+async function stopEventLiveLoc(id){
+  evLiveOn=false;
+  if(evLiveTimer){clearInterval(evLiveTimer);evLiveTimer=null;}
+  try{await api('/api/events/'+id+'/liveloc',{method:'POST',body:JSON.stringify({enabled:false})});}catch(e){}
+  document.getElementById('evLiveArea')?.remove();
+  const btn=document.getElementById('btnEvLive');
+  if(btn)btn.textContent='&#128225; Compartilhar localizacao ao vivo';
+  loadEventLiveInfo(id);
+  showToast('Localizacao ao vivo desativada.');
+}
+async function loadEventLiveInfo(id){
+  const area=document.getElementById('evLiveArea');
+  if(!area)return;
+  try{
+    const d=await api('/api/events/'+id+'/liveloc');
+    if(evLiveOn&&currentUser){
+      area.innerHTML=`<div class="pl-note" style="background:rgba(231,76,60,.08);border-left:4px solid #E74C3C;margin-top:10px"><span class="live-badge"><span class="live-dot"></span>Localizacao do encontro ativa</span><span class="small" style="display:block;margin-top:6px">Atualizada as ${new Date().toLocaleTimeString()}. Os participantes ja conseguem ver onde o encontro esta.</span></div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn small-btn outline" id="btnEvLive" style="flex:1" onclick="toggleEventLiveLoc(${id})">&#128683; Parar de compartilhar</button>
+        <button class="btn small-btn" style="flex:1" onclick="viewEventMap(${id})">&#128205; Ver meu local</button>
+      </div>`;
+    }
+    else if(d.enabled&&d.lat!=null&&d.lng!=null){
+      area.innerHTML=`<div class="pl-note" style="background:rgba(231,76,60,.08);border-left:4px solid #E74C3C;margin-top:10px">
+        <span class="live-badge"><span class="live-dot"></span>O organizador compartilha o local do encontro ao vivo</span>
+        <button class="btn small-btn" style="width:100%;margin-top:8px" onclick="openEventLiveMap(${id},${d.lat},${d.lng})">&#128205; Abrir local no mapa</button>
+      </div>`;
+    }else{
+      area.innerHTML='';
+    }
+  }catch(e){area.innerHTML='';}
+}
+function openEventLiveMap(id,lat,lng){
+  window._userLat=lat;window._userLng=lng;
+  setTab('mapa');
+  showToast('Local do encontro aberto no mapa.');
+}
+function goEventos(){if(evLiveTimer){clearInterval(evLiveTimer);evLiveTimer=null;}evLiveOn=false;currentEventId=null;renderEventos();}
 function viewEventMap(id){
   const ev=eventsData.find(x=>x.id===id);
   if(!ev)return;

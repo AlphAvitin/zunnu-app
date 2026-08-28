@@ -43,6 +43,7 @@ app.use('/api/social', require('./routes/social'));
 app.use('/api/petgallery', require('./routes/petgallery'));
 app.use('/api/aimatch', require('./routes/aimatch'));
 app.use('/api/cart', require('./routes/cart'));
+app.use('/api/groups', require('./routes/groups'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/lostpets', require('./routes/lostpets'));
 app.use('/api/bookings', require('./routes/bookings'));

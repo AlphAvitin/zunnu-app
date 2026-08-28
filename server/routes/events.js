@@ -2,6 +2,7 @@ const express = require('express');
 const { run, get, all } = require('../db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');
 const { sendToUser } = require('../ws');
+const { bumpIntimacy, getMatchBetweenUsers, INTIMACY, todayStr } = require('../partnership');
 
 const router = express.Router();
 
@@ -202,9 +203,16 @@ router.post('/:id/participate', authMiddleware, async (req, res) => {
     if (!newStatus) {
       if (existing) await run('DELETE FROM event_participants WHERE event_id = ? AND user_id = ?', [id, req.userId]);
     } else if (existing) {
+      const old = await get('SELECT status FROM event_participants WHERE event_id = ? AND user_id = ?', [id, req.userId]);
       await run('UPDATE event_participants SET status = ? WHERE event_id = ? AND user_id = ?', [newStatus, id, req.userId]);
+      if (newStatus === 'going' && old && old.status !== 'going') {
+        await bumpEncounterIntimacy(id, req.userId);
+      }
     } else {
       await run('INSERT INTO event_participants (event_id, user_id, status) VALUES (?, ?, ?)', [id, req.userId, newStatus]);
+      if (newStatus === 'going') {
+        await bumpEncounterIntimacy(id, req.userId);
+      }
       if (row.organizer_id !== req.userId) {
         const me = await get('SELECT name FROM users WHERE id = ?', [req.userId]);
         const reading = newStatus === 'going' ? 'vai participar de' : 'tem interesse em';
@@ -292,6 +300,72 @@ router.get('/:id/participants', optionalAuth, async (req, res) => {
     res.json({ participants, is_organizer: isOwner, participant_limit: row.participant_limit });
   } catch (err) {
     console.error('Event participants error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+async function bumpEncounterIntimacy(eventId, userId) {
+  try {
+    const participantCount = await get('SELECT COUNT(*) as going FROM event_participants WHERE event_id = ? AND status = ?', [eventId, 'going']);
+    if ((participantCount?.going || 0) < 2) return;
+    const goers = await all('SELECT user_id FROM event_participants WHERE event_id = ? AND status = ?', [eventId, 'going']);
+    if (!goers || goers.length < 2) return;
+    for (let i = 0; i < goers.length; i++) {
+      for (let j = i + 1; j < goers.length; j++) {
+        const a = goers[i].user_id, b = goers[j].user_id;
+        const match = await getMatchBetweenUsers(a, b);
+        if (match) {
+          // Count an event once per match
+          const already = await get('SELECT 1 as x FROM match_interaction_days WHERE match_id = ? AND day = ? AND event_together = 1', [match.id, todayStr()]);
+          await bumpIntimacy(match.id, INTIMACY.event_together);
+          await run('UPDATE match_interaction_days SET event_together = 1 WHERE match_id = ? AND day = ?', [match.id, todayStr()]);
+        }
+      }
+    }
+  } catch (e) {
+    console.error('bumpEncounterIntimacy error:', e);
+  }
+}
+
+router.get('/:id/liveloc', optionalAuth, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const row = await get('SELECT * FROM events WHERE id = ?', [id]);
+    if (!row) return res.status(404).json({ error: 'Evento nao encontrado' });
+    const active = row.status === 'approved' && String(row.date || '').slice(0, 10) >= todayStr();
+    res.json({
+      event_id: id,
+      enabled: active ? (row.live_location_enabled === 1) : false,
+      lat: active && row.live_location_enabled === 1 ? row.live_lat : null,
+      lng: active && row.live_location_enabled === 1 ? row.live_lng : null,
+      updated_at: active && row.live_location_enabled === 1 ? row.live_updated_at : null,
+      active
+    });
+  } catch (err) {
+    console.error('Event liveloc get error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+router.post('/:id/liveloc', authMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const row = await get('SELECT * FROM events WHERE id = ?', [id]);
+    if (!row) return res.status(404).json({ error: 'Evento nao encontrado' });
+    if (row.organizer_id !== req.userId) return res.status(403).json({ error: 'Somente o organizador pode ativar' });
+    if (row.status !== 'approved' || String(row.date || '').slice(0, 10) < todayStr()) {
+      return res.status(400).json({ error: 'Localizacao ao vivo so durante o evento ativo' });
+    }
+    const enabled = !!req.body.enabled;
+    const lat = enabled ? parseFloat(req.body.lat) : null;
+    const lng = enabled ? parseFloat(req.body.lng) : null;
+    if (enabled && (!isFinite(lat) || !isFinite(lng))) return res.status(400).json({ error: 'Coordenadas invalidas' });
+    const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    await run('UPDATE events SET live_location_enabled = ?, live_lat = ?, live_lng = ?, live_updated_at = ? WHERE id = ?',
+      [enabled ? 1 : 0, enabled ? lat : null, enabled ? lng : null, enabled ? now : row.live_updated_at, id]);
+    res.json({ ok: true, enabled, lat: enabled ? lat : null, lng: enabled ? lng : null, updated_at: enabled ? now : null });
+  } catch (err) {
+    console.error('Event liveloc set error:', err);
     res.status(500).json({ error: 'Erro interno' });
   }
 });

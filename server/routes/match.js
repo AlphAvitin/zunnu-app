@@ -3,8 +3,17 @@ const { run, get, all } = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 const { sendToUser } = require('../ws');
 const { creditPoints } = require('./points');
+const { bumpIntimacy, getMatchStats, INTIMACY } = require('../partnership');
 
 const router = express.Router();
+
+function juntosDias(createdAt) {
+  if (!createdAt) return 0;
+  const m = String(createdAt).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return 0;
+  const start = new Date(m.slice(1).join('-') + 'T00:00:00Z').getTime();
+  return Math.max(0, Math.round((Date.now() - start) / 86400000));
+}
 
 // Send partnership request
 router.post('/request', authMiddleware, async (req, res) => {
@@ -234,9 +243,54 @@ router.get('/matches', authMiddleware, async (req, res) => {
       ORDER BY COALESCE((SELECT ms4.created_at FROM messages ms4 WHERE ms4.match_id = m.id ORDER BY ms4.id DESC LIMIT 1), m.created_at) DESC
     `, [req.userId, req.userId, req.userId, req.userId, req.userId, req.userId]);
 
-    res.json(matches);
+    const ids = matches.map(x => x.id);
+    let daysByMatch = {};
+    if (ids.length) {
+      const placeholders = ids.map(() => '?').join(',');
+      const days = await all(`SELECT match_id, day FROM match_interaction_days WHERE match_id IN (${placeholders})`, ids);
+      daysByMatch = days.reduce((acc, r) => {
+        (acc[r.match_id] = acc[r.match_id] || []).push(r.day);
+        return acc;
+      }, {});
+    }
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const computeStreak = (daysArr) => {
+      const set = new Set(daysArr || []);
+      let streak = 0;
+      let cursor = set.has(todayStr) ? todayStr : new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      while (set.has(cursor)) {
+        streak++;
+        cursor = new Date(new Date(cursor + 'T00:00:00Z').getTime() - 86400000).toISOString().slice(0, 10);
+      }
+      return streak;
+    };
+
+    const out = matches.map(m => ({
+      ...m,
+      juntos_dias: juntosDias(m.created_at),
+      streak: computeStreak(daysByMatch[m.id])
+    }));
+
+    res.json(out);
   } catch (err) {
     console.error('Match list error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
+router.get('/matches/:matchId/stats', authMiddleware, async (req, res) => {
+  try {
+    const matchId = parseInt(req.params.matchId);
+    const match = await get('SELECT * FROM matches WHERE id = ? AND (user1_id = ? OR user2_id = ?)',
+      [matchId, req.userId, req.userId]);
+    if (!match) return res.status(404).json({ error: 'Parceria nao encontrada' });
+    const stats = await getMatchStats(matchId);
+    const partnerId = match.user1_id === req.userId ? match.user2_id : match.user1_id;
+    const partner = await get('SELECT id, name, avatar FROM users WHERE id = ?', [partnerId]);
+    res.json({ ...stats, partner_id: partnerId, partner_name: partner?.name, partner_avatar: partner?.avatar });
+  } catch (err) {
+    console.error('Match stats error:', err);
     res.status(500).json({ error: 'Erro interno' });
   }
 });
@@ -285,6 +339,8 @@ router.post('/matches/:matchId/messages', authMiddleware, async (req, res) => {
       SELECT m.*, u.name as sender_name, u.avatar as sender_avatar
       FROM messages m JOIN users u ON m.sender_id = u.id WHERE m.id = ?
     `, [result.lastInsertRowid]);
+
+    await bumpIntimacy(match.id, INTIMACY.message);
 
     const partnerId = match.user1_id === req.userId ? match.user2_id : match.user1_id;
     await run('INSERT INTO notifications (user_id, type, message, reference_id) VALUES (?, ?, ?, ?)',
