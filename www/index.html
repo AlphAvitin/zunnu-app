@@ -563,8 +563,6 @@ button,input,textarea,select{font:inherit}
     <button class="nav-btn active" data-tab="inicio" aria-label="Inicio"><span class="nav-icon">&#8962;</span>Inicio</button>
     <button class="nav-btn" data-tab="descobrir" aria-label="Descobrir"><span class="nav-icon">&#128269;</span>Descobrir</button>
     <button class="nav-btn" data-tab="mapa" aria-label="Mapa"><span class="nav-icon">&#128205;</span>Mapa</button>
-    <button class="nav-btn" data-tab="pontos" aria-label="Pontos"><span class="nav-icon">&#11088;</span>Pontos</button>
-    <button class="nav-btn" data-tab="pets" aria-label="Pets"><span class="nav-icon">&#128062;</span>Pets</button>
     <button class="nav-btn" data-tab="loja" aria-label="Loja"><span class="nav-icon">&#128722;</span>Loja</button>
     <button class="nav-btn" data-tab="perfil" aria-label="Perfil"><span class="nav-icon">&#128100;</span>Perfil</button>
   </div>
@@ -921,24 +919,15 @@ function petHealthChip(p){
   return`<span class="pp-vax ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</span>`;
 }
 
-function renderInicio(){
-  const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
-  const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
-  const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Mensagens"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
-  const cartBtn=currentUser?`<button class="icon-btn" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
-  const speciesEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Coelho:'&#128048;',Roedor:'&#128057;',Reptil:'&#129422;',Peixe:'&#128031;'};
-  const petStatus=(p)=>{const st=petHomeStatus(p);return`<div class="home-pet-status ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</div>`;};
-  let petsArea;
-  if(pets.length===0){
-    petsArea=`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`;
-  }else{
-    petsArea=`<div class="home-pets-scroll">${pets.map(p=>{
-      const emo=speciesEmoji[p.species]||'&#128062;';
-      return`<div class="home-pet-card" onclick="viewPetProfile(${p.id})">
+function renderSeusPets(){
+    const spEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Coelho:'&#128048;',Roedor:'&#128057;',Reptil:'&#129422;',Peixe:'&#128031;'};
+    const grid=`<div class="home-pets-scroll">${pets.map(p=>{
+      const emo=spEmoji[p.species]||'&#128062;';
+      const st=petHomeStatus(p);
+      return`<div class="home-pet-card" onclick="petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${p.id})">
         <div class="home-pet-photo"><img src="${su(p.image||'')}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt=""></div>
         <div class="home-pet-name">${esc(p.name)} <span class="small" style="font-size:11px">${emo}</span></div>
-        <div class="home-pet-breed">${esc(p.breed||p.species)}</div>${petStatus(p)}
+        <div class="home-pet-breed">${esc(p.breed||p.species)}</div>${st?`<div class="home-pet-status ${st.cl}">${st.cl==='ok'?'&#10024;':'&#9201;'} ${esc(st.txt)}</div>`:''}
       </div>`;
     }).join('')}
     <div class="home-pet-card home-pet-add" onclick="openModal('addPet')">
@@ -946,7 +935,16 @@ function renderInicio(){
       <div class="home-pet-name" style="color:var(--green)">Adicionar</div>
       <div class="home-pet-breed">novo pet</div>
     </div></div>`;
+    return`<div class="home-section-title"><h2>&#128062; Seus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>`
+      +(pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`:grid);
   }
+
+function renderInicio(){
+  const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
+  const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
+  const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes"><span>&#128276;</span>${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
+  const chatBtn=currentUser?`<button class="icon-btn" onclick="openModal('chat');refreshChatBadge()" aria-label="Mensagens"><span>&#128172;</span>${chatUnreadTotal>0?`<span class="chat-badge" id="chatBadge">${chatUnreadTotal>9?'9+':chatUnreadTotal}</span>`:''}</button>`:'';
+  const cartBtn=currentUser?`<button class="icon-btn" onclick="renderCart()" aria-label="Carrinho"><span>&#128722;</span>${cartCount>0?`<span class="cart-badge">${cartCount}</span>`:''}</button>`:'';
   const pins=homeNearby.slice(0,3).map((p,i)=>{
     const pst=[[20,18],[58,12],[36,62]][i];
     return`<div class="home-map-pin" style="left:${pst[0]}%;top:${pst[1]}%" onclick="event.stopPropagation();setTab('mapa')"><img src="${su(p.image||'')}" onerror="this.style.display='none'" alt=""></div>`;
@@ -979,8 +977,6 @@ function renderInicio(){
   <button class="home-plan-chip" onclick="openModal('plans')">${planTxt} &#11088; Ver planos</button>
   </div>
   <div class="content">
-    <div class="home-section-title"><h2>Seus pets &#128062;</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>
-    ${petsArea}
     <div class="home-section-title"><h2>Perto de voces &#128205;</h2></div>
     <div class="home-map-card" onclick="setTab('mapa')">
       <div class="home-map-preview">${pins}<div class="home-map-pin you" style="right:8%;bottom:12%">&#128205;</div></div>
@@ -1912,7 +1908,9 @@ function renderPerfil(){
         <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
-      <button class="btn pink" style="width:100%;margin-top:12px" onclick="renderPartnershipPending()">&#128153; Solicitacoes de Parceria</button>
+      <div style="margin-top:14px">${renderSeusPets()}</div>
+      <button class="btn gold outline" style="width:100%;margin-top:12px" onclick="setTab('pontos')">&#11088; Meus pontos</button>
+      <button class="btn pink" style="width:100%;margin-top:6px" onclick="renderPartnershipPending()">&#128153; Solicitacoes de Parceria</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="renderNotificacoes()">&#128276; Notificacoes${unreadCount?` <span class="disco-badge">${unreadCount>9?'9+':unreadCount}</span>`:''}</button>
       <button class="btn outline" style="width:100%;margin-top:6px" onclick="openConfig()">&#9881; Configuracoes</button>
       ${currentUser.plan==='pro'?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="renderMyEvents()">&#128197; Meus Eventos</button>`:''}
@@ -2550,7 +2548,7 @@ async function renderPontos() {
     const balance = data.balance || 0;
     const history = data.history || [];
     const rules = data.rules || {};
-    screen.innerHTML = header('Clube de Pontos','')+`<div class="content">
+    screen.innerHTML = header('Clube de Pontos','',{icon:'&#8592;',click:"setTab('perfil')"})+`<div class="content">
       <div style="background:linear-gradient(135deg,#FFE259,#FFA751);border-radius:16px;padding:20px;text-align:center;margin-bottom:12px">
         <div style="font-size:12px;font-weight:700;color:#5A3900">SEU SALDO</div>
         <div style="font-size:40px;font-weight:800;color:#5A3900">${balance} <span style="font-size:18px">pts</span></div>

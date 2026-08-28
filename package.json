@@ -7,6 +7,10 @@
     "start": "node server/server.js",
     "dev": "node server/server.js",
     "seed": "node server/seed.js",
+    "build": "node scripts/build.web.js",
+    "cap:sync": "npx cap sync android",
+    "apk": "node scripts/apk.js",
+    "apk:build": "npm run build && npm run cap:sync && npm run apk",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
