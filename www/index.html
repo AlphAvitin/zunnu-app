@@ -398,6 +398,50 @@ button,input,textarea,select{font:inherit}
 .live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(231,76,60,.12);color:#E74C3C;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px}
 .live-dot{width:7px;height:7px;border-radius:50%;background:#E74C3C;animation:pulse 1.2s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,.5)}70%{box-shadow:0 0 0 7px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
+/* ===== Chats redesign ===== */
+.chat-sec-head{display:flex;align-items:center;gap:8px;margin:20px 0 10px}
+.chat-sec-head h2{font-size:15px;font-weight:900;margin:0}
+.sugg-scroll{display:flex;gap:10px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.sugg-scroll::-webkit-scrollbar{display:none}
+.sugg-card{min-width:208px;max-width:230px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.sugg-top{display:flex;gap:9px;align-items:center}
+.sugg-avatar{width:44px;height:44px;border-radius:50%;background:var(--purpleSoft);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:18px;flex-shrink:0;color:var(--purple);font-weight:800}
+.sugg-avatar img{width:100%;height:100%;object-fit:cover}
+.sugg-pet{display:flex;gap:6px;align-items:center;margin-top:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:6px 8px;min-width:0}
+.sugg-pet img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--greenSoft);flex-shrink:0}
+.sugg-pet-emoji{width:28px;height:28px;border-radius:50%;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sugg-dist{font-size:9px;color:var(--soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sugg-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.sugg-tag{font-size:8px;font-weight:700;background:var(--purpleSoft);color:var(--purple);padding:2px 7px;border-radius:20px}
+.sugg-msg{margin-top:10px}
+.chat-empty{background:var(--card);border:1px dashed var(--line);border-radius:18px;padding:32px 20px;text-align:center;margin-top:4px}
+.chat-empty-art{width:88px;height:88px;margin:0 auto 12px;border-radius:26px;background:linear-gradient(135deg,var(--purpleSoft),var(--greenSoft));display:flex;align-items:center;justify-content:center;color:var(--purple);position:relative}
+.chat-empty-art .ic{width:40px;height:40px}
+.chat-empty-art::before,.chat-empty-art::after{content:'';position:absolute;border-radius:50%}
+.chat-empty-art::before{width:14px;height:14px;top:-6px;right:-4px;background:var(--coralSoft)}
+.chat-empty-art::after{width:22px;height:22px;bottom:-8px;left:-8px;background:var(--greenSoft);opacity:.8}
+.chat-empty-art .mini{position:absolute;right:10px;bottom:12px;width:20px;height:20px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.chat-empty-art .mini .ic{width:12px;height:12px}
+.sec-alert{display:flex;gap:9px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.35);border-radius:12px;padding:10px 12px;margin:14px 0 4px}
+.sec-alert .ic{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:var(--orange)}
+.sec-alert b{font-size:11px;color:var(--orange);display:block;margin-bottom:2px}
+.sec-alert span{font-size:10px;color:var(--soft);line-height:1.45;display:block}
+.fab{position:fixed;right:16px;bottom:78px;z-index:60;width:54px;height:54px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(124,58,237,.4);cursor:pointer;transition:transform .15s}
+.fab .ic{width:22px;height:22px}
+.fab:active{transform:scale(.94)}
+.fab-hint{position:fixed;right:80px;bottom:90px;z-index:60;background:var(--card);border:1px solid var(--line);color:var(--ink);font-size:10px;font-weight:700;padding:5px 9px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.12);pointer-events:none}
+/* ===== Grupos redesign ===== */
+.grp-search{display:flex;gap:7px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin:2px 16px 8px}
+.grp-search .ic{width:15px;height:15px;color:var(--purple);flex-shrink:0}
+.grp-search input{flex:1;border:none;background:none;outline:none;font-size:12px;color:var(--ink)}
+.inter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px}
+.inter-tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 6px;text-align:center;cursor:pointer;transition:transform .15s,border-color .15s}
+.inter-tile:active{transform:scale(.96)}
+.inter-tile.on{border-color:var(--purple);background:var(--purpleSoft)}
+.inter-tile .ic{width:22px;height:22px;margin-bottom:6px}
+.inter-tile b{display:block;font-size:9px;text-transform:capitalize;color:var(--ink);font-weight:700}
+.inter-tile.on b{color:var(--purple)}
+.grp-filter-note{font-size:11px;color:var(--soft);padding:4px 16px 2px}
 .discover-scroll{display:flex;gap:10px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
 .discover-scroll::-webkit-scrollbar{display:none}
 .discover-pet{min-width:112px;max-width:132px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;text-align:center;cursor:pointer;transition:transform .15s}
@@ -662,6 +706,8 @@ function setupBackButton(){
   }catch(e){}
 }
 let groupsData = [];
+let grpQ = '', grpCat = '';
+const GROUPS_INTERESTS=[['encontros','calendar','var(--purple)'],['passeios','dog','var(--green)'],['apoio','users','var(--blue)'],['adocao','heart','var(--coral)'],['outros','spark','var(--orange)']];
 let currentGroupDetail = null;
 let currentGroupPosts = [];
 let evLiveTimer = null;
@@ -700,6 +746,7 @@ let isTyping = {};
 let chatMatchId = null;
 let chatUnreadTotal = 0;
 let chatList = [];
+let chatSuggsCache = null;
 let cartItems = [];
 let cartCount = 0;
 let lostPets = [];
@@ -1171,7 +1218,7 @@ function renderInicio(){
 
 function setHomeSection(s){
   homeSection=s;
-  if(s==='grupos')loadGroups(thisRe=>renderGruposTab());
+  if(s==='grupos')loadGroups(()=>{render();});
   render();
 }
 
@@ -1241,8 +1288,9 @@ async function loadGroups(cb){
 }
 
 function renderGruposTab(){
-  const mine=groupsData.filter(g=>g.is_member||g.is_owner);
-  const discover=groupsData.filter(g=>!(g.is_member||g.is_owner));
+  const filtered=groupsData.filter(g=>(!grpCat||g.category===grpCat)&&(!grpQ||(g.name+' '+g.description+' '+g.category).toLowerCase().includes(grpQ.trim().toLowerCase())));
+  const mine=filtered.filter(g=>g.is_member||g.is_owner);
+  const discover=filtered.filter(g=>!(g.is_member||g.is_owner));
   const card=(g)=>`<div class="g-card">
     <div class="g-head">
       <div class="g-avatar">${g.image?`<img src="${su(g.image)}" onerror="this.style.display='none';this.parentNode.textContent='${groupEmoji(g.category)}'">`:groupEmoji(g.category)}</div>
@@ -1256,11 +1304,21 @@ function renderGruposTab(){
         :`<button class="btn small-btn" style="flex:1" onclick="joinGroupCard(${g.id})">Participar</button><button class="btn small-btn outline" style="flex:1" onclick="openGroupDetail(${g.id})">Ver</button>`}
     </div>
   </div>`;
+  const search=`<div class="grp-search">${ic('search')}<input id="grpSearch" placeholder="Buscar grupos por nome, tema ou descricao..." value="${grpQ?esc(grpQ):''}" oninput="grpQ=this.value;render()"></div>`;
+  const interests=`<div class="home-section-title"><h2>${ic('spark','var(--gold)')} Explore por interesses</h2></div>
+    <div class="inter-grid">
+      <div class="inter-tile ${grpCat===''?'on':''}" onclick="grpCat='';render()">${ic('paw','var(--purple)')}<b>todos</b></div>
+      ${GROUPS_INTERESTS.map(([c,icn,col])=>`<div class="inter-tile ${grpCat===c?'on':''}" onclick="grpCat='${c}';render()">${ic(icn,col)}<b>${esc(c)}</b></div>`).join('')}
+    </div>`;
+  const noMatch=groupsData.length&&!filtered.length?`<div class="home-section-title"></div><div class="grp-filter-note">Nenhum grupo corresponde a "${grpQ}"${grpCat?' na categoria '+esc(grpCat):''}.<button class="explore-more" onclick="grpQ='';grpCat='';render()">Limpar filtros</button></div>`:'';
   return `<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 4px">
-      <div class="comm-title" style="margin:0">&#128101; Grupos</div>
+      <div class="comm-title" style="margin:0">${ic('users','var(--purple)')} Grupos</div>
       <button class="btn small-btn" onclick="openCreateGroup()">+ Criar grupo</button>
     </div>
     <div class="pl-note" style="margin-bottom:10px">Crie ou participe de grupos da comunidade pet: encontros, passeios, apoio e adocao.</div>
+    ${search}
+    ${interests}
+    ${noMatch}
     ${groupsData.length===0?'<div class="home-empty"><div style="font-size:34px">&#128101;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum grupo ainda</b><span class="small">Crie o primeiro grupo da sua regiao!</span><button class="btn" style="margin-top:10px;width:100%" onclick="openCreateGroup()">Criar grupo</button></div>'
       :`<div class="home-section-title"><h2>Seus grupos</h2></div>${mine.length?mine.map(card).join(''):'<div class="pl-note">Voce ainda nao participa de nenhum grupo.</div>'}
        <div class="home-section-title"><h2>Descobrir grupos</h2></div>${discover.length?discover.map(card).join(''):'<div class="pl-note">Nenhum grupo para descobrir agora.</div>'}`}`;
@@ -3181,20 +3239,87 @@ function exploreChip(f){
   mapaFilter=f;loadNearbyPets();
 }
 
+async function ensureChatSuggs(){
+  if(chatSuggsCache)return;
+  try{
+    const list=await api('/api/aimatch/suggestions').catch(()=>[]);
+    chatSuggsCache=(Array.isArray(list)?list:[]).map(s=>{const pet=s.match_pet||{};let dist='';if(window._userLat&&window._userLng&&pet.latitude&&pet.longitude)dist=fmtDist(exploreDist(window._userLat,window._userLng,pet.latitude,pet.longitude));else if(pet.location)dist=esc(pet.location);
+      return {...s,distTxt:dist};});
+  }catch(e){chatSuggsCache=[];}
+}
+function suggCardHtml(s){
+  const pet=s.match_pet||{};
+  const tags=(s.reasons||'').split(',').map(t=>t.trim()).filter(Boolean).slice(0,3);
+  const first=(pet.owner_name||'?')[0]||'?';
+  const hasMatch=chatList.some(m=>m.partner_id===pet.user_id);
+  return`<div class="sugg-card">
+    <div class="sugg-top">
+      <div class="sugg-avatar">${pet.owner_avatar?`<img src="${su(pet.owner_avatar)}" onerror="this.style.display='none';this.parentNode.textContent='${esc(first)}'" alt="">`:esc(first)}</div>
+      <div style="flex:1;min-width:0"><b style="font-size:12px">@${atname(pet.owner_name||'Tutor')}</b>
+        <div class="sugg-dist">${esc(s.distTxt||'')}</div></div>
+    </div>
+    <div class="sugg-pet">${pet.image?`<img src="${su(pet.image)}" onerror="this.style.display='none';this.parentNode.textContent='${petEmoji(pet.species)}'" alt="">`:`<span class="sugg-pet-emoji">${petEmoji(pet.species)}</span>`}<span style="font-size:11px;font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(pet.name||'Pet')}</span><span class="sugg-dist">${esc(pet.breed||pet.species||'')}</span></div>
+    ${tags.length?`<div class="sugg-tags">${tags.map(t=>`<span class="sugg-tag">${esc(t)}</span>`).join('')}</div>`:''}
+    <button class="btn small-btn sugg-msg" onclick="suggestMsg(${pet.user_id},${pet.id},this)">${hasMatch?'Enviar mensagem':'Solicitar contato'}</button>
+  </div>`;
+}
+async function suggestMsg(userId,petId,btn){
+  if(!chatList.length){try{await refreshChatBadge();}catch(e){}}
+  const m=chatList.find(x=>x.partner_id===userId);
+  if(m){openChat(m.id,m.partner_name,m.partner_avatar);return;}
+  const myPet=pets.find(p=>p.user_id===currentUser?.id)||pets[0];
+  if(!myPet){alert('Cadastre um pet primeiro!');return;}
+  try{
+    await api('/api/match/request',{method:'POST',body:JSON.stringify({targetUserId:userId,targetPetId:petId,requesterPetId:myPet.id,type:partnershipType})});
+    if(btn){btn.disabled=true;btn.textContent='Pedido enviado';btn.style.opacity=.6;}
+    alert('Solicitacao de contato enviada! Assim que o tutor aceitar, a conversa aparece aqui.');
+  }catch(e){alert(e.message);}
+}
+async function openNewChat(){
+  if(!chatSuggsCache)await ensureChatSuggs();
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+  const list=chatSuggsCache||[];
+  const item=s=>{const pet=s.match_pet||{};const first=(pet.owner_name||'?')[0]||'?';return`<div style="display:flex;gap:8px;align-items:center;padding:8px;border-bottom:1px solid var(--line)">
+    <div class="sugg-avatar" style="width:36px;height:36px;font-size:14px">${pet.owner_avatar?`<img src="${su(pet.owner_avatar)}" onerror="this.style.display='none';this.parentNode.textContent='${esc(first)}'">`:esc(first)}</div>
+    <div style="flex:1;min-width:0"><b style="font-size:12px">@${atname(pet.owner_name||'Tutor')}</b><div class="small">${esc(pet.name||'')}${s.distTxt?' &bull; '+esc(s.distTxt):''}</div></div>
+    <button class="btn small-btn" onclick="closeModal();suggestMsg(${pet.user_id},${pet.id})">Enviar</button>
+  </div>`;};
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-head"><div class="modal-title">${ic('chat','var(--purple)')} Novo chat</div><button class="close" onclick="closeModal()">X</button></div>
+    ${list.length?`<div class="small" style="margin-bottom:6px">Escolha para quem quer enviar mensagem:</div><div style="max-height:58vh;overflow:auto">${list.map(item).join('')}</div>`
+      :`<div style="text-align:center;padding:14px 4px"><div style="font-size:36px">${ic('chat','var(--soft)')}</div><b style="display:block;margin:8px 0 3px;font-size:13px">Nenhuma sugestao ainda</b><div class="small">Adicione um pet no seu perfil e explore o Match para receber sugestoes de conversa.</div><button class="btn" style="width:100%;margin-top:12px" onclick="closeModal();openConexao()">Explorar Match</button></div>`}
+  </div></div>`;
+  document.body.appendChild(root);
+}
 async function renderChats(){
   nav.style.display='flex';
   await refreshChatBadge();
+  await ensureChatSuggs();
+  const sugSection=chatSuggsCache&&chatSuggsCache.length?`<div class="home-section-title"><h2>${ic('spark','var(--purple)')} Sugestoes para voce</h2><span class="small">Tutores com pets de perfis parecidos</span></div>
+    <div class="sugg-scroll">${chatSuggsCache.map(suggCardHtml).join('')}</div>`:'';
+  const emptyBox=chatList.length===0?`<div class="chat-empty">
+    <div class="chat-empty-art">${ic('chat')}<span class="mini">${ic('heart','var(--coral)')}</span></div>
+    <b style="display:block;margin:0 0 3px;font-size:13px">Nenhuma conversa ainda</b>
+    <div class="small" style="max-width:240px;margin:0 auto">Quando voces formarem uma parceria, a conversa aparece aqui. Use o Match ou as sugestoes acima para comecar!</div>
+    <button class="btn" style="margin-top:12px;width:100%" onclick="openConexao()">Encontrar tutores</button>
+  </div>`:'';
+  const listCards=chatList.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openChat(${m.id},'${sj(m.partner_name)}','${sj(m.partner_avatar||'')}')">
+    <div class="avatar"><img src="${su(m.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
+    <div style="flex:1;min-width:0"><b style="font-size:13px">${esc(m.partner_name)}</b>
+      <div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.last_message?`${m.last_sender_id===currentUser?.id?'Voce: ':''}${esc(typeof m.last_message==='string'?m.last_message:'')}`:'Clique para conversar'}${m.last_message?' &bull; '+shortTime(m.last_message_time):''}</div>
+    </div>
+    ${(m.unread||0)>0?`<span class="chat-badge" style="position:static;flex-shrink:0">${m.unread>9?'9+':m.unread}</span>`:''}
+  </div>`).join('');
+  const secAlert=`<div class="sec-alert">${ic('alert','var(--orange)')}<div><b>Seguranca em primeiro lugar</b><span>Nunca compartilhe dados sensiveis. Prefira marcar encontros em locais publicos e movimentados.</span></div></div>`;
   screen.innerHTML=header('Chats','Suas conversas')+`<div class="content" style="padding-top:0">
-    ${chatList.length===0?'<div class="home-empty" style="margin-top:30px"><div style="font-size:40px">&#128172;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhuma conversa ainda</b><span class="small">Quando der match pelo Match ou pedido de parceria, as conversas aparecem aqui.</span></div>':''}
-    ${chatList.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openChat(${m.id},'${sj(m.partner_name)}','${sj(m.partner_avatar||'')}')">
-      <div class="avatar"><img src="${su(m.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
-      <div style="flex:1;min-width:0"><b style="font-size:13px">${esc(m.partner_name)}</b>
-        <div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.last_message?`${m.last_sender_id===currentUser?.id?'Voce: ':''}${esc(typeof m.last_message==='string'?m.last_message:'')}`:'Clique para conversar'}${m.last_message?' &bull; '+shortTime(m.last_message_time):''}</div>
-      </div>
-      ${(m.unread||0)>0?`<span class="chat-badge" style="position:static;flex-shrink:0">${m.unread>9?'9+':m.unread}</span>`:''}
-    </div>`).join('')}
-    <div class="pl-note" style="text-align:center">As conversas ficam entre tutores que tiveram match real.</div>
-  </div>`;
+    ${sugSection}
+    <div class="chat-sec-head"><h2>Conversas</h2><span class="small">${chatList.length} ativa(s)</span></div>
+    ${emptyBox}
+    ${listCards}
+    ${secAlert}
+  </div>
+  <button class="fab" onclick="openNewChat()" aria-label="Novo chat">${ic('chat')}</button>`;
 }
 function openMarketplace(){
   if(currentUser&&currentUser.is_seller){setTab('loja');return;}
