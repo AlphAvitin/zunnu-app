@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--bg:#F7F5F0;--card:#fff;--ink:#282722;--soft:#999;--line:#ECEAE5;--purple:#7C3AED;--purple2:#5B21B6;--purpleSoft:#F1EAFD;--primary:var(--purple);--green:#0FA58C;--green2:#0B8A75;--greenSoft:#E3F5F1;--orange:#F59E0B;--orangeSoft:#FFF0DB;--coral:#E76F51;--coralSoft:#FCE4DE;--pink:#D94F7A;--pinkSoft:#FCE8EF;--gold:#D4AF37;--goldSoft:#FFF9E6;--blue:#2B7BB9;--blueSoft:#E2F1FC;--pix:#32BCAD;--pixSoft:#E6F8F6}
+:root{--bg:#F7F5F0;--card:#fff;--ink:#282722;--soft:#999;--line:#ECEAE5;--purple:#7C3AED;--purple2:#5B21B6;--purpleSoft:#F1EAFD;--primary:var(--purple);--green:#0FA58C;--green2:#0B8A75;--greenSoft:#E3F5F1;--orange:#F59E0B;--orangeSoft:#FFF0DB;--coral:#E76F51;--coralSoft:#FCE4DE;--pink:#D94F7A;--pinkSoft:#FCE8EF;--gold:#D4AF37;--goldSoft:#FFF9E6;--blue:#2B7BB9;--blueSoft:#E2F1FC;--pix:#32BCAD;--pixSoft:#E6F8F6;--sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp5:24px;--rr-lg:18px;--rr-xl:22px}
 [data-theme="dark"]{--bg:#1a1a2e;--card:#16213e;--ink:#e8e8e8;--soft:#a0a0b0;--line:#2a2a4a;--purple:#A78BFA;--purple2:#7C3AED;--purpleSoft:#241B45;--primary:var(--purple2);--green:#2DD4BF;--green2:#14B8A6;--greenSoft:#12312B;--orange:#FBBF24;--orangeSoft:#3a2a10;--coral:#FF7A59;--coralSoft:#3a1a12;--pink:#F06292;--pinkSoft:#3a1a2a;--gold:#E9C8B6;--goldSoft:#3a3010;--blue:#5EA8E8;--blueSoft:#1a2a3a;--pix:#4DD0C9;--pixSoft:#1a3a3a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
@@ -19,7 +19,7 @@ button,input,textarea,select{font:inherit}
 .header-row{display:flex;justify-content:space-between;align-items:center}
 .brand{display:flex;align-items:center;gap:8px}
 .logo{width:34px;height:34px;border-radius:10px;background:var(--purple);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800}
-.title{font-size:16px;font-weight:800;color:var(--ink)}
+.title{font-size:17px;font-weight:800;color:var(--ink)}
 .header-actions{display:flex;gap:4px;align-items:center}
 .icon-btn{width:32px;height:32px;border-radius:8px;border:none;background:var(--card);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .ic{width:1em;height:1em;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;vertical-align:-0.14em;flex-shrink:0}
@@ -253,6 +253,9 @@ button,input,textarea,select{font:inherit}
 .home-map-info .small{display:block;color:var(--soft);font-size:10px}
 .home-link{color:var(--purple);font-weight:800;font-size:11px;background:var(--purpleSoft);padding:7px 12px;border-radius:20px;flex-shrink:0}
 .home-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.home-quick-title{display:flex;align-items:center;gap:7px;margin:20px 0 10px;font-size:15px;font-weight:800;color:var(--ink)}
+.home-quick-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--greenSoft)}
+.home-quick-body{margin-bottom:4px}
 .home-quick-item{background:var(--card);border-radius:16px;padding:13px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s;animation:fadeIn .3s ease}
 .home-quick-item:active{transform:scale(.97)}
 .home-quick-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:var(--purple)}
@@ -261,6 +264,41 @@ button,input,textarea,select{font:inherit}
 .home-quick-icon.blue{background:var(--blueSoft);color:var(--blue)}
 .home-quick-icon.gold{background:var(--goldSoft);color:var(--gold)}
 .home-quick-item b{font-size:11px;font-weight:700;line-height:1.3}
+.home-quick-item.lg{padding:16px 8px;flex-direction:column;gap:8px;text-align:center;border-radius:18px}
+.home-quick-icon.lg{width:54px;height:54px;border-radius:16px;font-size:22px}
+.home-quick-icon.lg .ic{width:28px;height:28px}
+.home-quick-item.lg b{font-size:12px;font-weight:800}
+.home-level-title{display:flex;align-items:center;gap:7px;margin:24px 0 10px;font-size:12px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--purple)}
+.home-level-title:first-child{margin-top:4px}
+.home-level-title .home-quick-dot{background:var(--purple);box-shadow:0 0 0 3px var(--purpleSoft)}
+.home-strip{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;margin-bottom:10px;cursor:pointer;animation:fadeIn .3s ease}
+.home-strip .ic{width:20px;height:20px;flex-shrink:0}
+.home-strip b{font-size:12px;display:block}
+.home-strip span{font-size:10px;color:var(--soft);display:block;line-height:1.4}
+.home-strip .home-link{flex-shrink:0}
+.home-strip.ok{background:var(--greenSoft);border:1px solid var(--green)}
+.home-strip.ok b,.home-strip.ok .ic{color:var(--green)}
+.home-strip.warn{background:var(--orangeSoft);border:1px solid var(--orange)}
+.home-strip.warn b,.home-strip.warn .ic{color:#B26A00}
+.home-strip.notif{background:var(--purpleSoft);border:1px solid var(--purple)}
+.home-strip.notif b,.home-strip.notif .ic{color:var(--purple)}
+.home-strip.notif .home-link{background:var(--purple);color:#fff}
+.home-strip.warn .home-link,.home-strip.ok .home-link{background:var(--card);color:var(--ink)}
+.home-univ-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.home-univ-tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.05);transition:transform .15s;animation:fadeIn .3s ease}
+.home-univ-tile:active{transform:scale(.97)}
+.home-univ-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;color:var(--purple)}
+.home-univ-icon .ic{width:22px;height:22px}
+.home-univ-icon.green{background:var(--greenSoft);color:var(--green)}
+.home-univ-icon.coral{background:var(--coralSoft);color:var(--coral)}
+.home-univ-icon.blue{background:var(--blueSoft);color:var(--blue)}
+.home-univ-icon.gold{background:var(--goldSoft);color:var(--gold)}
+.home-univ-icon.purple{background:var(--purpleSoft);color:var(--purple)}
+.home-univ-tile b{font-size:12px;font-weight:800}
+.home-comm-dock{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.home-comm-btn{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px;font-size:10px;font-weight:800;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:transform .15s}
+.home-comm-btn:active{transform:scale(.96)}
+.home-comm-btn .ic{width:20px;height:20px;color:var(--purple)}
 .home-newpost{background:linear-gradient(135deg,var(--coral),#F29E81);border:none;width:100%;margin-bottom:12px;padding:11px;border-radius:12px;font-weight:800;color:#fff;box-shadow:0 4px 14px rgba(231,111,81,.28)}
 
 /* ===== Explorar / Mapa redesenhado ===== */
@@ -282,6 +320,7 @@ button,input,textarea,select{font:inherit}
 .map-locate{position:absolute;top:12px;right:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:none;background:var(--card);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;font-size:17px}
 .explore-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 2px;scrollbar-width:none}
 .explore-chips::-webkit-scrollbar{display:none}
+.explore-q{font-size:12px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:6px;margin-top:14px}
 .chip{border:none;background:var(--bg);color:var(--soft);font-size:11px;font-weight:800;padding:7px 13px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:all .15s}
 .chip.active{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(36,92,79,.3)}
 .explore-section{margin-top:22px}
@@ -311,6 +350,9 @@ button,input,textarea,select{font:inherit}
 .lost-pos{display:inline-block;font-size:9px;font-weight:800;color:var(--coral);background:var(--coralSoft);border-radius:12px;padding:2px 7px;margin-top:4px}
 .lost-met{display:block;font-size:9px;color:var(--soft);margin-top:4px}
 .lost-detail{border:none;background:var(--coral);color:#fff;font-size:9px;font-weight:800;padding:7px 10px;border-radius:10px;cursor:pointer;flex-shrink:0}
+.lost-seen-done{border:none;background:var(--greenSoft);color:var(--green);font-size:11px;font-weight:800;padding:8px 10px;border-radius:10px;text-align:center}
+.lost-seen-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:var(--green);background:var(--greenSoft);padding:3px 8px;border-radius:20px;margin-top:6px}
+.lost-seen-mini{border:none;background:none;color:var(--green);font-size:9px;font-weight:800;padding:4px 0 0;cursor:pointer}
 .svc-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
 .svc-chips::-webkit-scrollbar{display:none}
 .svc-chip{border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:10px;font-weight:800;padding:7px 12px;border-radius:20px;cursor:pointer;white-space:nowrap}
@@ -361,14 +403,6 @@ button,input,textarea,select{font:inherit}
 .home-sub-feeds{display:flex;gap:8px;margin:12px 0 2px}
 .hsf-chip{flex:1;border:1px solid var(--line);background:var(--card);color:var(--soft);font-size:11px;font-weight:800;padding:9px 10px;border-radius:20px;cursor:pointer;transition:all .2s;text-align:center}
 .hsf-chip.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 8px rgba(36,92,79,.25)}
-.home-acc{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:14px 0 4px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.05)}
-.home-acc-head{display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;background:none;border:none;cursor:pointer;text-align:left;color:var(--ink)}
-.home-acc-head .home-quick-icon{width:38px;height:38px;border-radius:12px}
-.home-acc-head b{font-size:13px;font-weight:800;flex:1}
-.home-acc-chev{transition:transform .2s;color:var(--soft);font-size:14px}
-.home-acc.open .home-acc-chev{transform:rotate(180deg)}
-.home-acc-body{display:none;padding:0 14px 14px}
-.home-acc.open .home-acc-body{display:block;animation:fadeIn .2s ease}
 .comm-title{font-size:16px;font-weight:900;margin:14px 0 8px;color:var(--ink);display:flex;align-items:center;gap:6px}
 .hb-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
 .hb-btn{width:100%;padding:12px;border:none;border-radius:14px;font-size:12px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.12);transition:transform .15s}
@@ -382,6 +416,9 @@ button,input,textarea,select{font:inherit}
 .prof-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .prof-col-left{display:flex;flex-direction:column;gap:8px}
 .prof-col-left .home-section-title{margin:0 0 2px}
+.prof-sections{margin-top:14px;text-align:left}
+.prof-sections .home-section-title{margin:18px 0 8px}
+.prof-sections .prof-pet-card{width:100%}
 .prof-pet-list{display:flex;flex-direction:column;gap:8px}
 .prof-pet-card{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;cursor:pointer;position:relative;transition:transform .15s}
 .prof-pet-card:active{transform:scale(.97)}
@@ -572,6 +609,7 @@ button,input,textarea,select{font:inherit}
 .pp-actions{display:flex;gap:8px;justify-content:center;margin-top:13px}
 .pp-actions .btn{background:#fff;color:var(--green);border:none;font-weight:800}
 .pp-actions .btn.alt{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.55)}
+.pp-carteira-badge{display:inline-flex;align-items:center;gap:5px;margin-top:10px;background:rgba(255,255,255,.16);color:#fff;font-size:10px;font-weight:800;letter-spacing:.4px;padding:5px 12px;border-radius:20px;text-transform:uppercase}
 .pp-card{background:linear-gradient(135deg,#1A3C33,#2E5F4F);border-radius:24px;color:#fff;padding:18px;margin-top:16px;box-shadow:0 12px 28px rgba(20,60,50,.38);position:relative;overflow:hidden;animation:fadeIn .3s ease}
 .pp-card::before{content:'';position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07);right:-35px;top:-35px}
 .pp-card::after{content:'';position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.05);left:-25px;bottom:-30px}
@@ -704,7 +742,6 @@ const API = '';
 let token = localStorage.getItem('zunnu_token');
 let tab = 'inicio';
 let homeSection = 'inicio';
-let homeAccOpen = false;
 const backStack = [];
 function pushBack(expr){
   if(backStack.length&&backStack[backStack.length-1]===expr)return;
@@ -786,11 +823,12 @@ let editingHealthRec = null;
 let healthModalCat = 'observacoes';
 let petProfileBack = "setTab('pets')";
 let petPostCount = 0;
+let petPartnership = null;
 let eventsData=[], eventsFilter={cat:'',q:'',view:'upcoming'}, currentEventId=null, eventsLoading=false;
-let adoptionsData=[], adopFilter={q:'',species:'',status:'available'}, currentAdoptionId=null, adopLoading=false, adopMine=false;
+let adoptionsData=[], adopFilter={q:'',species:'',status:'available',porte:''}, currentAdoptionId=null, adopLoading=false, adopMine=false;
 let matchBuilding=false;
 const EV_CATS={encontro:'Encontros',adocao:'Adocao',passeio:'Passeios',feira:'Feiras',educacao:'Educacao',saude:'Saude',show:'Shows',outros:'Outros'};
-const AD_STATUS={available:'Disponivel',in_process:'Em processo',adopted:'Adotado'};
+const AD_STATUS={available:'Disponivel',in_process:'Adocao em andamento',adopted:'Adotado'};
 const AD_SPECIES=['cachorro','gato','passaro','coelho','hamster','outros'];
 
 function connectWS() {
@@ -1183,7 +1221,7 @@ function renderSeusPets(){
       <div class="home-pet-name" style="color:var(--green)">Adicionar</div>
       <div class="home-pet-breed">novo pet</div>
     </div></div>`;
-    return`<div class="home-section-title"><h2>&#128062; Seus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>`
+    return`<div class="home-section-title"><h2>&#128062; Meus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>`
       +(pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`:grid);
   }
 
@@ -1191,8 +1229,18 @@ function renderInicio(){
   const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  const quick=[['paw','Adicionar pet',"openModal('addPet')",'green'],['camera','Nova postagem',"openModal('post')",'coral'],['calendar','Criar evento',"openEventos()",'blue'],['heart','Adocao de pets',"openAdocao()",'gold'],['store','Visitar loja',"openMarketplace()",'blue'],['users','Criar conexao',"openConexao()",'coral']];
-  const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item" onclick="${q[2]}"><div class="home-quick-icon ${q[3]}">${ic(q[0])}</div><b>${q[1]}</b></div>`).join('')}</div>`;
+  const quick=[['map','Descobrir',"setTab('mapa')",'green'],['heart','Parceria',"formarParceria()",'coral'],['paw','Adocao',"openAdocao()",'gold'],['calendar','Eventos',"openEventos()",'blue']];
+  const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item lg" onclick="${q[2]}"><div class="home-quick-icon lg ${q[3]}">${ic(q[0])}</div><b>${q[1]}</b></div>`).join('')}</div>`;
+  const unreadRow=unreadCount>0?`<div class="home-strip notif" onclick="renderNotificacoes()">${ic('bell')}<div><b>${unreadCount} notificacao${unreadCount>1?'oes':''} nao lida${unreadCount>1?'s':''}</b><span>Toque para ver o que esta acontecendo agora.</span></div><span class="home-link">&rarr;</span></div>`:'';
+  const warnPets=pets.filter(p=>petHomeStatus(p).cl==='warn');
+  const healthRow=pets.length?(warnPets.length?`<div class="home-strip warn" onclick="petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${warnPets[0].id})">${ic('alert')}<div><b>${esc(warnPets[0].name)} precisa de atencao</b><span>${esc(petHomeStatus(warnPets[0]).txt)}. Toque para ver os detalhes.</span></div><span class="home-link">&rarr;</span></div>`:`<div class="home-strip ok">${ic('spark')}<div><b>Saude em dia</b><span>Sem pendencia de vacinas, consultas ou cuidados.</span></div></div>`):'';
+  const univ=[['paw','Meus pets',"setTab('pets')",'green'],['lightbulb','Saude',(pets.length?`petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${pets[0].id})`:"openModal('addPet')"),'coral'],['users','Conexoes',"openConexao()",'purple'],['map','Pets proximos',"setTab('mapa')",'blue'],['store','Loja',"openMarketplace()",'gold']];
+  const univArea=`<div class="home-univ-grid">${univ.map(u=>`<div class="home-univ-tile" onclick="${u[2]}"><div class="home-univ-icon ${u[3]}">${ic(u[0])}</div><b>${esc(u[1])}</b></div>`).join('')}</div>`;
+  const commCards=`<div class="home-comm-dock">
+    <button class="home-comm-btn" onclick="setHomeSection('comunidade')">${ic('spark')}Comunidade</button>
+    <button class="home-comm-btn" onclick="setHomeSection('grupos')">${ic('users')}Grupos</button>
+    <button class="home-comm-btn" onclick="openModal('post')">${ic('camera')}Postar</button>
+  </div>`;
   const lostFound=(lostPets||[]).find(x=>x.status==='lost');
   const lostBanner=`<div class="lostpet-banner" onclick="openHomeLostPets()">
     <div class="lostpet-ico" style="color:var(--coral)">${ic(lostFound?'alert':'paw')}</div>
@@ -1216,7 +1264,16 @@ function renderInicio(){
   <div class="content">
     ${homeSection==='comunidade'?renderComunidade():
       homeSection==='grupos'?renderGruposTab():`
-      <div class="home-section-title"><h2>Momentos &#9889;</h2></div>
+      <div class="home-level-title"><span class="home-quick-dot"></span>O que importa agora</div>
+      ${unreadRow}
+      ${renderSeusPets()}
+      ${healthRow}
+      ${lostBanner}
+      <div class="home-quick-title"><span class="home-quick-dot"></span>Acesso rapido</div>
+      <div class="home-quick-body">${quickArea}</div>
+      <div class="home-level-title"><span class="home-quick-dot"></span>Meu universo pet</div>
+      ${univArea}
+      <div class="home-level-title"><span class="home-quick-dot"></span>Momentos e comunidade</div>
       <div class="stories-row">
         <div class="story-circle" onclick="openModal('addStory')">
           <div class="story-ring add-story"><div class="add-icon">+</div></div>
@@ -1229,15 +1286,7 @@ function renderInicio(){
           </div>
         `).join('')}
       </div>
-      <div class="home-acc ${homeAccOpen?'open':''}" id="homeAcc">
-        <button class="home-acc-head" onclick="toggleHomeAcc()">
-          <div class="home-quick-icon green">&#128270;</div>
-          <b>O que voce quer fazer?</b>
-          <span class="home-acc-chev">&#9662;</span>
-        </button>
-        <div class="home-acc-body">${quickArea}</div>
-      </div>
-      ${lostBanner}`}
+      ${commCards}`}
   </div>`;
 }
 
@@ -1247,11 +1296,6 @@ function setHomeSection(s){
   render();
 }
 
-function toggleHomeAcc(){
-  const acc=document.getElementById('homeAcc');
-  homeAccOpen=acc?!acc.classList.contains('open'):!homeAccOpen;
-  if(acc)acc.classList.toggle('open',homeAccOpen);
-}
 
 function postCardHtml(p){
   const isOwner=currentUser&&(p.user_id===currentUser.id);
@@ -2128,6 +2172,27 @@ async function requestPartnership(targetUserId, targetPetId) {
   } catch(e) { alert(e.message); }
 }
 
+function requestPartnershipType(targetUserId, targetPetId){
+  const old=document.getElementById('modal-root');if(old)old.remove();
+  const root=document.createElement('div');root.id='modal-root';
+  root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-head"><div class="modal-title">Como quer a parceria?</div><button class="close" onclick="closeModal()">X</button></div>
+    <div class="small" style="margin:8px 2px 12px;color:var(--soft)">A parceria comeca pelo pet: escolha o tipo ideal para voces.</div>
+    <div class="par-opt" onclick="choosePartnershipTypeFor('relacionamento',${targetUserId},${targetPetId})">
+      <div style="font-size:30px">&#128152;</div>
+      <div><b>Firmar relacionamento</b><span class="small">Conexao especial entre os pets de voces — companhia, convivencia e carinho.</span></div>
+    </div>
+    <div class="par-opt" onclick="choosePartnershipTypeFor('amigos',${targetUserId},${targetPetId})">
+      <div style="font-size:30px">&#128106;</div>
+      <div><b>Melhores amigos</b><span class="small">Amizade pet — playdates, passeios, apoio e companhia.</span></div>
+    </div>
+  </div></div>`;
+  document.body.appendChild(root);
+}
+function choosePartnershipTypeFor(t,targetUserId,targetPetId){
+  partnershipType=t;closeModal();requestPartnership(targetUserId,targetPetId);
+}
+
 async function renderPartnershipPending() {
   try {
     const [received, sent, matches] = await Promise.all([
@@ -2154,26 +2219,28 @@ async function renderPartnershipPending() {
         <div style="font-weight:700;font-size:12px">Para: ${esc(r.target_name)}</div>
         <div class="small">Pet: ${esc(r.target_pet_name||'')} &bull; <span style="color:var(--orange)">Aguardando resposta</span></div>
       </div>`).join('')}
-      <div class="section"><h2>Minhas parcerias</h2></div>
-      ${!matches||!matches.length?'<div class="pl-note">Quando voce formar uma parceria, ela aparece aqui com estatisticas de intimidade.</div>':matches.map((m,idx)=>`
+      <div class="section"><h2>Parceria ativa</h2></div>
+      ${!matches||!matches.length?'<div class="pl-note">Voce acompanha uma parceria ativa por vez. Ao formar uma, ela aparece aqui com estatisticas de intimidade.</div>':(()=>{const active=matches[0];const rest=matches.slice(1);let out=`
         <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px">
           <div style="display:flex;gap:10px;align-items:center">
-            <div class="avatar"><img src="${su(m.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
-            <div style="flex:1"><b style="font-size:13px">@${atname(m.partner_name)}</b>
-              <div class="small">${partnershipTypeLabel(m.partnership_type)} &bull; parceiro(a) #${idx+1}</div>
+            <div class="avatar"><img src="${su(active.partner_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt=""></div>
+            <div style="flex:1"><b style="font-size:13px">@${atname(active.partner_name)}</b>
+              <div class="small">${partnershipTypeLabel(active.partnership_type)} &bull; parceiro(a) principal</div>
             </div>
             <span class="g-badge" style="margin:0">&#128153;</span>
           </div>
           <div class="par-stats">
-            <div><b>${m.juntos_dias||0}</b><span>Juntos ha (dias)</span></div>
-            <div><b>${m.intimacy||0}</b><span>Intimidade</span></div>
-            <div><b>${m.streak||0}</b><span>Streak (dias)</span></div>
+            <div><b>${active.juntos_dias||0}</b><span>Juntos ha (dias)</span></div>
+            <div><b>${active.intimacy||0}</b><span>Intimidade</span></div>
+            <div><b>${active.streak||0}</b><span>Streak (dias)</span></div>
           </div>
           <div style="display:flex;gap:6px;margin-top:10px">
-            <button class="btn small-btn" style="flex:1" onclick="openPartnershipDetail(${m.id})">&#128153; Ver parceria</button>
-            <button class="btn small-btn outline" style="flex:1" onclick="openChat(${m.id},'${sj(atname(m.partner_name))}','${sj(m.partner_avatar||'')}')">&#128172; Abrir chat</button>
+            <button class="btn small-btn" style="flex:1" onclick="openPartnershipDetail(${active.id})">&#128153; Ver parceria</button>
+            <button class="btn small-btn outline" style="flex:1" onclick="openChat(${active.id},'${sj(atname(active.partner_name))}','${sj(active.partner_avatar||'')}')">&#128172; Abrir chat</button>
           </div>
-        </div>`).join('')}
+        </div>`;
+        if(rest.length){out+=`<div class="small" style="color:var(--soft);margin:6px 2px">Outras parcerias (historico):</div>`+rest.map(m=>`<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:center;gap:8px"><span style="font-size:16px">&#128153;</span><b style="font-size:12px;flex:1;min-width:0">@${atname(m.partner_name)}</b><span class="small" style="color:var(--soft)">${partnershipTypeLabel(m.partnership_type)} &bull; Intimidade ${m.intimacy||0}</span></div>`).join('');}
+        return out;})()}
     </div>`;
   } catch(e) { console.error(e); }
 }
@@ -2246,6 +2313,7 @@ async function openPetProfile(petId){
     petPhotos=await api('/api/petgallery/'+petId+'/photos').catch(()=>[]);
     petMilestones=await api('/api/petgallery/'+petId+'/milestones').catch(()=>[]);
     petPostCount=((await api('/api/posts?pet_id='+petId+'&limit=1').catch(()=>({total:0}))).total)||0;
+    try{const ms=await api('/api/match/matches').catch(()=>[]);petPartnership=(ms&&ms.length)?ms[0]:null;}catch(e){petPartnership=null;}
     renderPetProfilePage();
   }catch(e){alert(e.message);}
 }
@@ -2302,7 +2370,7 @@ function renderPetProfilePage(){
   const infoItem=(k,v)=>`<div class="pp-info-item"><div class="k">${k}</div><div class="v">${v}</div></div>`;
   const sexTxt=pp.sex?(pp.sex==='Macho'?'&#9794; Macho':esc(pp.sex)):dash;
   const pesoTxt=(pp.peso!==null&&pp.peso!==undefined&&pp.peso!=='')?(String(pp.peso).replace('.',',')+' kg'):dash;
-  const heroes=`${isOwner?`<button class="btn" onclick="openModal('editPet')">&#9998; Editar Perfil</button>`:`<button class="btn" onclick="requestPartnership(${pp.user_id},${pp.id})">&#128153; Pedir Parceria</button><button class="btn alt" onclick="viewUserProfile(${pp.user_id})">&#128100; Ver Tutor</button>`}`;
+  const heroes=`${isOwner?`<button class="btn" onclick="openModal('editPet')">&#9998; Editar Perfil</button>`:`<button class="btn" onclick="requestPartnershipType(${pp.user_id},${pp.id})">&#128153; Pedir Parceria</button><button class="btn alt" onclick="viewUserProfile(${pp.user_id})">&#128100; Ver Tutor</button>`}`;
   const vacRows=(pp.vaccines||[]).map(v=>`<div class="pp-vaccine-row"><span style="font-size:15px">&#128137;</span><div style="flex:1;min-width:0"><div class="vname">${esc(v.name)}</div><div class="vdate">${esc(v.date||'Data nao informada')}</div></div><span class="pp-v-status ${v.status==='Em dia'?'ok':'warn'}">${esc(v.status||'A agendar')}</span>${isOwner?`<div class="pp-h-tools"><button onclick="editVaccine(${v.id})" title="Editar">&#9998;</button><button onclick="deleteVaccine(${pp.id},${v.id})" title="Remover">&#10060;</button></div>`:''}</div>`).join('');
   const healthBlocks=HEALTH_CATS.map(cat=>{
     const rows=(pp.health||[]).filter(h=>h.category===cat[0]);
@@ -2316,6 +2384,32 @@ function renderPetProfilePage(){
   const social=[['&#128172;','Publicacoes',petPostCount,true],['&#128247;','Fotos',petPhotos.length,false],['&#10084;','Curtidas',null,false],['&#128101;','Amigos',null,false],['&#128100;','Seguidores',null,false],['&#128205;','Check-ins',null,false]];
   const socialGrid=social.map(s=>`<div class="pp-social-item" ${s[3]?`onclick="viewPetPosts(${pp.id})" style="cursor:pointer"`:''}><b style="${!s[2]?'color:var(--soft)':''}">${s[2]===null?'&mdash;':s[2]}</b><span>${s[1]}</span></div>`).join('');
   const privNote=pp.visibility==='public'?'Qualquer usuario da comunidade pode visualizar este perfil.':pp.visibility==='friends'?'Somente conexoes/amigos podem visualizar este perfil.':'Somente o tutor pode visualizar este perfil.';
+  const parBlock=isOwner
+    ? (petPartnership
+        ? `<div class="pp-panel">
+      <div class="pp-panel-head"><b>${petPartnership.partner_name?'Parceria com @'+atname(petPartnership.partner_name):'Parceria ativa'}</b><span class="g-badge" style="margin:0">&#128153;</span></div>
+      <div class="par-stats">
+        <div><b>${petPartnership.juntos_dias||0}</b><span>Juntos ha (dias)</span></div>
+        <div><b>${petPartnership.intimacy||0}</b><span>Intimidade</span></div>
+        <div><b>${petPartnership.streak||0}</b><span>Streak (dias)</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn small-btn" style="flex:1" onclick="openPartnershipDetail(${petPartnership.id})">&#128153; Ver parceria</button>
+        <button class="btn small-btn outline" style="flex:1" onclick="openChat(${petPartnership.id},'${sj(atname(petPartnership.partner_name))}','${sj(petPartnership.partner_avatar||'')}')">&#128172; Abrir chat</button>
+      </div>
+    </div>`
+        : `<div style="background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:30px">&#128153;</div>
+      <b style="display:block;font-size:13px;margin:6px 0 2px">Buscar um par para ${esc(pp.name)}</b>
+      <span class="small">A parceria comeca pelo pet: escolha o tipo e conheca tutores da comunidade.</span>
+      <button class="btn small-btn" style="margin-top:10px" onclick="formarParceria()">Formar Parceria</button>
+    </div>`)
+    : `<div style="background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:16px;text-align:center">
+      <div style="font-size:30px">&#128153;</div>
+      <b style="display:block;font-size:13px;margin:6px 0 2px">Quer formar parceria com ${esc(pp.name)}?</b>
+      <span class="small">Escolha o tipo e envie a solicitacao para o tutor.</span>
+      <button class="btn small-btn" style="margin-top:10px" onclick="requestPartnershipType(${pp.user_id},${pp.id})">&#128153; Pedir Parceria</button>
+    </div>`;
   screen.innerHTML=header(pp.name+' '+'&#128062;','',{icon:'&#8592;',click:petProfileBack})+`
   <div class="content" style="padding-top:0">
     <div class="pp-hero">
@@ -2325,6 +2419,7 @@ function renderPetProfilePage(){
       <div style="margin-top:9px"><span class="pp-loc">&#128205; ${esc(loc)}</span>${isOwner&&pp.visibility&&PRIV_LABEL[pp.visibility]?`<span class="pp-loc" style="margin-left:6px">${PRIV_LABEL[pp.visibility]}</span>`:''}</div>
       <div style="margin-top:6px">${petHealthChip(pp)}</div>
       <div class="pp-actions">${heroes}</div>
+      <div class="pp-carteira-badge">&#128196; Carteira Digital do Pet</div>
     </div>
     <div class="pp-card">
       <div class="pp-card-top">
@@ -2339,7 +2434,7 @@ function renderPetProfilePage(){
         <div class="pp-card-row"><span>&#127942;</span><span class="muted">${petMilestones.length} ${petMilestones.length===1?'conquista':'conquistas'}</span></div>
       </div>
     </div>
-    <div class="section"><h2>Informacoes</h2></div>
+    <div class="section"><h2>&#128196; Visao geral</h2></div>
     <div class="pp-info-grid">
       ${infoItem('Sexo',sexTxt)}
       ${infoItem('Nascimento',pp.birth_date?formatDateBR(pp.birth_date):dash)}
@@ -2349,25 +2444,27 @@ function renderPetProfilePage(){
       ${infoItem('Raca',pp.breed?esc(pp.breed):dash)}
       ${pp.microchip?infoItem('Microchip','<span style="font-size:10px">'+esc(pp.microchip)+'</span>'):''}
     </div>
+    <div class="section"><h2>Personalidade &#10084;</h2></div>
+    <div class="pp-trait-chips">${PET_TRAITS.map(t=>`<button class="pp-trait ${traits.includes(t)?'active':''} ${isOwner?'':'locked'}" ${isOwner?`onclick="toggleTrait('${t.replace(/'/g,"\\'")}')"`:''}>${esc(t)}</button>`).join('')}</div>
     <div class="section"><h2>Saude &#128138;</h2></div>
     <div class="pp-panel">
       <div class="pp-panel-head"><b>&#128137; Vacinas</b>${isOwner?`<button class="pp-panel-add" onclick="openModal('addVaccine')">+ Adicionar</button>`:''}</div>
       ${vacRows||'<div class="small" style="color:var(--soft);padding:4px 0">Nenhuma vacina registrada</div>'}
     </div>
     ${healthBlocks}
-    <div class="section"><h2>Personalidade &#10084;</h2></div>
-    <div class="pp-trait-chips">${PET_TRAITS.map(t=>`<button class="pp-trait ${traits.includes(t)?'active':''} ${isOwner?'':'locked'}" ${isOwner?`onclick="toggleTrait('${t.replace(/'/g,"\\'")}')"`:''}>${esc(t)}</button>`).join('')}</div>
-    <div class="section"><h2>Galeria &#128247;</h2></div>
+    <div class="section"><h2>Momentos &#128247;</h2></div>
     <div class="pp-gallery">
       ${galleryItems}
       ${isOwner?`<div class="pp-add-photo-card" onclick="openModal('addPhoto');setTimeout(function(){var el=document.getElementById('addPhotoPetId');if(el)el.value=${pp.id};},0)">+<span>Foto</span></div>`:''}
       ${petPhotos.length===0&&!isOwner?'<div class="pp-g-empty">Sem fotos na galeria ainda</div>':''}
     </div>
-    ${petMilestones.length?`<div class="section"><h2>Timeline &amp; Conquistas &#127942;</h2></div><div class="timeline">${petMilestones.map(m=>`<div class="timeline-item"><div class="date">${esc(m.date)}</div><b style="font-size:12px">&#${m.icon||'128062'}; ${esc(m.title)}</b><p style="font-size:11px;color:var(--soft);margin:2px 0 0">${esc(m.description)}</p></div>`).join('')}</div>`:''}
+    ${petMilestones.length?`<div class="timeline">${petMilestones.map(m=>`<div class="timeline-item"><div class="date">${esc(m.date)}</div><b style="font-size:12px">&#${m.icon||'128062'}; ${esc(m.title)}</b><p style="font-size:11px;color:var(--soft);margin:2px 0 0">${esc(m.description)}</p></div>`).join('')}</div>`:''}
     <div class="pp-panel" style="margin-top:10px">
       <div class="pp-panel-head"><b>&#127942; Conquistas</b>${isOwner?`<button class="pp-panel-add" onclick="openModal('addMilestone');setTimeout(function(){var el=document.getElementById('milestonePetId');if(el)el.value=${pp.id};},0)">+ Marco</button>`:''}</div>
       ${petMilestones.length?'<div class="small" style="color:var(--green);font-weight:700">'+petMilestones.length+' marco'+(petMilestones.length>1?'s':'')+' registrado'+(petMilestones.length>1?'s':'')+'</div>':'<div class="small" style="color:var(--soft);padding:4px 0">Nenhum marco ainda</div>'}
     </div>
+    <div class="section"><h2>Parceria &#128153;</h2></div>
+    ${parBlock}
     <div class="section"><h2>Area Social &#128062;</h2></div>
     <div class="pp-social-grid">${socialGrid}</div>
     <div class="pp-social-note">&#128274; Publicacoes, curtidas, amigos, seguidores e check-ins chegam na proxima fase do Pata&iacute;.</div>
@@ -2390,7 +2487,7 @@ function renderPerfil(){
     const emo=spEmoji[p.species]||'&#128062;';
     const st=petHomeStatus(p);
     const dot=st&&st.cl?`<span class="prof-pet-status-dot ${(st.cl==='ok'||st.cl==='up')?'ok':'warn'}"></span>`:'';
-    return`<div class="prof-pet-card" onclick="petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${p.id})">
+    return`<div class="prof-pet-card" onclick="petProfileBack=&quot;setTab('perfil')&quot;;openPetProfile(${p.id})">
       <div class="prof-pet-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt="">`:emo}</div>
       <div style="flex:1;min-width:0"><div class="prof-pet-name">${esc(p.name)}</div><div class="prof-pet-breed">${esc(p.breed||p.species)}</div></div>
       ${dot}
@@ -2398,11 +2495,18 @@ function renderPerfil(){
   }).join(''):`<div class="prof-pet-add-card" onclick="openModal(&#39;addPet&#39;)"><div class="prof-pet-photo"><span style="font-size:20px">+</span></div><b>Adicionar pet</b></div>`)
   +`<div class="prof-pet-add-card" onclick="openModal('addPet')"><div class="prof-pet-photo"><span style="font-size:20px">+</span></div><b>Adicionar pet</b></div>`;
   const opt=(icn,colo,title,sub,fn)=>`<div class="prof-opt-block" onclick="${fn}"><div class="prof-opt-ico" style="background:${colo[0]}">${ic(icn,colo[1])}</div><div style="flex:1;min-width:0"><b>${title}</b><span class="small">${sub}</span></div><span style="color:var(--soft);font-size:14px">&#8250;</span></div>`;
-  const options=
-    opt('heart',['rgba(231,111,81,.15)','var(--coral)'],'Minha Adocao','Pets que voce esta adotando','profNav(\'renderMyAdoptions()\')')+
-    opt('spark',['rgba(245,158,11,.15)','var(--gold)'],'Meus pontos','Ganhe pontos por acoes','profNav(\'setTab(\\\'pontos\\\')\')')+
-    opt('users',['rgba(15,165,140,.15)','var(--green)'],'Formar Parceria','Encontre um par ideal','profNav(\'formarParceria()\')')+
-    (currentUser.is_admin?opt('gear',['rgba(124,58,237,.15)','var(--purple)'],'Painel Admin','Gestao da plataforma','profNav(\'renderAdmin()\')'):'');
+  const adoptionRow=`<div class="prof-opt-block" onclick="profNav('renderMyAdoptions()')"><div class="prof-opt-ico" style="background:rgba(231,111,81,.15)">${ic('heart','var(--coral)')}</div><div style="flex:1;min-width:0"><b>Minha Adocao</b><span class="small">Pets que voce esta adotando</span></div><span style="color:var(--soft);font-size:14px">&#8250;</span></div>`;
+  const atvOptions=
+    opt('calendar',['rgba(43,123,185,.15)','var(--blue)'],'Eventos','Encontros, passeios e doacoes','profNav(\'openEventos()\')')+
+    opt('heart',['rgba(231,111,81,.15)','var(--coral)'],'Formar Parceria','Encontre um par ideal','profNav(\'formarParceria()\')')+
+    opt('users',['rgba(15,165,140,.15)','var(--green)'],'Comunidade','Forum, grupos e novidades','profNav(\'homeSection=\\\'comunidade\\\';setTab(\\\'inicio\\\')\')')+
+    opt('spark',['rgba(245,158,11,.15)','var(--gold)'],'Clube de pontos','Ganhe pontos por acoes','profNav(\'setTab(\\\'pontos\\\')\')');
+  const accOptions=
+    opt('gear',['rgba(124,58,237,.15)','var(--purple)'],'Configuracoes','Nome, seguranca e privacidade','openConfigFromProfile()')+
+    opt('bell',['rgba(231,111,81,.15)','var(--coral)'],'Notificacoes','Alertas e avisos','profNav(\'renderNotificacoes()\')')+
+    opt('spark',['rgba(245,158,11,.15)','var(--gold)'],'Plano ZUNNU','Veja beneficios e assine','profNav(\'openModal(\\\'plans\\\')\')')+
+    opt('lightbulb',['rgba(43,123,185,.15)','var(--blue)'],'Ajuda','Centro de ajuda e duvidas','profNav(\'renderHelp()\')')+
+    (currentUser.is_admin?opt('users',['rgba(124,58,237,.15)','var(--purple)'],'Painel Admin','Gestao da plataforma','profNav(\'renderAdmin()\')'):'');
   const bell=`<button class="icon-btn notif-btn" onclick="profNav('renderNotificacoes()')" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
   screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">Z</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfigFromProfile()" aria-label="Configuracoes">${ic('gear')}</button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
@@ -2413,6 +2517,7 @@ function renderPerfil(){
       </div>
       <div style="font-weight:800;font-size:17px;margin:10px 0 0"><button class="prof-edit-name" onclick="openConfigSection('conta')">${ic('gear')}</button>${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
       <div class="profile-handle">@${atname(handleFor(currentUser.name))}</div>
+      <button class="btn small-btn outline" style="margin-top:10px;width:100%" onclick="openConfigSection('conta')">&#9998; Editar perfil</button>
       <div class="small" style="margin-top:4px">${esc(currentUser.location||'')}</div>
       ${currentUser.is_human_verified?'<div style="margin-top:8px"><span class="badge-verified">Humano Verificado</span></div>':`<div style="margin-top:8px"><button class="btn small-btn" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button></div>`}
       <div class="small" style="margin-top:8px;line-height:1.5">${esc(currentUser.bio||'')}</div>
@@ -2422,15 +2527,14 @@ function renderPerfil(){
         <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
-      <div class="prof-cols">
-        <div class="prof-col-left">
-          <div class="home-section-title"><h2>&#128062; Seus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>
-          <div class="prof-pet-list">${petList}</div>
-        </div>
-        <div class="prof-col-left">
-          <div class="home-section-title"><h2>Opcoes</h2></div>
-          <div class="prof-pet-list">${options}</div>
-        </div>
+<div class="prof-sections">
+        <div class="home-section-title"><h2>&#128062; Meus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>
+        <div class="prof-pet-list">${petList}</div>
+        ${adoptionRow}
+        <div class="home-section-title"><h2>&#129313; Minha atividade</h2></div>
+        <div class="prof-pet-list">${atvOptions}</div>
+        <div class="home-section-title"><h2>&#128274; Minha conta</h2></div>
+        <div class="prof-pet-list">${accOptions}</div>
       </div>
     </div>
   </div>`;
@@ -2623,7 +2727,7 @@ async function openModal(type){
       <div class="small">${esc(p.species)} | ${esc(p.breed)} | ${esc(p.age)}</div>
       <div class="small">${esc(p.zodiac)} | ${p.is_castrated?'Castrado':'Nao castrado'}</div>
       <div class="small" style="margin-top:4px">Tutor: <b>${esc(p.tutor_name)}</b></div></div>
-      ${!isOwner?`<div style="margin-top:10px"><button class="btn pink" style="width:100%" onclick="requestPartnership(${p.user_id},${p.id})">&#128153; Pedir Parceria</button></div>`:''}
+      ${!isOwner?`<div style="margin-top:10px"><button class="btn pink" style="width:100%" onclick="requestPartnershipType(${p.user_id},${p.id})">&#128153; Pedir Parceria</button></div>`:''}
       <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:8px">
         <div style="font-weight:800;color:var(--green);font-size:12px">Vacinas</div>
         ${(p.vaccines||[]).map(v=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--line)"><span>${esc(v.name)}</span><span>${esc(v.date)}</span><span style="color:${v.status==='Em dia'?'var(--green)':'var(--orange)'}">${esc(v.status)}</span>${isOwner?`<button style="border:none;background:none;color:var(--coral);cursor:pointer" onclick="deleteVaccine(${p.id},${v.id})">X</button>`:''}</div>`).join('')||'<p class="small">Nenhuma vacina</p>'}
@@ -3317,7 +3421,7 @@ function centerMap(){const lat=window._userLat||-2.5307,lng=window._userLng||-44
 function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
 function exploreChip(f){
   document.querySelectorAll('.explore-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
-  if(f==='lost'){scrollToId('exploreLost');return;}
+  if(f==='places'){scrollToId('explorePlaces');return;}
   if(f==='services'){scrollToId('exploreServices');return;}
   mapaFilter=f;loadNearbyPets();
 }
@@ -3439,8 +3543,10 @@ async function openHomeLostPets(){
         <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">${esc(lp.pet_name)}</b><span style="font-size:9px;padding:2px 8px;border-radius:20px;background:var(--coralSoft);color:var(--coral);font-weight:800">PERDIDO</span></div>
         <div class="small" style="margin-top:4px">${esc(lp.species||'')} ${esc(lp.breed||'')} &bull; ${lp.latitude&&lp.longitude?'&#128205; '+fmtDist(exploreDist(window._userLat||-2.5307,window._userLng||-44.2829,lp.latitude,lp.longitude))+' &bull;':''} reportado ${formatDate(lp.created_at)}</div>
         ${lp.description?`<div class="small" style="margin-top:6px;color:var(--soft)">${esc(lp.description)}</div>`:''}
+        ${lostSeenCount(lp.id)?`<span class="lost-seen-badge" style="margin-top:6px">&#128064; Avistado ${lostSeenCount(lp.id)}x</span>`:''}
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn small-btn" style="flex:1" onclick="viewUserProfile(${lp.user_id})">&#128172; Falar com o tutor</button>
+          <button class="btn small-btn outline" style="flex:1" onclick="markLostSeen(${lp.id},'${sj(lp.pet_name)}',this)">&#128064; Eu vi este pet</button>
         </div>
       </div>
     </div>`).join(''):'<div class="home-empty"><div style="font-size:34px">&#128680;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet perdido reportado agora</b><span class="small">Se souber de um pet desaparecido, reporte pela aba Mapa.</span></div>'}
@@ -3486,12 +3592,13 @@ function renderMapa(){
         <div class="map-loading" id="mapLoading"><div class="spinner"></div></div>
         <button class="map-locate" onclick="centerMap()" aria-label="Centralizar localizacao">${ic('map','var(--purple)')}</button>
       </div>
+      <div class="explore-q">${ic('search','var(--purple)')} O que voce procura?</div>
       <div class="explore-chips">
-        <button class="chip ${mapaFilter==='all'?'active':''}" data-f="all" onclick="exploreChip('all')">${ic('paw','var(--green)')} Todos</button>
-        <button class="chip ${mapaFilter==='Cachorro'?'active':''}" data-f="Cachorro" onclick="exploreChip('Cachorro')">${ic('dog','var(--purple)')} Caes</button>
-        <button class="chip ${mapaFilter==='Gato'?'active':''}" data-f="Gato" onclick="exploreChip('Gato')">${ic('cat','var(--purple)')} Gatos</button>
-        <button class="chip" data-f="lost" onclick="exploreChip('lost')">${ic('alert','var(--coral)')} Perdidos</button>
+        <button class="chip ${mapaFilter==='all'?'active':''}" data-f="all" onclick="exploreChip('all')">${ic('paw','var(--green)')} Pets</button>
         <button class="chip" data-f="services" onclick="exploreChip('services')">${ic('store','var(--orange)')} Servicos</button>
+        <button class="chip" data-f="places" onclick="exploreChip('places')">${ic('map','var(--purple)')} Lugares</button>
+        <button class="chip" onclick="openAdocao()">${ic('heart','var(--coral)')} Adocao</button>
+        <button class="chip" onclick="openEventos()">${ic('calendar','var(--blue)')} Eventos</button>
       </div>
     </div>
     <div class="explore-section" id="exploreNearby">
@@ -3502,7 +3609,7 @@ function renderMapa(){
       <div class="explore-sec-head"><h2>Atencao na sua regiao ${ic('alert','var(--coral)')}</h2></div>
       <div class="lost-cards" id="lostCards"></div>
     </div>
-    <div class="explore-section">
+    <div class="explore-section" id="explorePlaces">
       <div class="explore-sec-head"><h2>Mapa Pet — Lugares</h2><button class="explore-more" onclick="loadPlaces()">Atualizar</button></div>
       <div class="pl-chips">
         <button class="pl-chip on" data-f="all" onclick="placesFilter='all';renderPlaces()">${ic('map','var(--green)')} Todos</button>
@@ -3628,7 +3735,6 @@ function renderNearbyList(){
         <span class="nearby-type">${emo} ${esc(p.breed||p.species)}</span>
         <span class="nearby-dist">${fmtDist(p.distance)}</span>
       </div>
-      <div class="nearby-sig">${esc(p.zodiac||'')}</div>
     </div>`;
   }).join('');
 }
@@ -3645,8 +3751,12 @@ function renderLostCards(){
       <b>${esc(x.pet_name)}</b>
       <span class="lost-pos">&#128205; ${d!=null?fmtDist(d):'Local em atualizacao'}</span>
       <span class="lost-met">${esc(x.species||'')} ${esc(x.breed||'')} &bull; reportado ${formatDate(x.created_at)}</span>
+      ${lostSeenCount(x.id)?`<span class="lost-seen-badge">&#128064; Avistado ${lostSeenCount(x.id)}x</span>`:''}
     </div>
-    <button class="lost-detail" onclick="renderLostPets()">Ver detalhes</button>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0">
+      <button class="lost-detail" onclick="renderLostPets()">Ver detalhes</button>
+      <button class="lost-seen-mini" onclick="markLostSeen(${x.id},'${sj(x.pet_name)}',this)">&#128064; Eu vi</button>
+    </div>
   </div>`).join('');
 }
 async function loadExploreServices(){
@@ -4012,6 +4122,8 @@ function renderLostPets() {
           </div>
           <div class="small">${esc(lp.species||'')} ${esc(lp.breed||'')} ${esc(lp.description||'')}</div>
           <div class="small">${formatDate(lp.created_at)}</div>
+          ${lp.status==='lost'?(lostSeenCount(lp.id)?`<span class="lost-seen-badge">&#128064; Avistado ${lostSeenCount(lp.id)}x</span>`:'')
+          +`<div style="display:flex;gap:6px;margin-top:8px"><button class="btn small-btn outline" style="flex:1" onclick="markLostSeen(${lp.id},'${sj(lp.pet_name)}',this)">&#128064; Eu vi este pet</button></div>`:''}
         </div>
       </div>
     </div>`).join('')}
@@ -4020,6 +4132,16 @@ function renderLostPets() {
 
 async function filterLost(status) {
   try { lostPets = await api('/api/lostpets'+(status!=='all'?'?status='+status:'')); renderLostPets(); } catch(e) {}
+}
+
+const LOST_SEEN_KEY='zunnu_lost_seen_v1';
+function lostSeenMap(){try{return JSON.parse(localStorage.getItem(LOST_SEEN_KEY)||'{}');}catch(e){return {};}}
+function lostSeenCount(id){return lostSeenMap()[id]||0;}
+function markLostSeen(id,name,btn){
+  const m=lostSeenMap();m[id]=(m[id]||0)+1;
+  try{localStorage.setItem(LOST_SEEN_KEY,JSON.stringify(m));}catch(e){}
+  if(btn){btn.outerHTML='<span class="lost-seen-done">&#128064; Avistado '+m[id]+'x</span>';}
+  alert('Obrigado! Avistamento registrado. Quem procura '+name+' fica sabendo que ele foi visto por ai.');
 }
 
 async function reportLostPet() {
@@ -4377,7 +4499,7 @@ async function loadAdoptions(){
   if(adopFilter.species&&!adopMine)qs.set('species',adopFilter.species);
   if(adopFilter.status&&!adopMine)qs.set('status',adopFilter.status);
   if(adopFilter.q)qs.set('q',adopFilter.q);
-  try{const d=await api('/api/adoption?'+qs.toString());adoptionsData=d.adoptions||[];}catch(e){adoptionsData=[];}
+  try{const d=await api('/api/adoption?'+qs.toString());let list=d.adoptions||[];if(adopFilter.porte&&!adopMine)list=list.filter(a=>String(a.porte||'').toLowerCase()===adopFilter.porte.toLowerCase());adoptionsData=list;}catch(e){adoptionsData=[];}
   adopLoading=false;
 }
 function adoptionCard(a){
@@ -4394,6 +4516,7 @@ function adoptionCard(a){
 function renderAdocao(){
   const chips=AD_SPECIES.map(s=>`<button class="pl-chip ${adopFilter.species===s?'on':''}" onclick="adopFilter.species='${adopFilter.species===s?'':s}';openAdocao();">${s}</button>`).join('');
   const stChips=['available','in_process','adopted'].map(s=>`<button class="pl-chip ${adopFilter.status===s?'on':''}" onclick="adopFilter.status='${adopFilter.status===s?'available':s}';openAdocao();">${AD_STATUS[s]}</button>`).join('');
+  const porteChips=[['','Todos os portes'],['Pequeno','Pequeno'],['Medio','Medio'],['Grande','Grande']].map(s=>`<button class="pl-chip ${adopFilter.porte===s[0]?'on':''}" onclick="adopFilter.porte='${adopFilter.porte===s[0]?'':s[0]}';openAdocao();">${s[1]}</button>`).join('');
   screen.innerHTML=header('Adocao','',{icon:'&#8592;',click:"setTab('mapa')"})+`<div class="content" style="padding-top:0">
     <div style="display:flex;gap:6px;margin:12px 0">
       <button class="btn small-btn ${adopMine?'':'outline'}" onclick="openAdocao()">Descobrir</button>
@@ -4402,6 +4525,7 @@ function renderAdocao(){
     </div>
     ${adopMine?'':`<div class="disc-search" style="margin-bottom:8px"><span class="disc-s-icon">&#128269;</span><input placeholder="Buscar por nome, historia ou cidade" onkeydown="if(event.key==='Enter'){adopFilter.q=this.value.trim();openAdocao();}"></div>`}
     ${adopMine?'':`<div class="pl-chips" style="padding:0 0 4px">${stChips}</div>`}
+    ${adopMine?'':`<div class="pl-chips" style="padding:0 0 4px">${porteChips}</div>`}
     ${adopMine?'':`<div class="pl-chips" style="padding:0 0 4px">${chips}</div>`}
     <div style="margin-top:8px">${adopLoading?'<div class="loading" style="margin:24px auto"></div>':adoptionsData.length?adoptionsData.map(adoptionCard).join('')+`<div class="pl-note">${adoptionsData.length} anuncio(s)</div>`:`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">${adopMine?'Voce nao criou anuncios ainda':'Nenhum pet para adocao agora'}</b><span class="small">${adopMine?'Anuncie um pet que precisa de um lar.':'Seja o primeiro a anunciar um pet para adocao.'}</span><button class="btn" style="margin-top:10px;width:100%" onclick="openNewAdoption()">+ Anunciar pet</button></div>`}</div>
   </div>`;
@@ -4893,7 +5017,7 @@ async function renderMyAdoptions(){
     ${ads.length?ads.map(a=>`<div class="ad-card" style="display:flex;gap:10px">
       <img src="${su(a.image||'')}" style="width:64px;height:64px;border-radius:10px;object-fit:cover" onerror="this.src='https://via.placeholder.com/64'">
       <div style="flex:1"><b style="font-size:13px">${esc(a.name)}</b><div class="small">${esc(a.species||'')} &bull; ${esc(a.breed||'')} &bull; ${esc(a.age||'')}</div>
-        <span class="badge-${a.status==='available'?'free':a.status==='in_process'?'plus':'pro'}">${a.status==='available'?'Disponivel':a.status==='in_process'?'Em processo':'Adotado'}</span>
+        <span class="badge-${a.status==='available'?'free':a.status==='in_process'?'plus':'pro'}">${a.status==='available'?'Disponivel':a.status==='in_process'?'Adocao em andamento':'Adotado'}</span>
         ${a.count_requests?`<span class="small" style="margin-left:6px">${a.count_requests} pedido(s)</span>`:''}
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
