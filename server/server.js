@@ -22,6 +22,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, '..', 'www')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/posts', require('./routes/posts'));
@@ -51,6 +52,8 @@ app.use('/api/business', require('./routes/business'));
 app.use('/api/points', require('./routes/points'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/favorites', require('./routes/favorites'));
+app.use('/api/sellerinterest', require('./routes/sellerinterest'));
+app.use('/api/upload', require('./routes/upload'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'www', 'index.html'));

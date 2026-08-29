@@ -378,6 +378,32 @@ button,input,textarea,select{font:inherit}
 .hb-pink{background:linear-gradient(135deg,var(--pink),#E05AA5);box-shadow:0 4px 12px rgba(224,90,165,.3)}
 .hb-blue{background:linear-gradient(135deg,var(--blue),#3E8FD9)}
 .avatar-cam{background:var(--green);color:#fff;border-radius:50%;border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+/* ===== Perfil duas colunas ===== */
+.prof-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.prof-col-left{display:flex;flex-direction:column;gap:8px}
+.prof-col-left .home-section-title{margin:0 0 2px}
+.prof-pet-list{display:flex;flex-direction:column;gap:8px}
+.prof-pet-card{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;cursor:pointer;position:relative;transition:transform .15s}
+.prof-pet-card:active{transform:scale(.97)}
+.prof-pet-photo{width:40px;height:40px;border-radius:11px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0}
+.prof-pet-photo img{width:100%;height:100%;object-fit:cover}
+.prof-pet-name{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prof-pet-breed{font-size:9px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prof-pet-status-dot{position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;border:2px solid var(--card)}
+.prof-pet-status-dot.ok{background:#2DD68C}
+.prof-pet-status-dot.warn{background:#F0A93C}
+.prof-pet-add-card{display:flex;align-items:center;gap:9px;background:transparent;border:1.5px dashed var(--line);border-radius:12px;padding:8px;cursor:pointer;color:var(--green)}
+.prof-opt-block{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;cursor:pointer;transition:transform .15s}
+.prof-opt-block:active{transform:scale(.97)}
+.prof-opt-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prof-opt-block b{font-size:11.5px;display:block}
+.prof-opt-block .small{font-size:9px;color:var(--soft);display:block}
+.prof-edit-name{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;background:none;border:none;padding:0;cursor:pointer;color:var(--green)}
+.prof-edit-name .ic{width:14px;height:14px}
+.avatar-pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.avatar-pick{border:2px solid var(--line);border-radius:14px;padding:4px;cursor:pointer;background:var(--bg)}
+.avatar-pick:active{transform:scale(.95)}
+.avatar-pick img{width:100%;border-radius:10px;display:block;object-fit:cover}
 .profile-handle{font-size:11px;color:var(--green);font-weight:700;margin-top:2px}
 .par-stats{display:flex;justify-content:space-between;gap:6px;margin-top:12px;background:var(--bg);border-radius:12px;padding:10px}
 .par-stats>div{flex:1;text-align:center}
@@ -868,7 +894,7 @@ const screen = document.getElementById('screen');
 const nav = document.getElementById('bottomNav');
 
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function su(s){s=String(s||'').trim();if(!/^https?:\/\//i.test(s))return'';return s.replace(/[\u0000-\u001f\u2028\u2029\s"<>'`\\]/g,encodeURIComponent)}
+function su(s){s=String(s||'').trim();if(!s)return'';if(/^data:/i.test(s))return s;if(/^https?:\/\//i.test(s))return s.replace(/[\u0000-\u001f\u2028\u2029\s"<>'`\\]/g,encodeURIComponent);if(s[0]==='/')return s.replace(/[\u0000-\u001f\u2028\u2029\s"<>'`\\]/g,encodeURIComponent);return'';}
 function sj(s){return String(s||'').replace(/[\\'"&<>\r\n\u2028\u2029]/g,function(c){if(c==='\\')return'\\\\';if(c==="'")return"\\'";if(c==='"')return'&quot;';if(c==='&')return'&amp;';if(c==='<')return'&lt;';if(c==='>')return'&gt;';if(c==='\n')return'\\n';if(c==='\r')return'\\r';if(c==='\u2028')return'\\u2028';return'\\u2029';})}
 function atname(s){return String(s||'').trim().replace(/^@+/, '');}
 function handleFor(name){const h=String(name||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');return h||'usuario';}
@@ -915,7 +941,7 @@ function header(title,subtitle,action=''){
   const acts=Array.isArray(action)?action.slice():((action)?[action]:[]);
   const back=acts.find(a=>a&&a.icon==='&#8592;');
   if(back&&back.click){pushBack(back.click);const i=acts.indexOf(back);acts[i]={icon:'&#8592;',click:'goBackScreen()',label:back.label||''};}
-  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">${title}</div></div><div class="header-actions">${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>{const nm=HEADER_IC_MAP[a.icon];return`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${nm&&ICONS[nm]?ic(nm):a.icon}</button>`;}).join('')}</div></div></div>`;
+  return`<div class="header"><div class="header-row"><div class="brand"><div class="logo">Z</div><div class="title">${title}</div></div><div class="header-actions">${bell}<button class="plan-btn" onclick="openModal('plans')">${planTxt}</button>${acts.map(a=>{const nm=HEADER_IC_MAP[a.icon];return`<button class="icon-btn" onclick="${a.click}" aria-label="${a.label||''}">${nm&&ICONS[nm]?ic(nm):a.icon}</button>`;}).join('')}</div></div></div>`;
 }
 
 async function api(path,opts={}){
@@ -952,7 +978,7 @@ function calculateAge(birthDateString){
 
 function renderAuth(){
   nav.style.display='none';
-  screen.innerHTML=`<div class="content" style="padding-top:24px"><div style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;text-align:center"><div class="logo" style="margin:0 auto 10px;font-size:24px;width:50px;height:50px">P</div><h2 style="margin:0 0 6px">${authMode==='login'?'Entrar no ZUNNU':'Criar Conta no ZUNNU'}</h2><p class="small" style="margin-bottom:14px">${authMode==='login'?'Acesse a comunidade e cuide do seu pet':'Cadastro seguro de tutores (+18 anos)'}</p>
+  screen.innerHTML=`<div class="content" style="padding-top:24px"><div style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;text-align:center"><div class="logo" style="margin:0 auto 10px;font-size:24px;width:50px;height:50px">Z</div><h2 style="margin:0 0 6px">${authMode==='login'?'Entrar no ZUNNU':'Criar Conta no ZUNNU'}</h2><p class="small" style="margin-bottom:14px">${authMode==='login'?'Acesse a comunidade e cuide do seu pet':'Cadastro seguro de tutores (+18 anos)'}</p>
   ${authMode==='register'?`<div class="field"><label>Nome Completo</label><input id="regName" placeholder="Seu nome"></div><div class="field"><label>Data de Nascimento (+18)</label><input id="regBirth" type="date"></div>`:''}
   <div class="field"><label>E-mail</label><input id="authEmail" type="email" placeholder="seu@email.com"></div>
   <div class="field"><label>Senha</label><input id="authPass" type="password" placeholder="Minimo 6 caracteres"></div>
@@ -1158,8 +1184,7 @@ function renderSeusPets(){
       <div class="home-pet-breed">novo pet</div>
     </div></div>`;
     return`<div class="home-section-title"><h2>&#128062; Seus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>`
-      +(pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`:grid)
-      +`<button class="btn outline" style="width:100%;margin-top:10px" onclick="renderMyAdoptions()">&#128062; Minha Adocao</button>`;
+      +(pets.length===0?`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nenhum pet cadastrado ainda</b><span class="small">Cadastre seu primeiro pet e acompanhe vacinas, lembretes e mais.</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('addPet')">+ Adicionar meu pet</button></div>`:grid);
   }
 
 function renderInicio(){
@@ -2358,16 +2383,35 @@ function renderPetProfilePage(){
 
 function renderPerfil(){
   if(!currentUser)return;
+  cfgInSection=false;
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
-  const bell=`<button class="icon-btn notif-btn" onclick="renderNotificacoes()" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
-  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">P</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfig()" aria-label="Configuracoes">${ic('gear')}</button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
+  const spEmoji={Cachorro:'&#128054;',Gato:'&#128049;',Ave:'&#128036;',Coelho:'&#128048;',Roedor:'&#128057;',Reptil:'&#129422;',Peixe:'&#128031;'};
+  const petList=(pets.length?pets.map(p=>{
+    const emo=spEmoji[p.species]||'&#128062;';
+    const st=petHomeStatus(p);
+    const dot=st&&st.cl?`<span class="prof-pet-status-dot ${(st.cl==='ok'||st.cl==='up')?'ok':'warn'}"></span>`:'';
+    return`<div class="prof-pet-card" onclick="petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${p.id})">
+      <div class="prof-pet-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt="">`:emo}</div>
+      <div style="flex:1;min-width:0"><div class="prof-pet-name">${esc(p.name)}</div><div class="prof-pet-breed">${esc(p.breed||p.species)}</div></div>
+      ${dot}
+    </div>`;
+  }).join(''):`<div class="prof-pet-add-card" onclick="openModal(&#39;addPet&#39;)"><div class="prof-pet-photo"><span style="font-size:20px">+</span></div><b>Adicionar pet</b></div>`)
+  +`<div class="prof-pet-add-card" onclick="openModal('addPet')"><div class="prof-pet-photo"><span style="font-size:20px">+</span></div><b>Adicionar pet</b></div>`;
+  const opt=(icn,colo,title,sub,fn)=>`<div class="prof-opt-block" onclick="${fn}"><div class="prof-opt-ico" style="background:${colo[0]}">${ic(icn,colo[1])}</div><div style="flex:1;min-width:0"><b>${title}</b><span class="small">${sub}</span></div><span style="color:var(--soft);font-size:14px">&#8250;</span></div>`;
+  const options=
+    opt('heart',['rgba(231,111,81,.15)','var(--coral)'],'Minha Adocao','Pets que voce esta adotando','profNav(\'renderMyAdoptions()\')')+
+    opt('spark',['rgba(245,158,11,.15)','var(--gold)'],'Meus pontos','Ganhe pontos por acoes','profNav(\'setTab(\\\'pontos\\\')\')')+
+    opt('users',['rgba(15,165,140,.15)','var(--green)'],'Formar Parceria','Encontre um par ideal','profNav(\'formarParceria()\')')+
+    (currentUser.is_admin?opt('gear',['rgba(124,58,237,.15)','var(--purple)'],'Painel Admin','Gestao da plataforma','profNav(\'renderAdmin()\')'):'');
+  const bell=`<button class="icon-btn notif-btn" onclick="profNav('renderNotificacoes()')" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
+  screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">Z</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfigFromProfile()" aria-label="Configuracoes">${ic('gear')}</button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
     <div class="tutor-card" style="padding:18px 14px">
       <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative;line-height:0" title="Clique para alterar foto">
         <img src="${su(currentUser.selfie_url||currentUser.avatar||'')}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
         <div class="avatar-cam" style="position:absolute;bottom:2px;right:2px;width:25px;height:25px">${ic('camera','#fff')}</div>
       </div>
-      <div style="font-weight:800;font-size:17px;margin:10px 0 0">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
+      <div style="font-weight:800;font-size:17px;margin:10px 0 0"><button class="prof-edit-name" onclick="openConfigSection('conta')">${ic('gear')}</button>${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
       <div class="profile-handle">@${atname(handleFor(currentUser.name))}</div>
       <div class="small" style="margin-top:4px">${esc(currentUser.location||'')}</div>
       ${currentUser.is_human_verified?'<div style="margin-top:8px"><span class="badge-verified">Humano Verificado</span></div>':`<div style="margin-top:8px"><button class="btn small-btn" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button></div>`}
@@ -2378,12 +2422,15 @@ function renderPerfil(){
         <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
-      <div style="margin-top:14px">${renderSeusPets()}</div>
-      <div class="hb-actions">
-        <button class="hb-btn hb-green" onclick="renderMyAdoptions()">&#128062; Minha Adocao</button>
-        <button class="hb-btn hb-gold" onclick="setTab('pontos')">&#11088; Meus pontos</button>
-        <button class="hb-btn hb-pink" onclick="formarParceria()">&#128153; Formar Parceria</button>
-        ${currentUser.is_admin?`<button class="hb-btn hb-blue" onclick="renderAdmin()">&#128737; Painel Admin</button>`:''}
+      <div class="prof-cols">
+        <div class="prof-col-left">
+          <div class="home-section-title"><h2>&#128062; Seus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>
+          <div class="prof-pet-list">${petList}</div>
+        </div>
+        <div class="prof-col-left">
+          <div class="home-section-title"><h2>Opcoes</h2></div>
+          <div class="prof-pet-list">${options}</div>
+        </div>
       </div>
     </div>
   </div>`;
@@ -2608,10 +2655,13 @@ async function openModal(type){
     document.body.appendChild(root);return;
   }else if(type==='editAvatar'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Alterar Foto de Perfil</div><button class="close" onclick="closeModal()">X</button></div>
-      <div style="text-align:center;margin-bottom:12px"><img src="${su(currentUser?.selfie_url||currentUser?.avatar||'')}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.src='https://via.placeholder.com/80'"></div>
-      <div class="field"><label>URL da Nova Foto</label><input id="newAvatarUrl" type="url" placeholder="https://exemplo.com/foto.jpg" value="${esc(currentUser?.avatar||'')}"></div>
-      <button class="btn" style="width:100%" onclick="saveAvatar()">Salvar Foto</button>
-      ${currentUser?.avatar?`<button class="btn outline" style="width:100%;margin-top:6px" onclick="saveAvatar('')">Remover Foto</button>`:''}
+      <div style="text-align:center;margin-bottom:12px"><img src="${su(currentUser?.selfie_url||currentUser?.avatar||'')}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--green)" onerror="this.style.display='none';this.parentNode.textContent='&#128100;'"></div>
+      <div class="field"><label>Enviar foto (galeria ou camera)</label><input type="file" id="avatarFile" accept="image/*" onchange="uploadAvatarFile(this.files[0])" style="padding:8px"></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px"><button class="btn small-btn outline" onclick="document.getElementById('avatarFile').click();document.getElementById('avatarFile').setAttribute('capture','environment')">&#128247; Camera</button></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px"><button class="btn small-btn outline" onclick="clearAvatarFile()">Usar galeria</button></div>
+      <div style="font-size:11px;font-weight:800;color:var(--soft);margin:12px 0 6px">OU escolha um avatar padrao</div>
+      <div class="avatar-pick-grid">${DEFAULT_AVATARS.map((a,i)=>`<div class="avatar-pick" onclick="saveAvatarDefault(${i})"><img src="${a.data}" alt=""></div>`).join('')}</div>
+      ${currentUser?.avatar?`<button class="btn outline" style="width:100%;margin-top:10px" onclick="saveAvatar('')">Remover Foto</button>`:''}
     </div></div>`;
   }else if(type==='addStory'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Novo Story</div><button class="close" onclick="closeModal()">X</button></div>
@@ -2673,8 +2723,41 @@ async function openModal(type){
   document.body.appendChild(root);
 }
 
+const DEFAULT_AVATARS=(()=>{
+  const mk=(emoji,colors)=>'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect width="96" height="96" rx="48" fill="${colors[0]}"/><circle cx="48" cy="54" r="26" fill="${colors[1]}"/><text x="48" y="72" font-size="40" text-anchor="middle">${emoji}</text></svg>`);
+  return [
+    mk('&#128062;',['#FCE4DE','#E76F51']),
+    mk('&#128049;',['#E2F1FC','#2B7BB9']),
+    mk('&#128054;',['#E3F5F1','#0FA58C']),
+    mk('&#128048;',['#FFF9E6','#D4AF37']),
+    mk('&#128031;',['#F1EAFD','#7C3AED']),
+    mk('&#128100;',['#FCE8EF','#D94F7A'])
+  ];
+})();
+async function uploadAvatarFile(file){
+  if(!file)return;
+  if(!file.type.startsWith('image/')){alert('Selecione uma imagem.');return;}
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      const data=await api('/api/upload/avatar',{method:'POST',body:JSON.stringify({data:reader.result})});
+      if(currentUser){currentUser.avatar=data.avatar;currentUser.selfie_url=null;}
+      closeModal();setTab('perfil');alert('Foto atualizada!');
+    }catch(e){alert(e.message);}
+  };
+  reader.readAsDataURL(file);
+}
+function clearAvatarFile(){const el=document.getElementById('avatarFile');if(el){el.value='';el.click();}}
+async function saveAvatarDefault(idx){
+  const a=DEFAULT_AVATARS[idx];if(!a)return;
+  try{
+    const data=await api('/api/auth/me',{method:'PUT',body:JSON.stringify({avatar:a.data})});
+    if(currentUser){currentUser.avatar=data.avatar;currentUser.selfie_url=data.selfie_url;}
+    closeModal();setTab('perfil');alert('Avatar atualizado!');
+  }catch(e){alert(e.message);}
+}
 async function saveAvatar(urlOverride){
-  const url=urlOverride!==undefined?urlOverride:document.getElementById('newAvatarUrl')?.value.trim();
+  const url=urlOverride;
   try{
     const data=await api('/api/auth/me',{method:'PUT',body:JSON.stringify({avatar:url||''})});
     if(currentUser){currentUser.avatar=data.avatar;currentUser.selfie_url=data.selfie_url;}
@@ -4578,6 +4661,7 @@ async function openConfig(){
   </div>`;
 }
 async function openConfigSection(sec){
+  if(!cfgInSection){pushBack('openConfig()');cfgInSection=true;}
   let me=currentUser;try{me=await api('/api/auth/me');}catch(e){}
   if(me)currentUser=me;
   const T={conta:'Conta',seguranca:'Seguranca',privacidade:'Privacidade',assinatura:'Assinatura',vendas:'Vendas & Marketplace',aplicativo:'Aplicativo'};
@@ -4587,7 +4671,7 @@ async function openConfigSection(sec){
       <div class="field"><label>Nome</label><input id="cfgName" value="${esc(me.name||'')}"></div>
       <div class="field"><label>Bio</label><textarea id="cfgBio" rows="2" placeholder="Conte sobre voce">${esc(me.bio||'')}</textarea></div>
       <div class="field"><label>Cidade / Localizacao</label><input id="cfgLoc" value="${esc(me.location||'')}"></div>
-      <div class="field"><label>Foto (URL)</label><input id="cfgAvatar" value="${esc(me.avatar||'')}"></div>
+      <div class="field"><label>Foto de perfil</label><div class="pl-note" style="padding:2px 0 6px">Toque na sua foto na tela de perfil para enviar uma nova (galeria ou camera) ou escolher um avatar padrao.</div></div>
       <div class="field"><label>Instagram</label><input id="cfgIg" placeholder="seu.usuario (sem @)" value="${esc(me.instagram||'')}"></div>
       <div class="field"><label>WhatsApp com DDI</label><input id="cfgWa" placeholder="Ex: 5598999999999" value="${esc(me.whatsapp||'')}"></div>
       <button class="btn" style="width:100%" onclick="saveConfig()">Salvar perfil</button>
@@ -4623,17 +4707,16 @@ async function openConfigSection(sec){
     </div>`;
   }
   if(sec==='vendas'){
+    let done=false;
+    try{const si=await api('/api/sellerinterest/me');done=!!si;}catch(e){}
     body=`<div class="cfg-card">
-      ${me.is_seller?`
-        <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Modo vendedor</b><span class="badge-pro">ATIVO</span></div>
-        <div class="pl-note" style="padding:6px 0">Voce optou em ser vendedor. Sua Loja ZUNNU esta liberada abaixo.</div>
-        <button class="btn" style="width:100%" onclick="setTab('loja')">&#128722; Abrir Loja ZUNNU</button>
-        <button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="toggleSeller(false)">Desativar modo vendedor</button>
-      `:`
-        <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Vendas &amp; Marketplace &#128274;</b><span class="badge-free">EM BREVE</span></div>
-        <div class="pl-note" style="padding:6px 0">A Loja ainda nao foi lancada. Quem desejar vender produtos ou servicos para a comunidade pet pode se tornar vendedor agora e ser liberado primeiro.</div>
-        <button class="btn gold" style="width:100%" onclick="toggleSeller(true)">Tornar-se vendedor</button>
-      `}
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:12px">Vendas &amp; Marketplace</b><span class="badge-free">EM BREVE</span></div>
+      <div class="pl-note" style="padding:8px 0 4px">A Loja ZUNNU esta em desenvolvimento. Assim que o programa de vendedores abrir, entramos em contato para te avisar. Deixe seus dados abaixo para participar da lista de interesse.</div>
+      <div class="field"><label>Seu nome</label><input id="siName" value="${esc(me.name||'')}"></div>
+      <div class="field"><label>O que pretende vender?</label><textarea id="siDesc" rows="2" placeholder="Ex: racoes, roupinhas, servicos de banho e tosa..."></textarea></div>
+      <div class="field"><label>Telefone / E-mail para contato</label><input id="siContact" placeholder="(99) 99999-9999 ou email@exemplo.com" value="${esc(me.whatsapp||me.email||'')}"></div>
+      <button class="btn gold" style="width:100%" onclick="submitSellerInterest()">${done?'Atualizar interesse':'Enviar interesse'}</button>
+      ${done?`<div class="pl-note" style="padding:6px 0 0">&#10003; Recebemos o seu interesse. Avisaremos quando o programa abrir.</div>`:''}
     </div>`;
   }
   if(sec==='aplicativo'){
@@ -4643,11 +4726,22 @@ async function openConfigSection(sec){
       <button class="btn outline danger" style="width:100%;margin-top:6px;color:var(--coral)" onclick="logout()">Sair da conta</button>
     </div>`;
   }
-  screen.innerHTML=header(T[sec]||'Configuracoes','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">${body}</div>`;
+  screen.innerHTML=header(T[sec]||'Configuracoes','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">${body}</div>`;
 }
 async function saveConfig(){
-  const body={name:val('cfgName'),bio:val('cfgBio'),location:val('cfgLoc'),avatar:val('cfgAvatar'),instagram:val('cfgIg'),whatsapp:val('cfgWa')};
+  const body={name:val('cfgName'),bio:val('cfgBio'),location:val('cfgLoc'),instagram:val('cfgIg'),whatsapp:val('cfgWa')};
   try{const u=await api('/api/auth/me',{method:'PUT',body:JSON.stringify(body)});currentUser=u;await openConfigSection('conta');alert('Perfil salvo!');}catch(e){alert(e.message);}
+}
+async function submitSellerInterest(){
+  const name=val('siName'),desc=val('siDesc'),contact=val('siContact');
+  if(!name){alert('Informe seu nome.');return;}
+  if(!desc){alert('Informe o que pretende vender.');return;}
+  if(!contact){alert('Informe um telefone ou e-mail para contato.');return;}
+  try{
+    await api('/api/sellerinterest',{method:'POST',body:JSON.stringify({name,sell_desc:desc,contact})});
+    alert('Interesse registrado! Avisaremos quando o programa de vendedores abrir.');
+    await openConfigSection('vendas');
+  }catch(e){alert(e.message);}
 }
 async function changePassword(){
   const cur=val('cfgPassCur'),n1=val('cfgPassNew'),n2=val('cfgPassNew2');
@@ -4660,7 +4754,8 @@ async function unblockUser(id){
   try{await api('/api/social/block/'+id,{method:'DELETE'});await openConfigSection('privacidade');}catch(e){alert(e.message);}
 }
 function renderHelp(){
-  screen.innerHTML=header('Centro de ajuda','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">
+  pushBack('openConfig()');
+  screen.innerHTML=header('Centro de ajuda','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
     <div class="cfg-card"><b style="font-size:12px">Como a ZUNNU funciona?</b>
       <div class="pl-note" style="padding:6px 0">Crie o perfil dos seus pets, compartilhe momentos no feed, encontre lugares e eventos, adote ou anuncie pets para adocao e converse com outros tutores quando houver match.</div>
     </div>
@@ -4676,6 +4771,9 @@ function renderHelp(){
 
 /* ===== Painel Admin (E18/E19) ===== */
 let adminView='dashboard';
+let cfgInSection=false;
+function openConfigFromProfile(){pushBack('renderPerfil()');cfgInSection=false;openConfig();}
+function profNav(e){pushBack('renderPerfil()');(0,eval)(e);}
 async function renderAdmin(){
   if(!currentUser?.is_admin){alert('Acesso restrito.');return;}
   let dash={},rep=[],evs=[],us=[];let usQ='';
@@ -4734,7 +4832,8 @@ async function setUserAdmin(id,is_admin){
 
 /* ===== Seja ZUNNU PRO (E11) ===== */
 function renderProInfo(){
-  screen.innerHTML=header('Seja ZUNNU PRO','',{icon:'&#8592;',click:'openConfig()'})+`<div class="content" style="padding-top:0">
+  pushBack('openConfig()');
+  screen.innerHTML=header('Seja ZUNNU PRO','',{icon:'&#8592;',click:'goBackScreen()'})+`<div class="content" style="padding-top:0">
     <div class="cfg-card" style="border-color:var(--blue)">
       <div style="display:flex;justify-content:space-between;align-items:center"><b>Tutor Plus</b><span class="badge-plus">R$ 4,99/mes</span></div>
       <div class="pl-note" style="padding:6px 0">Zero anuncios e selo azul de tutor verificado, mais beneficios exclusivos.</div>

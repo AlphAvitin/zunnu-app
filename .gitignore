@@ -2,6 +2,7 @@ node_modules/
 server/patai.db
 server/zunu.db
 server/zunnu.db
+server/uploads/
 android/
 .DS_Store
 *.log

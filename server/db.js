@@ -543,6 +543,14 @@ CREATE TABLE IF NOT EXISTS points_transactions (
   reason TEXT,
   created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 );
+CREATE TABLE IF NOT EXISTS seller_interest (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  name TEXT,
+  sell_desc TEXT,
+  contact TEXT,
+  created_at TEXT DEFAULT to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
+);
 `;
 
 async function migrate() {
@@ -1217,6 +1225,15 @@ function createTables(db) {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
   try { db.run("ALTER TABLE users ADD COLUMN points_balance INTEGER DEFAULT 0"); } catch(e) {}
+  db.run(`
+  CREATE TABLE IF NOT EXISTS seller_interest (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    name TEXT,
+    sell_desc TEXT,
+    contact TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
 }
 
 async function run(sql, params = []) {
