@@ -24,7 +24,7 @@ function containsOffensiveText(text) {
 const POST_COLS = `p.id, p.text, p.image, p.video_url, p.likes, p.comments_count, p.shares,
   p.location as post_location, p.visibility as post_visibility, p.partner_match_id, p.created_at,
   u.id as user_id, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan,
-  pt.id as pet_id, pt.name as pet_name, pt.species as pet_species, pt.image as pet_image,
+  pt.id as pet_id, pt.name as pet_name, pt.species as pet_species, pt.breed as pet_breed, pt.image as pet_image,
   pt.visibility as pet_visibility,
   pn.id as partner_user_id, pn.name as partner_name, pn.avatar as partner_avatar`;
 

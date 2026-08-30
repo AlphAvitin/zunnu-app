@@ -145,7 +145,7 @@ button,input,textarea,select{font:inherit}
 .stories-row{display:flex;gap:10px;overflow-x:auto;padding:8px 0 12px;scrollbar-width:none;-ms-overflow-style:none}
 .stories-row::-webkit-scrollbar{display:none}
 .story-circle{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;flex-shrink:0}
-.story-ring{width:56px;height:56px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--pink),var(--orange));display:flex;align-items:center;justify-content:center}
+.story-ring{width:56px;height:56px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--purple),var(--coral));display:flex;align-items:center;justify-content:center}.story-ring.viewed{border:0}
 .story-ring.viewed{background:var(--line)}
 .story-ring.add-story{background:none;border:2px dashed var(--line)}
 .story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg)}
@@ -547,6 +547,37 @@ button,input,textarea,select{font:inherit}
 .post-loc{color:var(--green);font-weight:700}
 .comment-pet{display:inline-block;background:var(--greenSoft);color:var(--green);border-radius:8px;padding:1px 7px;font-size:9px;font-weight:700;margin-right:5px}
 .comment-del{border:0;background:none;color:var(--coral);font-size:12px;cursor:pointer;float:right}
+
+/* ===== Feed da Comunidade - card pet-centrico ===== */
+.pf-card{background:var(--card);border-radius:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);animation:fadeIn .3s ease;overflow:hidden}
+.pf-head{display:flex;align-items:center;gap:10px;padding:11px 13px 0}
+.pf-avatar-wrap{position:relative;flex-shrink:0;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--coral));padding:2px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pf-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:19px}
+.pf-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pf-tutor-mini{position:absolute;bottom:-3px;right:-3px;width:18px;height:18px;border-radius:50%;border:2px solid #fff;background:var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:8px;cursor:pointer}
+.pf-tutor-mini img{width:100%;height:100%;object-fit:cover}
+.pf-id{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pf-name-row{display:flex;align-items:center;gap:5px;min-width:0}
+.pf-name{font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.pf-cat-badge{flex-shrink:0;font-size:8px;font-weight:800;text-transform:capitalize;color:var(--purple);background:var(--purpleSoft);border-radius:8px;padding:2px 6px}
+.pf-sub{font-size:10.5px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.pf-sub b{color:var(--purple);font-weight:700}
+.pf-txt{padding:9px 13px 10px;font-size:12.5px;line-height:1.5;color:var(--ink)}
+.pf-media{width:calc(100% - 20px);margin:0 10px;border-radius:16px;overflow:hidden;background:var(--greenSoft)}
+.pf-media img{width:100%;display:block;object-fit:cover}
+.pf-media video{width:100%;display:block;max-height:340px;background:#000}
+.pf-actions{display:flex;align-items:center;padding:6px 8px 8px;gap:2px}
+.pf-action{display:flex;align-items:center;gap:6px;border:0;background:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--soft);padding:6px 9px;border-radius:10px;flex:1}
+.pf-action:active{background:var(--bg)}
+.pf-action .pf-ic{width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pf-action .pf-ic svg{width:14px;height:14px}
+.pf-paw-count{color:var(--purple)}
+.pf-action.on .pf-ic{background:var(--purple)}
+.pf-action.neutral .pf-ic{background:var(--greenSoft);color:var(--green)}
+.pf-action.share .pf-ic{background:var(--coralSoft);color:var(--coral)}
+.pf-loc{display:inline-flex;align-items:center;gap:3px;color:var(--green);font-weight:700}
+.pf-comments-section{display:none;border-top:1px solid var(--line);padding:8px 12px;background:var(--bg)}
+.pf-comments-section.open{display:block}
 
 /* ===== Descobrir (Etapa 5) ===== */
 .disc-search{background:var(--card);border-radius:14px;padding:2px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin:10px 16px}
@@ -1407,14 +1438,49 @@ async function homeSearch(){
 }
 
 
+function hasPetData(p){return p.pet_id&&(p.pet_name||p.pet_image||p.pet_species);}
+function catBadge(species){return species?`<span class="pf-cat-badge">${esc(species)}</span>`:'';}
+function tutorMini(p){return`<div class="pf-tutor-mini" onclick="event.stopPropagation();viewUserProfile(${p.user_id})" title="${esc(p.user_name)}">${p.user_avatar?`<img src="${su(p.user_avatar)}" onerror="this.style.display='none';this.textContent='${esc((p.user_name||'T').charAt(0))}'" alt="">`:`${esc((p.user_name||'T').charAt(0))}`}</div>`;}
 function postCardHtml(p){
   const isOwner=currentUser&&(p.user_id===currentUser.id);
-  const petChip=p.pet_id?`<div class="post-pet" onclick="event.stopPropagation();openPostPet(${p.pet_id})">${p.pet_image?`<img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.style.paddingLeft='0'" alt="">`:`<span class="post-pet-emoji">${petEmoji(p.pet_species)}</span>`}<span>com ${esc(p.pet_name||'')}</span></div>`:'';
-  const partnerChip=p.partner_match_id&&p.partner_name?`<div class="post-pet" style="color:var(--pink)">&#128153;<span>parceria com ${esc(p.partner_name)}</span></div>`:'';
   const menu=`<div class="post-menu"><button class="post-menu-btn" onclick="togglePostMenu(${p.id})">&#8943;</button><div id="pmenu-${p.id}" class="post-dropdown" style="display:none">
     ${isOwner?`<button onclick="editPost(${p.id})">&#9998; Editar</button><button class="danger" onclick="deletePost(${p.id})">&#128465; Excluir</button>`
     :`<button onclick="reportPost(${p.id})">&#128680; Denunciar</button><button onclick="hidePost(${p.id})">&#128065; Ocultar publicacao</button><button onclick="blockUser(${p.user_id})">&#128683; Bloquear ${esc((p.user_name||'').split(' ')[0])}</button>`}
   </div></div>`;
+  if(hasPetData(p)){
+    const petAvatar=p.pet_image?`<img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.innerHTML='&#128062;'" alt="">`:`${petEmoji(p.pet_species)}`;
+    const subParts=[];
+    if(p.pet_breed)subParts.push(`<b>${esc(p.pet_breed)}</b>`);
+    else if(p.pet_species)subParts.push(`<b>${esc(p.pet_species)}</b>`);
+    subParts.push(`por ${esc(p.user_name)}`);
+    subParts.push(p.time||formatDate(p.created_at));
+    return`<div class="post pf-card">
+      <div class="pf-head">
+        <div class="pf-avatar-wrap" onclick="openPostPet(${p.pet_id})">
+          <div class="pf-avatar">${petAvatar}</div>
+          ${tutorMini(p)}
+        </div>
+        <div class="pf-id">
+          <div class="pf-name-row"><span class="pf-name" onclick="openPostPet(${p.pet_id})">${esc(p.pet_name)}</span>${catBadge(p.pet_species)}</div>
+          <div class="pf-sub">${subParts.join(' &middot; ')}${p.post_location?` &middot; <span class="pf-loc">&#128205; ${esc(p.post_location)}</span>`:''}</div>
+        </div>
+        ${menu}
+      </div>
+      <div class="pf-txt">${esc(p.text)}</div>
+      ${p.video_url?`<div class="pf-media"><video src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video></div>`
+        :p.image?`<div class="pf-media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
+      <div class="pf-actions">
+        <button class="pf-action on" onclick="toggleLike(${p.id})"><span class="pf-ic">${ic('paw')}</span><span class="pf-paw-count">${p.likes||0}</span></button>
+        <button class="pf-action neutral" onclick="toggleComments(${p.id})"><span class="pf-ic">${ic('chat')}</span><span>${p.comments_count||0}</span></button>
+        <button class="pf-action share" onclick="sharePost(${p.id})"><span class="pf-ic">${ic('heart')}</span><span>${p.shares||0} Compartilhar</span></button>
+      </div>
+      <div id="comments-${p.id}" class="pf-comments-section${showComments[p.id]?' open':''}">
+        <div id="commentsList-${p.id}"><div class="loading"><div class="spinner"></div></div></div>
+        <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
+      </div>
+    </div>`;
+  }
+  const petChip=p.pet_image?`<div class="post-pet" onclick="event.stopPropagation();openPostPet(${p.pet_id})"><img src="${su(p.pet_image)}" onerror="this.style.display='none';this.parentNode.style.paddingLeft='0'" alt=""><span>com ${esc(p.pet_name||'')}</span></div>`:'';
   return`<div class="post">
     <div class="post-head">
       <div class="avatar" onclick="viewUserProfile(${p.user_id})" style="cursor:pointer"><img src="${su(p.user_avatar||'')}" onerror="this.style.display='none';this.parentNode.textContent='P'" alt="${esc(p.user_name)}"></div>
@@ -1425,7 +1491,6 @@ function postCardHtml(p){
       ${menu}
     </div>
     ${petChip}
-    ${partnerChip}
     <div class="post-text">${esc(p.text)}</div>
     ${p.video_url?`<video class="media-video" src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
     <div class="post-actions">
