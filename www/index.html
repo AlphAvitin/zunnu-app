@@ -62,6 +62,8 @@ button,input,textarea,select{font:inherit}
 .media{height:180px;background:var(--greenSoft)}.media img{width:100%;height:100%;object-fit:cover}
 .post-actions{display:flex;gap:4px;padding:6px 12px;border-top:1px solid var(--line)}
 .action{border:0;background:none;padding:4px 8px;cursor:pointer;font-size:11px;color:var(--soft);font-weight:600;border-radius:6px}.action:hover{background:var(--greenSoft)}
+.like-act .ic{width:13px;height:13px;vertical-align:-2px}
+.like-act.liked{color:var(--purple)}
 
 .post-menu{position:relative}.post-menu-btn{background:none;border:none;cursor:pointer;font-size:14px;color:var(--soft);padding:4px}
 .post-dropdown{position:absolute;right:0;top:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px;z-index:15;min-width:110px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
@@ -144,13 +146,13 @@ button,input,textarea,select{font:inherit}
 
 .stories-row{display:flex;gap:10px;overflow-x:auto;padding:8px 0 12px;scrollbar-width:none;-ms-overflow-style:none}
 .stories-row::-webkit-scrollbar{display:none}
-.story-circle{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;flex-shrink:0}
-.story-ring{width:56px;height:56px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--purple),var(--coral));display:flex;align-items:center;justify-content:center}.story-ring.viewed{border:0}
+.story-circle{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0}
+.story-ring{width:66px;height:66px;border-radius:50%;padding:2.5px;background:linear-gradient(135deg,var(--purple),var(--coral));display:flex;align-items:center;justify-content:center}.story-ring.viewed{border:0}
 .story-ring.viewed{background:var(--line)}
 .story-ring.add-story{background:none;border:2px dashed var(--line)}
 .story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg)}
-.story-ring .add-icon{width:100%;height:100%;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--green)}
-.story-name{font-size:9px;color:var(--soft);max-width:56px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.story-ring .add-icon{width:100%;height:100%;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--green)}
+.story-name{font-size:10px;color:var(--soft);max-width:70px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 
 .story-viewer{position:fixed;inset:0;background:#000;z-index:200;display:flex;align-items:center;justify-content:center}
 .story-viewer-inner{width:100%;max-width:430px;height:100%;position:relative;display:flex;flex-direction:column}
@@ -216,12 +218,14 @@ button,input,textarea,select{font:inherit}
 .media-video{width:100%;max-height:280px;background:var(--greenSoft)}
 
 /* ===== Home redesenhada ===== */
-.home-hero{background:linear-gradient(150deg,var(--green) 0%,var(--green2) 100%);border-radius:0 0 28px 28px;padding:18px 16px 16px;color:#fff;position:relative;overflow:hidden}
+.home-hero{background:linear-gradient(150deg,#7C3AED 0%,#5B21B6 100%);border-radius:0 0 28px 28px;padding:18px 16px 16px;color:#fff;position:relative;overflow:hidden}
 .home-hero::after{content:'';position:absolute;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.06);right:-45px;top:-45px}
 .home-hero::before{content:'';position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.05);right:75px;bottom:-55px}
 .home-hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.home-welcome{font-size:11px;font-weight:800;color:#A7CFC3;letter-spacing:.5px;text-transform:uppercase}
-.home-hello{font-size:21px;font-weight:900;margin:2px 0 8px}
+.home-hero-brand{display:flex;align-items:center;gap:8px}
+.home-logo{width:34px;height:34px;border-radius:11px;background:#fff;color:#7C3AED;font-weight:900;font-size:19px;box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.home-welcome{font-size:11px;font-weight:800;color:#E9DFFB;letter-spacing:.5px;text-transform:uppercase}
+.home-hello{font-size:21px;font-weight:900;margin:10px 0 8px}
 .home-sub{font-size:13px;font-weight:600;color:rgba(255,255,255,.92)}
 .home-hero-icons{display:flex;gap:6px}
 .home-hero-icons .icon-btn{background:rgba(255,255,255,.15);color:#fff;box-shadow:none;backdrop-filter:blur(4px)}
@@ -551,27 +555,29 @@ button,input,textarea,select{font:inherit}
 /* ===== Feed da Comunidade - card pet-centrico ===== */
 .pf-card{background:var(--card);border-radius:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);animation:fadeIn .3s ease;overflow:hidden}
 .pf-head{display:flex;align-items:center;gap:10px;padding:11px 13px 0}
-.pf-avatar-wrap{position:relative;flex-shrink:0;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--coral));padding:2px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.pf-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:19px}
+.pf-avatar-wrap{position:relative;flex-shrink:0;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--coral));padding:2.5px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pf-avatar{width:45px;height:45px;border-radius:50%;object-fit:cover;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:21px}
 .pf-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .pf-tutor-mini{position:absolute;bottom:-3px;right:-3px;width:18px;height:18px;border-radius:50%;border:2px solid #fff;background:var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:8px;cursor:pointer}
 .pf-tutor-mini img{width:100%;height:100%;object-fit:cover}
 .pf-id{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .pf-name-row{display:flex;align-items:center;gap:5px;min-width:0}
-.pf-name{font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.pf-name{font-size:15px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .pf-cat-badge{flex-shrink:0;font-size:8px;font-weight:800;text-transform:capitalize;color:var(--purple);background:var(--purpleSoft);border-radius:8px;padding:2px 6px}
 .pf-sub{font-size:10.5px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
 .pf-sub b{color:var(--purple);font-weight:700}
-.pf-txt{padding:9px 13px 10px;font-size:12.5px;line-height:1.5;color:var(--ink)}
+.pf-txt{padding:11px 15px 12px;font-size:13.5px;line-height:1.55;color:var(--ink)}
 .pf-media{width:calc(100% - 20px);margin:0 10px;border-radius:16px;overflow:hidden;background:var(--greenSoft)}
 .pf-media img{width:100%;display:block;object-fit:cover}
 .pf-media video{width:100%;display:block;max-height:340px;background:#000}
 .pf-actions{display:flex;align-items:center;padding:6px 8px 8px;gap:2px}
 .pf-action{display:flex;align-items:center;gap:6px;border:0;background:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--soft);padding:6px 9px;border-radius:10px;flex:1}
 .pf-action:active{background:var(--bg)}
-.pf-action .pf-ic{width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pf-action .pf-ic svg{width:14px;height:14px}
+.pf-action .pf-ic{width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pf-action .pf-ic svg{width:16px;height:16px}
 .pf-paw-count{color:var(--purple)}
+.pf-paw-count:not(.on){color:var(--soft)}
+.pf-action.off .pf-ic{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
 .pf-action.on .pf-ic{background:var(--purple)}
 .pf-action.neutral .pf-ic{background:var(--greenSoft);color:var(--green)}
 .pf-action.share .pf-ic{background:var(--coralSoft);color:var(--coral)}
@@ -1070,6 +1076,7 @@ function header(title,subtitle,action=''){
 
 async function api(path,opts={}){
   const headers={'Content-Type':'application/json'};
+  if(opts.body instanceof FormData){delete headers['Content-Type'];}
   if(token)headers['Authorization']='Bearer '+token;
   try{
     const r=await fetch(API+path,{...opts,headers:{...headers,...opts.headers}});
@@ -1353,9 +1360,10 @@ function renderInicio(){
     ${feedLoading}${moreBtn}`;
   screen.innerHTML=`<div class="home-hero">
   <div class="home-hero-row">
-    <div><div class="home-welcome">ZUNNU</div><div class="home-hello">Ola, ${fn} &#128075;</div></div>
+    <div class="home-hero-brand"><div class="logo home-logo">Z</div><div class="home-welcome">ZUNNU</div></div>
     <div class="home-hero-icons">${bell}</div>
   </div>
+  <div class="home-hello">Ola, ${fn} &#128075;</div>
   <div class="home-sub">Como estao seus pets hoje?</div>
   <button class="home-plan-chip" onclick="openModal('plans')">${planTxt} &#11088; Ver planos</button>
   </div>
@@ -1470,13 +1478,13 @@ function postCardHtml(p){
       ${p.video_url?`<div class="pf-media"><video src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video></div>`
         :p.image?`<div class="pf-media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
       <div class="pf-actions">
-        <button class="pf-action on" onclick="toggleLike(${p.id})"><span class="pf-ic">${ic('paw')}</span><span class="pf-paw-count">${p.likes||0}</span></button>
+        <button class="pf-action ${p.liked_by_user?'on':'off'}" onclick="toggleLike(${p.id})"><span class="pf-ic">${ic('paw')}</span><span class="pf-paw-count${p.liked_by_user?' on':''}">${p.likes||0}</span></button>
         <button class="pf-action neutral" onclick="toggleComments(${p.id})"><span class="pf-ic">${ic('chat')}</span><span>${p.comments_count||0}</span></button>
         <button class="pf-action share" onclick="sharePost(${p.id})"><span class="pf-ic">${ic('heart')}</span><span>${p.shares||0} Compartilhar</span></button>
       </div>
       <div id="comments-${p.id}" class="pf-comments-section${showComments[p.id]?' open':''}">
         <div id="commentsList-${p.id}"><div class="loading"><div class="spinner"></div></div></div>
-        <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
+        <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button type="button" class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
       </div>
     </div>`;
   }
@@ -1494,13 +1502,13 @@ function postCardHtml(p){
     <div class="post-text">${esc(p.text)}</div>
     ${p.video_url?`<video class="media-video" src="${su(p.video_url)}" controls playsinline preload="metadata" poster="${su(p.image||'')}"></video>`:p.image?`<div class="media" onclick="openLightbox('${su(p.image)}')" style="cursor:pointer"><img src="${su(p.image)}" onerror="this.style.display='none'" alt=""></div>`:''}
     <div class="post-actions">
-      <button class="action" onclick="toggleLike(${p.id})" style="${p.liked_by_user?'color:var(--pink)':''}">&#9829; ${p.likes||0}</button>
+      <button type="button" class="action like-act ${p.liked_by_user?'liked':''}" onclick="toggleLike(${p.id})">${ic('paw')} ${p.likes||0}</button>
       <button class="action" onclick="toggleComments(${p.id})">&#128172; ${p.comments_count||0}</button>
       <button class="action" onclick="sharePost(${p.id})">&#128228; ${p.shares||0} Compartilhar</button>
     </div>
     <div id="comments-${p.id}" style="display:${showComments[p.id]?'block':'none'}" class="comments-section">
       <div id="commentsList-${p.id}"><div class="loading"><div class="spinner"></div></div></div>
-      <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
+      <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button type="button" class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
     </div>
   </div>`;
 }
@@ -1733,7 +1741,13 @@ async function deleteComment(postId,commentId){
 async function addComment(postId){
   const input=document.getElementById('commentInput-'+postId);
   const text=input?.value.trim();if(!text)return;
-  try{await api('/api/posts/'+postId+'/comments',{method:'POST',body:JSON.stringify({text})});input.value='';await loadComments(postId);render();}catch(e){alert(e.message);}
+  try{
+    await api('/api/posts/'+postId+'/comments',{method:'POST',body:JSON.stringify({text})});
+    input.value='';showComments[postId]=true;
+    await loadComments(postId);
+    if(window.innerWidth>0)showToast('Comentario enviado!');
+    render();
+  }catch(e){showToast(e.message||'Nao foi possivel comentar');}
 }
 
 let curSharePost=null;
@@ -1756,27 +1770,45 @@ async function doShare(){
 }
 async function shareExternal(url){
   doShare();
-  if(navigator.share){try{await navigator.share({title:'Patai',text:'Confira este post no Patai!',url});}catch(e){}}
-  else{navigator.clipboard?.writeText(url);showToast('Link copiado!');}
+  const shareData={title:'ZUNNU',text:'Confira este momento no ZUNNU!',url};
+  let shared=false;
+  try{
+    if(navigator.share){ await navigator.share(shareData); shared=true; }
+  }catch(e){}
+  if(!shared){
+    try{ await navigator.clipboard.writeText(url); showToast('Link copiado!'); }
+    catch(e){ showToast('Nao foi possivel compartilhar'); }
+  }
 }
 function shareCopy(url){
   doShare();
   navigator.clipboard?.writeText(url);showToast('Link copiado!');
 }
 
-function previewPostImage(){
-  const v=document.getElementById('postImage')?.value.trim();
+let feedPostVideo='';
+function previewPostImageFile(file){
   const wrap=document.getElementById('postImgPreview');
   if(!wrap)return;
-  if(/^https?:\/\//i.test(v)){
-    feedPostImage=v;wrap.style.display='block';
-    const img=document.getElementById('postImgPrevImg');
-    img.style.display='block';
-    img.onerror=function(){wrap.style.display='none';feedPostImage='';};
-    img.src=v;
-  }else{wrap.style.display='none';feedPostImage='';}
+  if(file&&file.type.startsWith('image/')){
+    const reader=new FileReader();
+    reader.onload=function(){
+      feedPostImage=this.result;wrap.style.display='block';
+      const img=document.getElementById('postImgPrevImg');
+      img.onerror=function(){wrap.style.display='none';feedPostImage='';};
+      img.src=this.result;
+    };
+    reader.readAsDataURL(file);
+  }else{wrap.style.display='none';const v=document.getElementById('postImageFile');if(v)v.value='';feedPostImage='';}
 }
-function removePostImage(){feedPostImage='';const el=document.getElementById('postImage');if(el)el.value='';const wrap=document.getElementById('postImgPreview');if(wrap)wrap.style.display='none';}
+function removePostImageFile(){feedPostImage='';const el=document.getElementById('postImageFile');if(el)el.value='';const wrap=document.getElementById('postImgPreview');if(wrap)wrap.style.display='none';}
+async function uploadMediaFile(file){
+  if(!file)return '';
+  if(file.size>30*1024*1024){throw new Error('Arquivo muito grande (max 30MB)');}
+  const fd=new FormData();
+  fd.append('file',file);
+  const data=await api('/api/upload/media',{method:'POST',body:fd});
+  return data.url||'';
+}
 
 
 async function editPost(id){
@@ -2819,9 +2851,9 @@ async function openModal(type){
     <div class="field"><label>Pet relacionado</label><select id="postPet"><option value="">Nenhum pet</option>${(pets||[]).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
     <div class="field"><label>Com qual parceiro? (opcional)</label><select id="postMatch"><option value="">Nenhum parceiro</option></select></div>
     <div class="field"><label>Mensagem *</label><textarea id="postTxt" placeholder="O que esta acontecendo com seu pet?" rows="3"></textarea></div>
-    <div class="field"><label>Foto (URL)</label><input id="postImage" type="url" placeholder="https://exemplo.com/foto.jpg" oninput="previewPostImage()">
-      <div id="postImgPreview" style="margin-top:8px;display:none"><img id="postImgPrevImg" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px" alt="Previa da foto"><button class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="removePostImage()">Remover foto</button></div></div>
-    <div class="field"><label>Video (URL, opcional)</label><input id="postVideo" type="url" placeholder="https://exemplo.com/video.mp4"></div>
+    <div class="field"><label>Foto (arquivo)</label><input type="file" id="postImageFile" accept="image/*" onchange="previewPostImageFile(this.files[0])">
+      <div id="postImgPreview" style="margin-top:8px;display:none"><img id="postImgPrevImg" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px" alt="Previa da foto"><button type="button" class="btn small-btn outline" style="width:100%;margin-top:6px" onclick="removePostImageFile()">Remover foto</button></div></div>
+    <div class="field"><label>Video (arquivo, opcional)</label><input type="file" id="postVideoFile" accept="video/*"></div>
     <div class="field"><label>Localizacao (opcional)</label><input id="postLoc" placeholder="Ex: Pinheiro - MA"></div>
     <div class="field"><label>Visibilidade</label><select id="postVis"><option value="public">&#127757; Publico</option><option value="friends">&#128101; Amigos</option><option value="private">&#128274; Privado</option></select></div>
     <button class="btn" style="width:100%" onclick="savePost()">Publicar</button></div></div>`;
@@ -2922,14 +2954,14 @@ async function openModal(type){
   }else if(type==='addStory'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Novo Story</div><button class="close" onclick="closeModal()">X</button></div>
       <p class="small" style="margin-bottom:12px">Seu story expira em 24h</p>
-      <div class="field"><label>URL da Imagem *</label><input id="storyUrl" type="url" placeholder="https://exemplo.com/foto.jpg"></div>
+      <div class="field"><label>Imagem (arquivo) *</label><input type="file" id="storyFile" accept="image/*"></div>
       <div class="field"><label>Legenda</label><input id="storyCaption" placeholder="Legenda opcional"></div>
       <div class="field"><label>Vincular Pet</label><select id="storyPet"><option value="">Nenhum</option>${(pets||[]).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
       <button class="btn pink" style="width:100%" onclick="createStory()">Publicar Story</button>
     </div></div>`;
   }else if(type==='addReel'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Novo Reel</div><button class="close" onclick="closeModal()">X</button></div>
-      <div class="field"><label>URL do Video *</label><input id="reelUrl" type="url" placeholder="https://exemplo.com/video.mp4"></div>
+      <div class="field"><label>Video (arquivo) *</label><input type="file" id="reelFile" accept="video/*"></div>
       <div class="field"><label>Legenda *</label><input id="reelCaption" placeholder="Descreva o reel"></div>
       <div class="field"><label>Musica</label><input id="reelMusic" placeholder="Nome da musica"></div>
       <div class="field"><label>Vincular Pet</label><select id="reelPet"><option value="">Nenhum</option>${(pets||[]).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
@@ -2942,7 +2974,7 @@ async function openModal(type){
   }else if(type==='addPhoto'){
     root.innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-head"><div class="modal-title">Nova Foto do Pet</div><button class="close" onclick="closeModal()">X</button></div>
       <input type="hidden" id="addPhotoPetId" value="">
-      <div class="field"><label>URL da Imagem *</label><input id="photoUrl" type="url" placeholder="https://exemplo.com/foto.jpg"></div>
+      <div class="field"><label>Imagem (arquivo) *</label><input type="file" id="photoFile" accept="image/*"></div>
       <div class="field"><label>Legenda</label><input id="photoCaption" placeholder="Descricao da foto"></div>
       <button class="btn pink" style="width:100%" onclick="addPetPhoto()">Adicionar Foto</button>
     </div></div>`;
@@ -3021,19 +3053,37 @@ async function saveAvatar(urlOverride){
   }catch(e){alert(e.message);}
 }
 function closeModal(){document.getElementById('modal-root')?.remove();viewingPet=null;currentChatMatchId=null;chatMatchId=null;}
+function dataUrlToFile(dataUrl,filename){
+  const arr=dataUrl.split(',');const mime=(arr[0].match(/data:(.*?);/)||[])[1]||'image/png';
+  const ext=(mime.split('/')[1]||'png').replace('jpeg','jpg');
+  const bstr=atob(arr[1]);const n=bstr.length;const u8=new Uint8Array(n);
+  for(let i=0;i<n;i++)u8[i]=bstr.charCodeAt(i);
+  return new File([u8],filename+'.'+ext,{type:mime});
+}
 async function savePost(){
   const t=document.getElementById('postTxt')?.value.trim();
   if(!t){alert('Escreva algo!');return;}
+  const btn=document.querySelector('.btn[onclick="savePost()"]');
+  const origText=btn?btn.textContent:'';
   try{
     const pet=parseInt(document.getElementById('postPet')?.value)||null;
     const pm=parseInt(document.getElementById('postMatch')?.value)||null;
     const loc=document.getElementById('postLoc')?.value.trim()||'';
     const vis=document.getElementById('postVis')?.value||'public';
-    const img=feedPostImage||document.getElementById('postImage')?.value.trim()||'';
-    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t,image:img,video_url:document.getElementById('postVideo')?.value.trim()||'',pet_id:pet,partner_match_id:pm,location:loc,visibility:vis})});
-    feedPostImage='';
+    if(btn){btn.textContent='Enviando...';btn.disabled=true;}
+    let img='';
+    const imageFileEl=document.getElementById('postImageFile');
+    if(imageFileEl&&imageFileEl.files&&imageFileEl.files[0]){img=await uploadMediaFile(imageFileEl.files[0]);}
+    else if(feedPostImage&&feedPostImage.startsWith('data:')){img=await uploadMediaFile(dataUrlToFile(feedPostImage,'post_img'));}
+    else if(feedPostImage&&/^https?:\/\//i.test(feedPostImage)){img=feedPostImage;}
+    let video='';
+    const videoFileEl=document.getElementById('postVideoFile');
+    if(videoFileEl&&videoFileEl.files&&videoFileEl.files[0]){video=await uploadMediaFile(videoFileEl.files[0]);}
+    else if(feedPostVideo){video=await uploadMediaFile(dataUrlToFile(feedPostVideo,'post_video'));}
+    const p=await api('/api/posts',{method:'POST',body:JSON.stringify({text:t,image:img,video_url:video,pet_id:pet,partner_match_id:pm,location:loc,visibility:vis})});
+    feedPostImage='';feedPostVideo='';
     posts.unshift(p);postPage=1;feedError=false;showComments[p.id]=false;closeModal();setTab('inicio');
-  }catch(e){alert(e.message);}
+  }catch(e){if(btn){btn.textContent=origText;btn.disabled=false;}alert(e.message);}
 }
 
 let postMatches=[];
@@ -3537,21 +3587,21 @@ async function sendReelComment(reelId){
 }
 
 async function createStory(){
-  const url=document.getElementById('storyUrl')?.value.trim();
+  const fileEl=document.getElementById('storyFile');
   const caption=document.getElementById('storyCaption')?.value.trim()||'';
   const pet_id=document.getElementById('storyPet')?.value||null;
-  if(!url){alert('Insira a URL da imagem');return;}
-  try{await api('/api/stories',{method:'POST',body:JSON.stringify({image_url:url,caption,pet_id:pet_id?parseInt(pet_id):null})});closeModal();await loadAll();}catch(e){alert(e.message);}
+  if(!fileEl||!fileEl.files||!fileEl.files[0]){alert('Selecione uma imagem');return;}
+  try{const url=await uploadMediaFile(fileEl.files[0]);await api('/api/stories',{method:'POST',body:JSON.stringify({image_url:url,caption,pet_id:pet_id?parseInt(pet_id):null})});closeModal();await loadAll();}catch(e){alert(e.message||'Nao foi possivel publicar');}
 }
 
 async function createReel(){
-  const url=document.getElementById('reelUrl')?.value.trim();
+  const fileEl=document.getElementById('reelFile');
   const caption=document.getElementById('reelCaption')?.value.trim()||'';
   const music=document.getElementById('reelMusic')?.value.trim()||'';
   const pet_id=document.getElementById('reelPet')?.value||null;
-  if(!url){alert('Insira a URL do video');return;}
+  if(!fileEl||!fileEl.files||!fileEl.files[0]){alert('Selecione um video');return;}
   if(!caption){alert('Adicione uma legenda');return;}
-  try{await api('/api/reels',{method:'POST',body:JSON.stringify({video_url:url,caption,music,pet_id:pet_id?parseInt(pet_id):null})});closeModal();await loadAll();}catch(e){alert(e.message);}
+  try{const url=await uploadMediaFile(fileEl.files[0]);await api('/api/reels',{method:'POST',body:JSON.stringify({video_url:url,caption,music,pet_id:pet_id?parseInt(pet_id):null})});closeModal();await loadAll();}catch(e){alert(e.message||'Nao foi possivel publicar');}
 }
 
 let mapaInst=null;
@@ -3965,10 +4015,10 @@ async function openChatWith(userId){
 
 async function addPetPhoto(){
   const petId=document.getElementById('addPhotoPetId')?.value||(currentPetProfile?currentPetProfile.id:'');
-  const url=document.getElementById('photoUrl')?.value.trim();
+  const fileEl=document.getElementById('photoFile');
   const caption=document.getElementById('photoCaption')?.value.trim()||'';
-  if(!url||!petId){alert('Insira a URL da foto');return;}
-  try{await api('/api/petgallery/'+petId+'/photos',{method:'POST',body:JSON.stringify({image_url:url,caption})});closeModal();await refreshPetProfile();}catch(e){alert(e.message);}
+  if(!fileEl||!fileEl.files||!fileEl.files[0]||!petId){alert('Selecione uma imagem');return;}
+  try{const url=await uploadMediaFile(fileEl.files[0]);await api('/api/petgallery/'+petId+'/photos',{method:'POST',body:JSON.stringify({image_url:url,caption})});closeModal();await refreshPetProfile();}catch(e){alert(e.message||'Nao foi possivel adicionar');}
 }
 
 async function addPetMilestone(){

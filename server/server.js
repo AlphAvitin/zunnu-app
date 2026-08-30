@@ -4,6 +4,7 @@ const http = require('http');
 const path = require('path');
 const { initDB, get, run } = require('./db');
 const { setupWebSocket } = require('./ws');
+const { configureBots } = require('./bots');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -139,6 +140,7 @@ async function start() {
     SELECT (SELECT id FROM business_profiles WHERE business_name = 'Parque Centro'), 4, 5, 'O lugar perfeito para passear com a Amora.'
     WHERE NOT EXISTS (SELECT 1 FROM place_reviews WHERE place_id = (SELECT id FROM business_profiles WHERE business_name = 'Parque Centro') AND user_id = 4)`);
   console.log('Places seeded:', places.length);
+  await configureBots().catch(e => console.error('Bots init error:', e.message));
   setupWebSocket(server);
   server.listen(PORT, () => {
     console.log(`ZUNNU server running on port ${PORT}`);
