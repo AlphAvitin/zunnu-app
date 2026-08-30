@@ -370,6 +370,40 @@ router.post('/:id/report', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/ranking/top', optionalAuth, async (req, res) => {
+  try {
+    const uid = req.userId || -1;
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const rows = await all(`
+      SELECT pt.id, pt.name, pt.image, pt.species, pt.breed,
+        p.user_id, u.name as user_name, u.avatar as user_avatar, u.plan as user_plan,
+        COUNT(DISTINCT p.id) as post_count,
+        SUM(p.likes) as likes,
+        SUM(p.comments_count) as comments,
+        SUM(p.shares) as shares,
+        (SUM(p.likes) + SUM(p.comments_count) * 2 + SUM(p.shares) * 3) as score
+      FROM posts p
+      JOIN pets pt ON pt.id = p.pet_id
+      JOIN users u ON u.id = p.user_id
+      WHERE p.pet_id IS NOT NULL
+        AND p.created_at >= ?
+        AND p.visibility = 'public'
+        AND NOT EXISTS (SELECT 1 FROM blocks bl WHERE (bl.blocker_id = ? AND bl.blocked_id = p.user_id) OR (bl.blocker_id = p.user_id AND bl.blocked_id = ?))
+      GROUP BY pt.id
+      HAVING score > 0
+      ORDER BY score DESC, likes DESC
+      LIMIT 3
+    `, [monthStart.toISOString(), uid, uid]);
+    const top = rows.map((r, i) => ({ ...r, rank: i + 1, score: Number(r.score) }));
+    res.json({ month: monthStart.toISOString().slice(0, 7), top });
+  } catch (err) {
+    console.error('Ranking error:', err);
+    res.status(500).json({ error: 'Erro interno' });
+  }
+});
+
 function formatTime(dateStr) {
   if (!dateStr) return 'agora';
   const diff = (Date.now() - new Date(dateStr + 'Z').getTime()) / 1000;

@@ -429,6 +429,34 @@ button,input,textarea,select{font:inherit}
 .prof-pet-status-dot{position:absolute;top:7px;right:7px;width:9px;height:9px;border-radius:50%;border:2px solid var(--card)}
 .prof-pet-status-dot.ok{background:#2DD68C}
 .prof-pet-status-dot.warn{background:#F0A93C}
+.prof-pet-card-lg{padding:10px;gap:12px;border-radius:14px}
+.prof-pet-photo-lg{width:64px;height:64px;border-radius:14px;background:var(--greenSoft);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;position:relative}
+.prof-pet-photo-lg img{width:100%;height:100%;object-fit:cover}
+.prof-pet-selo{position:absolute;top:-4px;left:-4px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;border:2px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.prof-pet-selo.ok{background:#2DD68C}
+.prof-pet-selo.warn{background:#F0A93C}
+.prof-pet-health{font-size:9px;margin-top:3px;font-weight:700}
+.prof-pet-health.ok{color:#2DD68C}
+.prof-pet-health.warn{color:#F0A93C}
+.prof-pet-card-lg .prof-pet-name{font-size:13px}
+.prof-pet-card-lg .prof-pet-breed{font-size:10px}
+.tutor-avatar-wrap{display:inline-block;line-height:0}
+.tutor-avatar-wrap.no-img{display:flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:50%;background:linear-gradient(150deg,var(--green),var(--green2));color:#fff;font-size:30px;font-weight:800;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.tutor-avatar-letter{display:flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:50%;background:linear-gradient(150deg,var(--green),var(--green2));color:#fff;font-size:30px;font-weight:800;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.prof-name-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px}
+.prof-name{font-weight:800;font-size:17px}
+.prof-name .badge-free,.prof-name .badge-plus,.prof-name .badge-pro{margin-left:2px;vertical-align:middle}
+.prof-pencil{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;background:var(--greenSoft);border-radius:50%;cursor:pointer;color:var(--green);padding:0}
+.prof-pencil .ic{width:14px;height:14px}
+.prof-bio{display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;width:100%;box-sizing:border-box}
+.prof-bio>span{font-size:11px;color:var(--ink);line-height:1.45;text-align:center}
+.prof-bio-loc{display:inline-flex;align-items:center;gap:4px;color:var(--soft);font-weight:700}
+.prof-bio-loc .ic{width:13px;height:13px}
+.prof-socials{display:flex;justify-content:center;gap:8px;margin-top:2px}
+.prof-socials .social-chip{padding:5px;border-radius:50%;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center}
+.prof-socials .social-chip .ic{width:20px;height:20px}
+.prof-stats{display:flex;justify-content:space-around;background:var(--bg);border-radius:12px;padding:10px;margin-top:14px}
+.prof-verif{margin-top:0}
 .prof-pet-add-card{display:flex;align-items:center;gap:9px;background:transparent;border:1.5px dashed var(--line);border-radius:12px;padding:8px;cursor:pointer;color:var(--green)}
 .prof-opt-block{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;cursor:pointer;transition:transform .15s}
 .prof-opt-block:active{transform:scale(.97)}
@@ -725,6 +753,27 @@ button,input,textarea,select{font:inherit}
 .lostpet-banner{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--coral);border-radius:14px;margin:12px 0 4px;cursor:pointer}
 .lostpet-ico{width:40px;height:40px;border-radius:12px;background:var(--coralSoft);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .lostpet-banner>div:nth-child(2){flex:1}.lostpet-banner b{display:block;font-size:13px}.lostpet-banner .small{color:var(--soft)}
+.home-moments{padding:4px 0 2px;margin-bottom:4px}
+.home-search{margin:10px 0 4px}
+.home-pills{padding:2px 0 8px}
+.rank-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}
+.rank-title{font-size:15px;font-weight:900;color:var(--ink)}
+.rank-note{font-size:10px;color:var(--soft);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+.rank-podium{display:flex;flex-direction:column;gap:8px}
+.rank-card{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.rank-card.rank-1{border-color:var(--gold);background:linear-gradient(135deg,var(--goldSoft),var(--card))}
+.rank-card.rank-2{border-color:#C0C7CE}
+.rank-card.rank-3{border-color:#D8B58C}
+.rank-medal{display:flex;align-items:center;gap:3px;font-size:16px;flex-shrink:0;color:var(--gold)}
+.rank-medal b{font-size:13px;color:var(--ink)}
+.rank-photo{width:46px;height:46px;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-shrink:0}
+.rank-photo img{width:100%;height:100%;object-fit:cover}
+.rank-emoji{font-size:24px}
+.rank-info{flex:1;min-width:0}
+.rank-info b{display:block;font-size:13px}
+.rank-by{font-size:10px;color:var(--soft);display:block}
+.rank-stats{display:flex;gap:10px;margin-top:3px;font-size:10px;color:var(--soft)}
+.rank-go{color:var(--soft);font-size:15px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -743,6 +792,7 @@ let token = localStorage.getItem('zunnu_token');
 let tab = 'inicio';
 let homeSection = 'inicio';
 const backStack = [];
+let tabStack = [];
 function pushBack(expr){
   if(backStack.length&&backStack[backStack.length-1]===expr)return;
   backStack.push(expr);
@@ -751,6 +801,7 @@ function pushBack(expr){
 function runBackExpr(expr){try{(0,eval)(expr);}catch(e){console.error('back exp',e);}}
 function goBackScreen(){
   if(backStack.length){const expr=backStack.pop();runBackExpr(expr);return;}
+  if(tabStack.length){switchTab(tabStack.pop());return;}
   renderPerfil();
 }
 function minimizeApp(){try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App&&window.Capacitor.Plugins.App.minimizeApp){window.Capacitor.Plugins.App.minimizeApp();return;}}catch(e){}if(navigator.app&&navigator.app.exitApp)navigator.app.exitApp();}
@@ -759,6 +810,7 @@ function handleBackButton(){
   if(modal&&modal.style.display!=='none'){closeModal();return;}
   if(document.getElementById('storyViewer')){closeStory();return;}
   if(backStack.length){const expr=backStack.pop();runBackExpr(expr);return;}
+  if(tabStack.length){switchTab(tabStack.pop());return;}
   minimizeApp();
 }
 function setupBackButton(){
@@ -969,7 +1021,10 @@ spark:'M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4L12 3Z',
 users:'M9 7.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM3.5 20.5c.4-3.5 2.7-5.3 5.5-5.3s5.1 1.8 5.5 5.3M16 4.3a3.5 3.5 0 0 1 0 7M19 15.6c.8.8 1.2 2 1.4 3.4',
 scissors:'M8.5 15.5a3.7 3.7 0 1 0 0 5.6c2-2 3.2-6.4 4-12.7.9-6.8 1.3-11 2.5-11s3.5 4.2 8 8.6M15.5 15.5a3.7 3.7 0 1 1-5.6-5.6c2-2 6.4-3.2 12.7-4-6.8-.9-11-1.3-11-2.5s4.2-3.5 8.6-8',
 tree:'M12 3 7 9.5h2.5L6.5 14h3L7 19h10l-2.5-5h3L14.5 9.5H17L12 3ZM12 19v2.5',
-lightbulb:'M12 3a7 7 0 0 0-4 12.7c.8.6 1 1.3 1 2.3v1a1.5 1.5 0 0 0 1.5 1.5h3A1.5 1.5 0 0 0 15 19v-1c0-1 .2-1.7 1-2.3A7 7 0 0 0 12 3ZM9.5 16.5h5'
+lightbulb:'M12 3a7 7 0 0 0-4 12.7c.8.6 1 1.3 1 2.3v1a1.5 1.5 0 0 0 1.5 1.5h3A1.5 1.5 0 0 0 15 19v-1c0-1 .2-1.7 1-2.3A7 7 0 0 0 12 3ZM9.5 16.5h5',
+instagram:'M7 3.5h10A3.5 3.5 0 0 1 20.5 7v10a3.5 3.5 0 0 1-3.5 3.5H7A3.5 3.5 0 0 1 3.5 17V7A3.5 3.5 0 0 1 7 3.5ZM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM17.2 7.2h.01',
+whatsapp:'M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3ZM8.7 7.6c.3-.7.3-.7.6-.7l1.5.1c.2 0 .4.2.5.5.2.5.6 1.7.6 1.8 0 .1 0 .3-.2.5l-.6.7c-.2.2-.3.3-.1.6.2.5.9 1.6 1.9 2.3 1.4 1 1.6 1.1 1.9 1.1.3 0 .5-.2.8-.7.3-.5.7-1 .9-1 .2-.1.4-.2.6 0l1.6.8c.3.2.5.3.5.5 0 .5-.9 2-1.7 2.2-.5.2-1 .2-1.8-.1-1-.4-2.2-1.2-3.4-2.4-1.7-1.6-2.6-3-2.8-3.5-.2-.4 0-.7.2-.9l.6-.6c.2-.3.3-.5.1-.8-.2-.4-.5-1.1-.7-1.5-.2-.5-.4-.5-.7-.5l-.8-.1c-.5-.1-.6-.1-.9.3Z',
+edit:'M4 20l4-1 10-10a2.5 2.5 0 0 0-3.5-3.5L5 15.5 4 20ZM13.5 6.5l3 3'
 };
 function ic(n,c){const p=ICONS[n];if(!p)return'';return'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="'+(c||'currentColor')+'" xmlns="http://www.w3.org/2000/svg">'+p+'</svg>';}
 
@@ -1229,29 +1284,42 @@ function renderInicio(){
   const fn=esc((currentUser?.name||'Tutor').trim().split(' ')[0]);
   const planTxt=currentUser?(currentUser.plan==='pro'?'PRO':currentUser.plan==='plus'||currentUser.plan==='tutor'?'TUTOR':'FREE'):'PLANOS';
   const bell=currentUser?`<button class="icon-btn notif-btn" onclick="toggleNotifs()" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`:'';
-  const quick=[['map','Descobrir',"setTab('mapa')",'green'],['heart','Parceria',"formarParceria()",'coral'],['paw','Adocao',"openAdocao()",'gold'],['calendar','Eventos',"openEventos()",'blue']];
-  const quickArea=`<div class="home-quick">${quick.map(q=>`<div class="home-quick-item lg" onclick="${q[2]}"><div class="home-quick-icon lg ${q[3]}">${ic(q[0])}</div><b>${q[1]}</b></div>`).join('')}</div>`;
-  const unreadRow=unreadCount>0?`<div class="home-strip notif" onclick="renderNotificacoes()">${ic('bell')}<div><b>${unreadCount} notificacao${unreadCount>1?'oes':''} nao lida${unreadCount>1?'s':''}</b><span>Toque para ver o que esta acontecendo agora.</span></div><span class="home-link">&rarr;</span></div>`:'';
-  const warnPets=pets.filter(p=>petHomeStatus(p).cl==='warn');
-  const healthRow=pets.length?(warnPets.length?`<div class="home-strip warn" onclick="petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${warnPets[0].id})">${ic('alert')}<div><b>${esc(warnPets[0].name)} precisa de atencao</b><span>${esc(petHomeStatus(warnPets[0]).txt)}. Toque para ver os detalhes.</span></div><span class="home-link">&rarr;</span></div>`:`<div class="home-strip ok">${ic('spark')}<div><b>Saude em dia</b><span>Sem pendencia de vacinas, consultas ou cuidados.</span></div></div>`):'';
-  const univ=[['paw','Meus pets',"setTab('pets')",'green'],['lightbulb','Saude',(pets.length?`petProfileBack='setTab(&#39;perfil&#39;)';openPetProfile(${pets[0].id})`:"openModal('addPet')"),'coral'],['users','Conexoes',"openConexao()",'purple'],['map','Pets proximos',"setTab('mapa')",'blue'],['store','Loja',"openMarketplace()",'gold']];
-  const univArea=`<div class="home-univ-grid">${univ.map(u=>`<div class="home-univ-tile" onclick="${u[2]}"><div class="home-univ-icon ${u[3]}">${ic(u[0])}</div><b>${esc(u[1])}</b></div>`).join('')}</div>`;
-  const commCards=`<div class="home-comm-dock">
-    <button class="home-comm-btn" onclick="setHomeSection('comunidade')">${ic('spark')}Comunidade</button>
-    <button class="home-comm-btn" onclick="setHomeSection('grupos')">${ic('users')}Grupos</button>
-    <button class="home-comm-btn" onclick="openModal('post')">${ic('camera')}Postar</button>
-  </div>`;
   const lostFound=(lostPets||[]).find(x=>x.status==='lost');
   const lostBanner=`<div class="lostpet-banner" onclick="openHomeLostPets()">
     <div class="lostpet-ico" style="color:var(--coral)">${ic(lostFound?'alert':'paw')}</div>
     <div style="flex:1">${lostFound?`<b>Pet perdido perto de voce</b><span class="small">${esc(lostFound.pet_name)} ${esc(lostFound.species||'')} ${esc(lostFound.breed||'')} esta desaparecido. Veja como ajudar.</span>`:`<b>Pet perdido perto de voce</b><span class="small">Confira os pets perdidos na sua regiao e ajude a encontrar.</span>`}</div>
     <span class="home-link">&rarr;</span>
   </div>`;
-  const subTabs=`<div class="home-sub-feeds">
-    <button class="hsf-chip ${homeSection==='inicio'?'active':''}" onclick="setHomeSection('inicio')">${ic('home')} Inicio</button>
-    <button class="hsf-chip ${homeSection==='comunidade'?'active':''}" onclick="setHomeSection('comunidade')">${ic('spark')} Comunidade</button>
-    <button class="hsf-chip ${homeSection==='grupos'?'active':''}" onclick="setHomeSection('grupos')">${ic('users')} Grupos</button>
+  const moments=`<div class="stories-row home-moments">
+    <div class="story-circle" onclick="openModal('addStory')">
+      <div class="story-ring add-story"><div class="add-icon">+</div></div>
+      <div class="story-name">Seu momento</div>
+    </div>
+    ${storiesData.filter(s=>s.user_id!==currentUser?.id).map(s=>`
+      <div class="story-circle" onclick="viewStory(${s.user_id})">
+        <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${su(s.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div>
+        <div class="story-name">${esc(s.user_name)}</div>
+      </div>
+    `).join('')}
   </div>`;
+  const pills=[['for_you','Para voce'],['following','Seguindo'],['nearby','Perto de voce']];
+  const pillsHtml=`<div class="feed-chips home-pills">
+    ${pills.map(f=>`<button class="feed-chip ${homeSection!=='grupos'&&feedFilter===f[0]?'active':''}" onclick="setFeedFilter('${f[0]}')">${f[1]}</button>`).join('')}
+    <button class="feed-chip ${homeSection==='grupos'?'active':''}" onclick="setHomeSection('grupos')">${ic('users')} Grupos</button>
+  </div>`;
+  const searchBar=`<div class="search-bar home-search"><input id="homeSearch" placeholder="Buscar posts e pessoas..." onkeydown="if(event.key==='Enter')homeSearch()"><button class="btn small-btn" onclick="homeSearch()">Buscar</button></div>`;
+  const feedLoading=feedLoadingMore?'<div class="loading" style="margin:14px 0"><div class="spinner"></div></div>':'';
+  const moreBtn=feedLoadingMore?'':(postPage<postPages?'<button class="btn outline" style="width:100%;margin-top:12px" onclick="loadMoreFeed()">Carregar mais</button>':'');
+  const emptyFeed=feedError?`<div class="home-empty"><div style="font-size:34px">&#128544;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nao conseguimos carregar o feed</b><span class="small">Verifique sua conexao e tente novamente.</span><button class="btn" style="margin-top:10px;width:100%" onclick="loadAll()">Tentar novamente</button></div>`
+    :`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Ainda nao ha publicacoes por aqui.</b><span class="small">Seja o primeiro a compartilhar um momento do seu pet!</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('post')">Criar publicacao</button></div>`;
+  const feedBody=`<div id="homeSearchResults" style="display:none"><div id="searchList"></div></div>
+    ${lostBanner}
+    <div id="top3Box"></div>
+    <div class="comm-title">&#128293; O que esta acontecendo agora?</div>
+    ${adHTML()}
+    <button class="btn home-newpost" onclick="openModal('post')">&#128248; Criar publicacao</button>
+    ${posts.length===0&&!feedLoadingMore?emptyFeed:posts.map(p=>postCardHtml(p)).join('')}
+    ${feedLoading}${moreBtn}`;
   screen.innerHTML=`<div class="home-hero">
   <div class="home-hero-row">
     <div><div class="home-welcome">ZUNNU</div><div class="home-hello">Ola, ${fn} &#128075;</div></div>
@@ -1260,40 +1328,82 @@ function renderInicio(){
   <div class="home-sub">Como estao seus pets hoje?</div>
   <button class="home-plan-chip" onclick="openModal('plans')">${planTxt} &#11088; Ver planos</button>
   </div>
-  ${subTabs}
-  <div class="content">
-    ${homeSection==='comunidade'?renderComunidade():
-      homeSection==='grupos'?renderGruposTab():`
-      <div class="home-level-title"><span class="home-quick-dot"></span>O que importa agora</div>
-      ${unreadRow}
-      ${renderSeusPets()}
-      ${healthRow}
-      ${lostBanner}
-      <div class="home-quick-title"><span class="home-quick-dot"></span>Acesso rapido</div>
-      <div class="home-quick-body">${quickArea}</div>
-      <div class="home-level-title"><span class="home-quick-dot"></span>Meu universo pet</div>
-      ${univArea}
-      <div class="home-level-title"><span class="home-quick-dot"></span>Momentos e comunidade</div>
-      <div class="stories-row">
-        <div class="story-circle" onclick="openModal('addStory')">
-          <div class="story-ring add-story"><div class="add-icon">+</div></div>
-          <div class="story-name">Seu momento</div>
-        </div>
-        ${storiesData.filter(s=>s.user_id!==currentUser?.id).map(s=>`
-          <div class="story-circle" onclick="viewStory(${s.user_id})">
-            <div class="story-ring ${s.has_unviewed?'':'viewed'}"><img src="${su(s.user_avatar||'')}" onerror="this.style.display='none'" alt=""></div>
-            <div class="story-name">${esc(s.user_name)}</div>
-          </div>
-        `).join('')}
-      </div>
-      ${commCards}`}
+  <div class="content" style="padding-top:14px">
+    ${moments}
+    ${searchBar}
+    ${pillsHtml}
+    ${homeSection==='grupos'?renderGruposTab():feedBody}
   </div>`;
+  if(homeSection!=='grupos')loadTop3();
 }
 
 function setHomeSection(s){
   homeSection=s;
   if(s==='grupos')loadGroups(()=>{render();});
   render();
+}
+
+function setFeedFilter(f){feedFilter=f;homeSection='inicio';postPage=1;feedError=false;loadAll();}
+
+async function loadTop3(){
+  try{
+    const d=await api('/api/posts/ranking/top');
+    const box=document.getElementById('top3Box');if(!box)return;
+    const top=(d&&d.top)||[];
+    if(!top.length){box.innerHTML='';return;}
+    box.innerHTML=`<div class="rank-head"><span class="rank-title">&#127942; Top 3 do mes</span><span class="rank-note">${esc(d.month.replace('-','/'))}</span></div>
+      <div class="rank-podium">
+        ${top.map(p=>{
+          const medal=p.rank===1?'&#129351;':p.rank===2?'&#129352;':'&#129353;';
+          return`<div class="rank-card rank-${p.rank}" onclick="petProfileBack=&quot;setTab('inicio')&quot;;openPetProfile(${p.id})">
+            <div class="rank-medal">${medal} <b>${p.rank}&ordm;</b></div>
+            <div class="rank-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.textContent='${petEmoji(p.species)}'" alt="">`:`<span class="rank-emoji">${petEmoji(p.species)}</span>`}</div>
+            <div class="rank-info"><b>${esc(p.name)}</b><span class="rank-by">@${atname(p.user_name)}</span>
+              <div class="rank-stats"><span>&#9829; ${p.likes||0}</span><span>&#128172; ${p.comments||0}</span><span>&#128228; ${p.shares||0}</span></div>
+            </div>
+            <span class="rank-go">&rarr;</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }catch(e){}
+}
+
+function loadMoreFeed(){
+  if(feedLoadingMore)return;
+  feedLoadingMore=true;render();
+  (async()=>{
+    try{
+      const d=await api('/api/posts?page='+(postPage+1)+'&limit=10&filter='+feedFilter);
+      const have=new Set(posts.map(x=>x.id));
+      const fresh=(d.posts||[]).filter(x=>!have.has(x.id));
+      posts=posts.concat(fresh);postPage+=1;postPages=d.pages||postPages;
+    }catch(e){feedError=posts.length===0;}
+    feedLoadingMore=false;render();
+  })();
+}
+
+async function homeSearch(){
+  const q=(document.getElementById('homeSearch')?.value||'').trim();
+  const wrap=document.getElementById('homeSearchResults');
+  const listBox=document.getElementById('searchList');
+  if(!wrap||!listBox)return;
+  if(!q){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  listBox.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const d=await api('/api/search?q='+encodeURIComponent(q));
+    const users=(d.users||[]).slice(0,6);
+    const posts=(d.posts||[]).slice(0,8);
+    let html='<div class="sr-head">Resultados para "<b>'+esc(q)+'</b>"</div>';
+    if(users.length){
+      html+='<div class="sr-group">Pessoas</div>'+users.map(u=>`<div class="sr-item" onclick="viewUserProfile(${u.id})"><div class="sr-ico user">${esc((u.name||'?')[0])}</div><div><b>${esc(u.name)}</b><span class="small">${u.pets_count?u.pets_count+' pet(s)':''}${u.location?' &bull; '+esc(u.location):''}</span></div><span class="explore-link sr-go">&rarr;</span></div>`).join('');
+    }
+    if(posts.length){
+      html+='<div class="sr-group">Publicacoes</div>'+posts.map(p=>`<div class="sr-item" onclick="openPostDetailId(${p.id})"><div class="sr-ico user">${esc((p.user_name||'?')[0])}</div><div><b>${esc((p.text||'').slice(0,44))}</b><span class="small">@${atname(p.user_name)}${p.pet_name?' &bull; '+esc(p.pet_name):''}</span></div><span class="explore-link sr-go">&rarr;</span></div>`).join('');
+    }
+    if(!users.length&&!posts.length)html='<div class="explore-empty">Nenhuma pessoa ou publicacao para "'+esc(q)+'"</div>';
+    listBox.innerHTML=html;
+  }catch(e){listBox.innerHTML='<div class="explore-empty">Erro na busca. Tente novamente.</div>';}
 }
 
 
@@ -1328,22 +1438,6 @@ function postCardHtml(p){
       <div class="comment-input"><input id="commentInput-${p.id}" placeholder="Escreva um comentario..." onkeydown="if(event.key==='Enter')addComment(${p.id})"><button class="btn small-btn" onclick="addComment(${p.id})">Enviar</button></div>
     </div>
   </div>`;
-}
-
-function renderComunidade(){
-  const feedFilters=[['for_you','Para voce'],['following','Seguindo'],['nearby','Perto de voce'],['new','Novos']];
-  const feedTabs=`<div class="feed-chips">${feedFilters.map(f=>`<button class="feed-chip ${feedFilter===f[0]?'active':''}" onclick="setFeedFilter('${f[0]}')">${f[1]}</button>`).join('')}</div>`;
-  let moreBtn=feedLoadingMore?'<div class="loading" style="margin:14px 0"><div class="spinner"></div></div>':
-    (postPage<postPages?'<button class="btn outline" style="width:100%;margin-top:12px" onclick="loadMoreFeed()">Carregar mais</button>':'');
-  const emptyFeed=feedError?`<div class="home-empty"><div style="font-size:34px">&#128544;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Nao conseguimos carregar o feed</b><span class="small">Verifique sua conexao e tente novamente.</span><button class="btn" style="margin-top:10px;width:100%" onclick="loadAll()">Tentar novamente</button></div>`
-    :`<div class="home-empty"><div style="font-size:34px">&#128062;</div><b style="display:block;margin:6px 0 2px;font-size:13px">Ainda nao ha publicacoes por aqui.</b><span class="small">Seja o primeiro a compartilhar um momento do seu pet!</span><button class="btn" style="margin-top:10px;width:100%" onclick="openModal('post')">Criar publicacao</button></div>`;
-  return `<div class="comm-title">&#128293; O que esta acontecendo agora?</div>
-    ${feedTabs}
-    ${adHTML()}
-    <div class="search-bar"><input id="feedSearch" placeholder="Buscar no feed..." onkeyup="searchFeed()"><button class="btn small-btn" onclick="searchFeed()">Buscar</button></div>
-    <button class="btn home-newpost" onclick="openModal('post')">&#128248; Criar publicacao</button>
-    ${posts.length===0&&!feedLoadingMore?emptyFeed:posts.map(p=>postCardHtml(p)).join('')}
-    ${moreBtn}`;
 }
 
 function groupEmoji(cat){return ({encontros:'&#127881;',passeios:'&#128062;',apoio:'&#129309;',adocao:'&#128062;'}[cat]||'&#128172;');}
@@ -1518,20 +1612,6 @@ async function removeGroupMember(gid,uid){
 
 function togglePostMenu(id){document.querySelectorAll('.post-dropdown').forEach(el=>{if(el.id!=='pmenu-'+id)el.style.display='none';});const el=document.getElementById('pmenu-'+id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
 
-function setFeedFilter(f){feedFilter=f;postPage=1;feedError=false;loadAll();}
-
-async function loadMoreFeed(){
-  if(feedLoadingMore)return;
-  feedLoadingMore=true;render();
-  try{
-    const d=await api('/api/posts?page='+(postPage+1)+'&limit=10&filter='+feedFilter);
-    const have=new Set(posts.map(x=>x.id));
-    const fresh=(d.posts||[]).filter(x=>!have.has(x.id));
-    posts=posts.concat(fresh);postPage+=1;postPages=d.pages||postPages;
-  }catch(e){feedError=posts.length===0;}
-  feedLoadingMore=false;render();
-}
-
 function openPostPet(id){petProfileBack="setTab('inicio')";openPetProfile(id);}
 function openCommPet(id){petProfileBack="setTab('mapa')";openPetProfile(id);}
 
@@ -1547,12 +1627,6 @@ async function blockUser(uid){
     posts.forEach(p=>{if(p.user_id===uid)delete showComments[p.id];});
     render();showToast('Usuario bloqueado');
   }catch(e){alert(e.message);}
-}
-
-async function searchFeed(){
-  const q=document.getElementById('feedSearch')?.value||'';
-  postPage=1;
-  try{const d=await api('/api/posts?search='+encodeURIComponent(q)+'&page=1&limit=10&filter='+feedFilter);posts=d.posts||[];postPages=d.pages||1;render();}catch(e){feedError=true;render();}
 }
 
 async function toggleLike(id){
@@ -2486,11 +2560,13 @@ function renderPerfil(){
   const petList=(pets.length?pets.map(p=>{
     const emo=spEmoji[p.species]||'&#128062;';
     const st=petHomeStatus(p);
-    const dot=st&&st.cl?`<span class="prof-pet-status-dot ${(st.cl==='ok'||st.cl==='up')?'ok':'warn'}"></span>`:'';
-    return`<div class="prof-pet-card" onclick="petProfileBack=&quot;setTab('perfil')&quot;;openPetProfile(${p.id})">
-      <div class="prof-pet-photo">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt="">`:emo}</div>
-      <div style="flex:1;min-width:0"><div class="prof-pet-name">${esc(p.name)}</div><div class="prof-pet-breed">${esc(p.breed||p.species)}</div></div>
-      ${dot}
+    const statusCl=st&&st.cl!=='warn'?'ok':'warn';
+    return`<div class="prof-pet-card prof-pet-card-lg" onclick="petProfileBack=&quot;setTab('perfil')&quot;;openPetProfile(${p.id})">
+      <div class="prof-pet-photo-lg">${p.image?`<img src="${su(p.image)}" onerror="this.style.display='none';this.parentNode.textContent='${emo}'" alt="">`:emo}${st?`<span class="prof-pet-selo ${statusCl}" title="${esc(st.txt)}">&#10004;</span>`:''}</div>
+      <div style="flex:1;min-width:0"><div class="prof-pet-name">${esc(p.name)}</div><div class="prof-pet-breed">${emo} ${esc(p.breed||p.species)}</div>
+        ${st?`<div class="prof-pet-health ${statusCl}">${esc(st.txt)}</div>`:''}
+      </div>
+      <span style="color:var(--soft);font-size:16px;margin-left:4px">&#8250;</span>
     </div>`;
   }).join(''):`<div class="prof-pet-add-card" onclick="openModal(&#39;addPet&#39;)"><div class="prof-pet-photo"><span style="font-size:20px">+</span></div><b>Adicionar pet</b></div>`)
   +`<div class="prof-pet-add-card" onclick="openModal('addPet')"><div class="prof-pet-photo"><span style="font-size:20px">+</span></div><b>Adicionar pet</b></div>`;
@@ -2499,7 +2575,7 @@ function renderPerfil(){
   const atvOptions=
     opt('calendar',['rgba(43,123,185,.15)','var(--blue)'],'Eventos','Encontros, passeios e doacoes','profNav(\'openEventos()\')')+
     opt('heart',['rgba(231,111,81,.15)','var(--coral)'],'Formar Parceria','Encontre um par ideal','profNav(\'formarParceria()\')')+
-    opt('users',['rgba(15,165,140,.15)','var(--green)'],'Comunidade','Forum, grupos e novidades','profNav(\'homeSection=\\\'comunidade\\\';setTab(\\\'inicio\\\')\')')+
+    opt('users',['rgba(15,165,140,.15)','var(--green)'],'Comunidade','Feed, momentos e grupos','profNav(\'setTab(\\\'inicio\\\')\')')+
     opt('spark',['rgba(245,158,11,.15)','var(--gold)'],'Clube de pontos','Ganhe pontos por acoes','profNav(\'setTab(\\\'pontos\\\')\')');
   const accOptions=
     opt('gear',['rgba(124,58,237,.15)','var(--purple)'],'Configuracoes','Nome, seguranca e privacidade','openConfigFromProfile()')+
@@ -2508,25 +2584,34 @@ function renderPerfil(){
     opt('lightbulb',['rgba(43,123,185,.15)','var(--blue)'],'Ajuda','Centro de ajuda e duvidas','profNav(\'renderHelp()\')')+
     (currentUser.is_admin?opt('users',['rgba(124,58,237,.15)','var(--purple)'],'Painel Admin','Gestao da plataforma','profNav(\'renderAdmin()\')'):'');
   const bell=`<button class="icon-btn notif-btn" onclick="profNav('renderNotificacoes()')" aria-label="Notificacoes">${ic('bell')}${unreadCount>0?`<span class="notif-badge">${unreadCount}</span>`:''}</button>`;
+  const avatarImg=currentUser.selfie_url||currentUser.avatar;
+  const initial=(currentUser.name||'U').trim()[0]||'U';
+  const avatarHtml=avatarImg?`<img src="${su(avatarImg)}" class="tutor-avatar" onerror="this.onerror=null;this.parentNode.classList.add('no-img');this.parentNode.textContent='${esc(initial)}'" alt="${esc(currentUser.name)}">`:`<span class="tutor-avatar tutor-avatar-letter">${esc(initial)}</span>`;
+  const socialChips=(currentUser.instagram||currentUser.whatsapp)?`<div class="prof-socials">${currentUser.instagram?`<a class="social-chip" href="https://instagram.com/${sj(atname(currentUser.instagram))}" target="_blank" rel="noopener" aria-label="Instagram">${ic('instagram','#E1306C')}</a>`:''}${currentUser.whatsapp?`<a class="social-chip" href="https://wa.me/${sj(String(currentUser.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener" aria-label="WhatsApp">${ic('whatsapp','#25D366')}</a>`:''}</div>`:'';
+  const bioLines=[];
+  if(currentUser.location)bioLines.push(`<span class="prof-bio-loc">${ic('map','var(--soft)')} ${esc(currentUser.location)}</span>`);
+  if(currentUser.bio)bioLines.push(`<span>${esc(currentUser.bio)}</span>`);
+  const bioHtml=(bioLines.length||socialChips)?`<div class="prof-bio">${bioLines.join('')}${socialChips}</div>`:'';
+  const statusBadge=currentUser.is_human_verified?'<span class="badge-verified">Humano Verificado</span>':'';
+  const verifBlock=currentUser.is_human_verified?'':`<button class="btn small-btn prof-verif" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button>`;
+  const verifRow=(statusBadge||verifBlock)?`<div style="margin-top:10px">${statusBadge}${verifBlock}</div>`:'';
+  const nameRow=`<div class="prof-name-row"><span class="prof-name">${esc(currentUser.name)} ${getBadge(currentUser.plan)}</span><button class="prof-pencil" onclick="openConfigSection('conta')" aria-label="Editar perfil">${ic('edit','var(--green)')}</button></div>`;
   screen.innerHTML=`<div class="header"><div class="header-row"><div class="brand"><div class="logo">Z</div><div class="title">Perfil</div></div><div class="header-actions" style="gap:10px">${bell}<button class="icon-btn" onclick="openConfigFromProfile()" aria-label="Configuracoes">${ic('gear')}</button><button class="plan-btn" onclick="openModal('plans')">${planTxt}</button></div></div></div>`+`
   <div class="content">
     <div class="tutor-card" style="padding:18px 14px">
       <div onclick="openModal('editAvatar')" style="cursor:pointer;display:inline-block;position:relative;line-height:0" title="Clique para alterar foto">
-        <img src="${su(currentUser.selfie_url||currentUser.avatar||'')}" class="tutor-avatar" onerror="this.src='https://via.placeholder.com/76?text=U'" alt="${esc(currentUser.name)}">
+        <div class="tutor-avatar-wrap">${avatarHtml}</div>
         <div class="avatar-cam" style="position:absolute;bottom:2px;right:2px;width:25px;height:25px">${ic('camera','#fff')}</div>
       </div>
-      <div style="font-weight:800;font-size:17px;margin:10px 0 0"><button class="prof-edit-name" onclick="openConfigSection('conta')">${ic('gear')}</button>${esc(currentUser.name)} ${getBadge(currentUser.plan)}</div>
-      <div class="profile-handle">@${atname(handleFor(currentUser.name))}</div>
-      <button class="btn small-btn outline" style="margin-top:10px;width:100%" onclick="openConfigSection('conta')">&#9998; Editar perfil</button>
-      <div class="small" style="margin-top:4px">${esc(currentUser.location||'')}</div>
-      ${currentUser.is_human_verified?'<div style="margin-top:8px"><span class="badge-verified">Humano Verificado</span></div>':`<div style="margin-top:8px"><button class="btn small-btn" style="background:#EE9C3C;border:none" onclick="openModal('selfie')">Fazer Verificacao Facial</button></div>`}
-      <div class="small" style="margin-top:8px;line-height:1.5">${esc(currentUser.bio||'')}</div>
-      ${(currentUser.instagram||currentUser.whatsapp)?`<div style="display:flex;gap:8px;margin-top:10px;justify-content:center;flex-wrap:wrap">${currentUser.instagram?`<a class="social-chip" href="https://instagram.com/${sj(atname(currentUser.instagram))}" target="_blank" rel="noopener">&#128247; @${atname(currentUser.instagram)}</a>`:''}${currentUser.whatsapp?`<a class="social-chip" href="https://wa.me/${sj(String(currentUser.whatsapp).replace(/\D/g,''))}" target="_blank" rel="noopener">&#128241; ${esc(currentUser.whatsapp)}</a>`:''}</div>`:''}
-      <div style="display:flex;justify-content:space-around;background:var(--bg);border-radius:12px;padding:10px;margin-top:14px">
+      ${nameRow}
+      <div class="profile-handle" style="margin-top:2px">@${atname(handleFor(currentUser.name))}</div>
+      ${bioHtml}
+      <div class="prof-stats">
         <div class="small"><b>${currentUser.stats?.pets||0}</b> Pets</div>
         <div class="small"><b>${currentUser.stats?.posts||0}</b> Posts</div>
         <div class="small"><b>${currentUser.stats?.matches||0}</b> Conexoes</div>
       </div>
+      ${verifRow}
 <div class="prof-sections">
         <div class="home-section-title"><h2>&#128062; Meus pets</h2><button class="home-more" onclick="setTab('pets')">Ver todos</button></div>
         <div class="prof-pet-list">${petList}</div>
@@ -2631,7 +2716,9 @@ function render(){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
 }
 
-function setTab(t){tab=t;viewingPet=null;backStack.length=0;render();window.scrollTo(0,0);}
+function setTab(t){switchTab(t);}
+function switchTab(t){tab=t;viewingPet=null;backStack.length=0;render();window.scrollTo(0,0);}
+function navTab(t){if(t!==tab){tabStack.push(tab);if(tabStack.length>8)tabStack.shift();}switchTab(t);}
 async function openModal(type){
   const old=document.getElementById('modal-root');if(old)old.remove();
   const root=document.createElement('div');root.id='modal-root';
@@ -3415,14 +3502,12 @@ function fmtDist(km){if(km==null||isNaN(km))return'';if(km<1)return'A '+Math.max
 function exploreDist(a,b,c,d){const R=6371,rad=x=>x*Math.PI/180;const dLa=rad(c-a),dLo=rad(d-b);const x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function updateExplorerLoc(){
   const el=document.getElementById('exploreLoc');if(!el)return;
-  el.innerHTML=window._userLat?(window._userLat.toFixed(3))+'<b class="explore-loc-ok">Localizacao ativa</b>':'<b>Ativando localizacao...</b>';
+  el.innerHTML=window._userLat?`${ic('map','currentColor')} <b class="explore-loc-ok">Localizacao ativa</b>`:`${ic('map','currentColor')} <b>Localizacao em Sao Luis (MA)</b>`;
 }
 function centerMap(){const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;if(mapaInst)mapaInst.setView([lat,lng],14);}
 function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
 function exploreChip(f){
   document.querySelectorAll('.explore-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
-  if(f==='places'){scrollToId('explorePlaces');return;}
-  if(f==='services'){scrollToId('exploreServices');return;}
   mapaFilter=f;loadNearbyPets();
 }
 
@@ -3569,34 +3654,20 @@ function renderMapa(){
     <div class="explore-top">
       <div><div class="explore-title">Explorar ${ic('paw','currentColor')}</div><div class="explore-sub">Descubra o mundo pet perto de voce</div></div>
     </div>
-    <div class="explore-loc" id="exploreLoc">${ic('map','currentColor')} <b>Ativando localizacao...</b></div>
-    <div class="explore-search"><input id="exploreSearchInput" placeholder="Buscar pets, servicos, usuarios, petshops..." onkeydown="if(event.key==='Enter')exploreSearch()"><button onclick="exploreSearch()">Buscar</button></div>
+    <div class="explore-loc" id="exploreLoc">${ic('map','currentColor')} <b>Localizacao em Sao Luis (MA)</b></div>
+    <div class="explore-search"><input id="exploreSearchInput" placeholder="Buscar pets, servicos, usuarios..." onkeydown="if(event.key==='Enter')exploreSearch()"><button onclick="exploreSearch()">Buscar</button></div>
   </div>
   <div class="content">
     <div id="exploreResults" style="display:none"></div>
-    <div class="explore-section" id="exploreDiscover">
-      <div id="discFeaturedWrap">${renderDiscFeatured()}</div>
-      <div class="disc-tools">
-        <button class="pl-chip" onclick="openEventos()">${ic('calendar','var(--purple)')} Eventos proximos</button>
-        <button class="pl-chip" onclick="openAdocao()">${ic('heart','var(--coral)')} Adocao de pets</button>
-        <button class="pl-chip" onclick="openConexao()">${ic('users','var(--green)')} Criar conexao</button>
-      </div>
-      <hr class="disc-hr">
-      <div class="home-section-title"><h2>${ic('map','var(--purple)')} Buscar por cidade</h2></div>
-      <div style="padding:2px 16px;display:flex;gap:8px"><input id="mpCityIn" placeholder="Ex.: Sao Luis (MA)" value="${discCity?esc(discCity):''}" onkeydown="if(event.key==='Enter')exploreCitySearch()" class="disc-search" style="flex:1;border:1px solid rgba(0,0,0,.07);box-shadow:none;border-radius:12px"><button class="btn" style="padding:0 14px;flex-shrink:0" onclick="exploreCitySearch()">Buscar</button></div>
-      ${commPetsSectionHtml()}
-    </div>
     <div class="map-hero" id="exploreMap">
       <div class="map-wrap">
         <div id="mapaView"></div>
         <div class="map-loading" id="mapLoading"><div class="spinner"></div></div>
-        <button class="map-locate" onclick="centerMap()" aria-label="Centralizar localizacao">${ic('map','var(--purple)')}</button>
+        <button class="map-locate" onclick="requestLoc()" aria-label="Usar minha localizacao">${ic('map','var(--purple)')}</button>
       </div>
       <div class="explore-q">${ic('search','var(--purple)')} O que voce procura?</div>
       <div class="explore-chips">
         <button class="chip ${mapaFilter==='all'?'active':''}" data-f="all" onclick="exploreChip('all')">${ic('paw','var(--green)')} Pets</button>
-        <button class="chip" data-f="services" onclick="exploreChip('services')">${ic('store','var(--orange)')} Servicos</button>
-        <button class="chip" data-f="places" onclick="exploreChip('places')">${ic('map','var(--purple)')} Lugares</button>
         <button class="chip" onclick="openAdocao()">${ic('heart','var(--coral)')} Adocao</button>
         <button class="chip" onclick="openEventos()">${ic('calendar','var(--blue)')} Eventos</button>
       </div>
@@ -3605,67 +3676,20 @@ function renderMapa(){
       <div class="explore-sec-head"><h2>Perto de voce</h2><button class="explore-more" onclick="exploreChip('all')">Atualizar</button></div>
       <div class="nearby-cards" id="nearbyCards"><div class="explore-empty">Carregando pets por perto...</div></div>
     </div>
-    <div class="explore-section" id="exploreLost">
-      <div class="explore-sec-head"><h2>Atencao na sua regiao ${ic('alert','var(--coral)')}</h2></div>
-      <div class="lost-cards" id="lostCards"></div>
-    </div>
-    <div class="explore-section" id="explorePlaces">
-      <div class="explore-sec-head"><h2>Mapa Pet — Lugares</h2><button class="explore-more" onclick="loadPlaces()">Atualizar</button></div>
-      <div class="pl-chips">
-        <button class="pl-chip on" data-f="all" onclick="placesFilter='all';renderPlaces()">${ic('map','var(--green)')} Todos</button>
-        <button class="pl-chip" data-f="Pet Shop" onclick="placesFilter='Pet Shop';renderPlaces()">${ic('store','var(--purple)')} Pet Shop</button>
-        <button class="pl-chip" data-f="Veterinaria" onclick="placesFilter='Veterinaria';renderPlaces()">${ic('paw','var(--green)')} Vet</button>
-        <button class="pl-chip" data-f="Banho e Tosa" onclick="placesFilter='Banho e Tosa';renderPlaces()">${ic('scissors','var(--orange)')} Tosa</button>
-        <button class="pl-chip" data-f="Parque" onclick="placesFilter='Parque';renderPlaces()">${ic('tree','var(--green)')} Parque</button>
-        <button class="pl-chip" data-f="Praca" onclick="placesFilter='Praca';renderPlaces()">${ic('tree','var(--gold)')} Praca</button>
-        <button class="pl-chip" data-f="Lazer" onclick="placesFilter='Lazer';renderPlaces()">${ic('spark','var(--orange)')} Lazer</button>
-        <button class="pl-chip" onclick="openMyPlaces()">${ic('user','var(--purple)')} Meus lugares</button>
-        <button class="pl-chip" onclick="openSuggestPlace()">${ic('lightbulb','var(--orange)')} Sugerir local</button>
-        <button class="pl-chip" onclick="openNewPlace()">${ic('plus','var(--green)')} Adicionar lugar</button>
-      </div>
-      <div class="pl-chips" style="padding-top:2px">
-        <select id="plCitySel" onchange="placeCity=this.value==='__all__'?'':this.value;loadPlaces()" style="flex:1;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:8px 10px;font-size:12px;background:var(--card)">
-          <option value="__all__">Todas as cidades</option>
-          <option>Sao Luis</option>
-          <option>Centro</option>
-          <option>Bairro Alto</option>
-          <option>Calhau</option>
-          <option>Ponta de Areia</option>
-          <option>Renascer</option>
-          <option>TurU</option>
-        </select>
-        <button class="btn" style="padding:0 12px;flex-shrink:0" onclick="goPlaceCity()">Ir</button>
-      </div>
-      <div class="pl-note">Pin amarelo = pet friendly. Toque em um pin ou card para ver detalhes, avaliar e favoritar.</div>
-      <div class="pl-grid" id="placesGrid"><div class="explore-empty" style="grid-column:1/-1">Carregando lugares...</div></div>
-    </div>
-    <div class="explore-section">
-      <div class="explore-sec-head"><h2>Comunidade local</h2></div>
-      <div class="community-teaser" style="margin-bottom:8px" onclick="setTab('inicio')">
-        <div class="explore-quick-icon green">&#128293;</div>
-        <div><b>Veja o que esta acontecendo agora</b><span class="small">Posts, stories e novidades da comunidade pet</span></div>
-        <span class="explore-link">&rarr;</span>
-      </div>
-      <div class="community-teaser" onclick="renderMyEvents()">
-        <div class="explore-quick-icon" style="background:var(--goldSoft)">&#128197;</div>
-        <div><b>Meus Eventos</b><span class="small">Gerencie os eventos que voce criou</span></div>
-        <span class="explore-link">&rarr;</span>
-      </div>
-    </div>
   </div>`;
+  const lat=window._userLat||-2.5307,lng=window._userLng||-44.2829;
+  initMap(lat,lng);
+  loadNearbyPets();
   updateExplorerLoc();
-  renderLostCards();
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      window._userLat=pos.coords.latitude;window._userLng=pos.coords.longitude;
-      initMap(pos.coords.latitude,pos.coords.longitude);
-      loadNearbyPets();
-      updateExplorerLoc();
-      renderLostCards();
-      loadPlaces();
-    },()=>{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();loadPlaces();});
-  }else{initMap(-2.5307,-44.2829);loadNearbyPets();updateExplorerLoc();renderLostCards();loadPlaces();}
-  loadDiscFeatured();
+}
+function requestLoc(){
+  if(!navigator.geolocation){alert('Geolocalizacao indisponivel neste dispositivo.');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    window._userLat=pos.coords.latitude;window._userLng=pos.coords.longitude;
+    initMap(pos.coords.latitude,pos.coords.longitude);
+    loadNearbyPets();
+    updateExplorerLoc();
+  },()=>{alert('Nao foi possivel obter sua localizacao. Usando Sao Luis (MA).');});
 }
 function initMap(lat,lng){
   if(mapaInst){mapaInst.remove();mapaInst=null;}
@@ -5034,7 +5058,7 @@ async function deleteMyAdoption(id){
   try{await api('/api/adoption/'+id,{method:'DELETE'});renderMyAdoptions();}catch(e){alert(e.message);}
 }
 
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>navTab(b.dataset.tab)));
 document.addEventListener('click',e=>{
   if(!e.target.closest('.notif-btn')&&!e.target.closest('.notif-dropdown')){
     const nd=document.querySelector('.notif-dropdown');if(nd)nd.remove();
